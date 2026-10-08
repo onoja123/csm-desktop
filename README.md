@@ -59,7 +59,7 @@ csm serve stop
 npm run app:build
 ```
 
-produces `src-tauri/target/release/bundle/macos/CSM.app` and a `.dmg` next to it.
+produces `src-tauri/target/release/bundle/macos/CSM.app`. For a disk image, run `npm run app:dmg` afterwards; it uses `hdiutil` rather than Tauri's Finder-scripted DMG, which needs automation permissions.
 
 ## Layout
 
