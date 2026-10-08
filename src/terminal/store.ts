@@ -42,6 +42,7 @@ interface TerminalState {
 }
 
 let counter = 0;
+let hydrating = false;
 const nextId = (prefix: string) => `${prefix}-${Date.now().toString(36)}-${(counter++).toString(36)}`;
 
 export function titleFromCwd(cwd: string, home: string): string {
@@ -119,7 +120,8 @@ export const useTerminal = create<TerminalState>((set, get) => ({
   },
 
   async hydrate() {
-    if (get().hydrated) return;
+    if (get().hydrated || hydrating) return;
+    hydrating = true;
     const [shells, homeDir] = await Promise.all([pty.shells().catch(() => []), pty.defaultCwd().catch(() => '')]);
     set({ shells, homeDir, hydrated: true });
     const saved = loadState();
