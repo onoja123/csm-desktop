@@ -1,4 +1,5 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { HashRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { AppShell } from '@/components/shell/AppShell';
 import { ConnectionGate } from '@/components/shell/ConnectionGate';
 import { CommandPalette } from '@/components/palette/CommandPalette';
@@ -15,14 +16,35 @@ import { Handoffs, HandoffDetail } from '@/screens/Handoffs';
 import { Tasks } from '@/screens/Tasks';
 import { ActivityScreen } from '@/screens/ActivityScreen';
 import { Settings } from '@/screens/Settings';
+import { TerminalScreen } from '@/screens/TerminalScreen';
+import { useTerminalShortcuts } from '@/terminal/shortcuts';
+
+function Shortcuts() {
+  useTerminalShortcuts();
+  return null;
+}
+
+// Development only: open on a given screen so a dev session can land on the terminal directly.
+function DevStart() {
+  const nav = useNavigate();
+  useEffect(() => {
+    const route = import.meta.env.DEV ? (import.meta.env.VITE_START_ROUTE as string | undefined) : undefined;
+    if (route) nav(route, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return null;
+}
 
 export function App() {
   return (
     <HashRouter>
+      <Shortcuts />
+      <DevStart />
       <AppShell>
         <ConnectionGate>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/terminal" element={<TerminalScreen />} />
             <Route path="/agents" element={<Agents />} />
             <Route path="/agents/:id" element={<AgentDetail />} />
             <Route path="/accounts" element={<Accounts />} />

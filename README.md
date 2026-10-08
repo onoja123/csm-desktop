@@ -27,6 +27,23 @@ csm (Go)                              CSM Desktop (Tauri + React + TypeScript)
 - **Approvals**: under the service, CSM registers a `PreToolUse` hook for Claude Code's shell commands. The hook asks the service; the service asks you; the answer goes back as Claude Code's own hook decision. No answer within ten minutes, or no desktop connected, and Claude Code falls back to its normal prompt. Other agents keep their terminal prompts, which you can answer in the Output tab.
 - **Truthful data**: every figure comes from CSM or the agent's own session record. Usage shows `Unknown` until the agent reports it. Task names are the last request the user made in that session, not a guess. There is no progress percentage because nothing provides one.
 
+## CSM Terminal
+
+The Terminal screen is a real terminal: every pane is a pseudo-terminal running your login shell, created by the Rust side with `portable-pty` (the PTY layer from WezTerm) and rendered by xterm.js with the WebGL renderer. Interactive programs, the alternate screen, colours, Unicode, resizing and signals all go through the PTY. Tabs, splits, search, scrollback, shell choice and persistence of open tabs and directories are handled in `src/terminal/`; the shell integration files under the app's data directory report the working directory and prompt boundaries (OSC 7 and OSC 133) so tab titles and the status bar stay truthful. An agent's session can be opened as a terminal tab; that tab is the service's PTY for the run, not a copy.
+
+The PTY is reachable only through Tauri IPC from the app window. Nothing about local terminals is exposed on the service socket or the network listener.
+
+| Shortcut | Action |
+|---|---|
+| ⌘T · ⌘⇧T | New terminal · reopen closed |
+| ⌘W · ⌘⇧W | Close pane · close tab |
+| ⌘D · ⌘⇧D | Split side by side · split stacked |
+| ⌘⇧] · ⌘⇧[ · ⌃Tab · ⌘1-9 | Switch tabs |
+| ⌘⌥← → | Focus panes |
+| ⌘F | Search output |
+| ⌘⇧K | Clear |
+| ⌘K · ⌘⇧P | Command palette, including terminal actions |
+
 ## Requirements
 
 - macOS 12 or newer (Linux should work but is untested)

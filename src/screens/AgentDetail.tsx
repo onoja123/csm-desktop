@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeftRight, FileDiff, Send, Square, UserRound } from 'lucide-react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { ArrowLeftRight, FileDiff, Send, Square, TerminalSquare, UserRound } from 'lucide-react';
 import { Page } from '@/components/shell/AppShell';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { AgentStatus } from '@/components/agents/AgentStatus';
@@ -21,6 +21,7 @@ type Tab = 'output' | 'files' | 'activity' | 'session' | 'mcp';
 export function AgentDetail() {
   const { id = '' } = useParams();
   const [params, setParams] = useSearchParams();
+  const nav = useNavigate();
   const tab = (params.get('tab') as Tab) || 'output';
   const setTab = (t: Tab) => setParams({ tab: t }, { replace: true });
   const { runs, accounts, activity, approvals, status } = useData();
@@ -108,6 +109,12 @@ export function AgentDetail() {
                 ) : null}
                 <Button icon={ArrowLeftRight} onClick={() => openHandoff({ projectDir: run.project_dir, fromProvider: run.provider, fromAccount: run.account })}>
                   Handoff
+                </Button>
+                <Button icon={TerminalSquare} onClick={() => nav(`/terminal?run=${encodeURIComponent(run.id)}`)}>
+                  Open in Terminal
+                </Button>
+                <Button variant="ghost" onClick={() => nav(`/terminal?cwd=${encodeURIComponent(run.project_dir)}`)}>
+                  Shell here
                 </Button>
                 <Button icon={Square} variant="danger" onClick={() => void api.stopRun(id)}>
                   Stop

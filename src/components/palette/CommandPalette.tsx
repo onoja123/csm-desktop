@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Command } from 'cmdk';
-import { ArrowLeftRight, Check, Play, Square, Terminal, UserRound, X, type LucideIcon } from 'lucide-react';
+import { ArrowLeftRight, Check, Columns2, Eraser, Play, RotateCcw, Rows2, Search, Square, Terminal, TerminalSquare, UserRound, X, type LucideIcon } from 'lucide-react';
+import { useTerminal } from '@/terminal/store';
 import { create } from 'zustand';
 import { Icon } from '@/components/ui';
 import { NAV } from '@/components/shell/Sidebar';
@@ -9,6 +10,7 @@ import { providerIcon } from '@/components/agents/AgentIcon';
 import { useStartAgent } from '@/components/agents/StartAgentDialog';
 import { useHandoffDialog } from '@/components/handoffs/HandoffDialog';
 import { api } from '@/lib/api';
+import { handles } from '@/components/terminal/ShellTerminal';
 import { PROVIDER_LONG_NAMES, PROVIDER_NAMES, baseName } from '@/lib/format';
 import { useData } from '@/store/data';
 
@@ -47,7 +49,7 @@ export function CommandPalette() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      if ((e.metaKey || e.ctrlKey) && (e.key.toLowerCase() === 'k' || (e.shiftKey && e.key.toLowerCase() === 'p'))) {
         e.preventDefault();
         toggle();
       }
@@ -78,9 +80,29 @@ export function CommandPalette() {
 
     list.push({ id: 'act:start', group: 'Actions', label: 'Start agent', hint: '⌘N', icon: Play, run: () => openStart() });
 
+    const term = useTerminal.getState();
+    const go = (fn: () => unknown) => () => {
+      nav('/terminal');
+      setTimeout(() => void fn(), 50);
+    };
+    list.push({ id: 'term:new', group: 'Terminal', label: 'New terminal', hint: '⌘T', icon: TerminalSquare, run: go(() => term.newTab()) });
+    list.push({ id: 'term:split-row', group: 'Terminal', label: 'New split (side by side)', hint: '⌘D', icon: Columns2, run: go(() => term.split('row')) });
+    list.push({ id: 'term:split-col', group: 'Terminal', label: 'New split (stacked)', hint: '⌘⇧D', icon: Rows2, run: go(() => term.split('column')) });
+    list.push({ id: 'term:close', group: 'Terminal', label: 'Close terminal', hint: '⌘W', icon: X, run: go(() => { const t = term.activeTab(); if (t) void term.closePane(t.activePaneId); }) });
+    list.push({ id: 'term:next', group: 'Terminal', label: 'Focus next pane', hint: '⌘⌥→', icon: ArrowLeftRight, run: go(() => term.cycleFocus(1)) });
+    list.push({ id: 'term:prev', group: 'Terminal', label: 'Focus previous pane', hint: '⌘⌥←', icon: ArrowLeftRight, run: go(() => term.cycleFocus(-1)) });
+    list.push({ id: 'term:clear', group: 'Terminal', label: 'Clear terminal', hint: '⌘⇧K', icon: Eraser, run: go(() => { const t = term.activeTab(); if (t) handles.get(t.activePaneId)?.term.clear(); }) });
+    list.push({ id: 'term:restart', group: 'Terminal', label: 'Restart shell', icon: RotateCcw, run: go(() => { const t = term.activeTab(); if (t) void term.restartShell(t.activePaneId); }) });
+    list.push({ id: 'term:kill', group: 'Terminal', label: 'Kill process (Ctrl+C)', icon: Square, run: go(() => { const t = term.activeTab(); if (t) void term.killProcess(t.activePaneId); }) });
+    list.push({ id: 'term:search', group: 'Terminal', label: 'Search output', hint: '⌘F', icon: Search, run: go(() => term.setSearchOpen(true)) });
+    list.push({ id: 'term:copy', group: 'Terminal', label: 'Copy selection', hint: '⌘C', icon: Terminal, run: go(() => { const t = term.activeTab(); const h = t && handles.get(t.activePaneId); if (h?.term.hasSelection()) void navigator.clipboard.writeText(h.term.getSelection()); }) });
+    list.push({ id: 'term:paste', group: 'Terminal', label: 'Paste', hint: '⌘V', icon: Terminal, run: go(async () => { const t = term.activeTab(); const h = t && handles.get(t.activePaneId); if (h) h.term.paste(await navigator.clipboard.readText()); }) });
+    list.push({ id: 'term:selectall', group: 'Terminal', label: 'Select all', icon: Terminal, run: go(() => { const t = term.activeTab(); handles.get(t?.activePaneId ?? '')?.term.selectAll(); }) });
+
     for (const r of live) {
       list.push({ id: `agent:${r.id}`, group: 'Agents', label: `${PROVIDER_LONG_NAMES[r.provider]} · ${r.account}`, hint: r.task.summary ?? baseName(r.project_dir), icon: providerIcon(r.provider), keywords: r.project_dir, run: () => nav(`/agents/${r.id}`) });
-      list.push({ id: `term:${r.id}`, group: 'Actions', label: `Open terminal: ${PROVIDER_NAMES[r.provider]} · ${r.account}`, icon: Terminal, run: () => nav(`/agents/${r.id}?tab=output`) });
+      list.push({ id: `term:${r.id}`, group: 'Actions', label: `Open terminal: ${PROVIDER_NAMES[r.provider]} · ${r.account}`, icon: Terminal, run: () => nav(`/terminal?run=${encodeURIComponent(r.id)}`) });
+      list.push({ id: `shell:${r.id}`, group: 'Actions', label: `Shell in ${baseName(r.project_dir)}`, icon: TerminalSquare, run: () => nav(`/terminal?cwd=${encodeURIComponent(r.project_dir)}`) });
       list.push({ id: `stop:${r.id}`, group: 'Actions', label: `Stop ${PROVIDER_NAMES[r.provider]} · ${r.account}`, icon: Square, run: () => api.stopRun(r.id) });
       list.push({ id: `handoff:${r.id}`, group: 'Actions', label: `Create handoff from ${PROVIDER_NAMES[r.provider]} · ${r.account}`, icon: ArrowLeftRight, run: () => openHandoff({ projectDir: r.project_dir, fromProvider: r.provider, fromAccount: r.account }) });
     }

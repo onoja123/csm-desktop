@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { Activity, ArrowLeftRight, Bot, History, Home, ListTodo, Plug, Settings, UserRound, type LucideIcon } from 'lucide-react';
+import { Activity, ArrowLeftRight, Bot, History, Home, ListTodo, Plug, Settings, TerminalSquare, UserRound, type LucideIcon } from 'lucide-react';
 import { Icon, StatusDot } from '@/components/ui';
 import { useConnection } from '@/store/connection';
 import { useData } from '@/store/data';
 
 export const NAV: { to: string; label: string; icon: LucideIcon; end?: boolean }[] = [
   { to: '/', label: 'Home', icon: Home, end: true },
+  { to: '/terminal', label: 'Terminal', icon: TerminalSquare },
   { to: '/agents', label: 'Agents', icon: Bot },
   { to: '/accounts', label: 'Accounts', icon: UserRound },
   { to: '/mcp', label: 'MCP', icon: Plug },

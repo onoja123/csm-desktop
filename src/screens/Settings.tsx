@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { openPath } from '@tauri-apps/plugin-opener';
 import { Page } from '@/components/shell/AppShell';
 import { FailoverPanel } from './Accounts';
+import { TerminalSettingsPanel } from '@/components/terminal/TerminalSettings';
 import { Button, PageHeader, Panel, Row, Section, Toggle } from '@/components/ui';
 import { api, service } from '@/lib/api';
 import { PROVIDER_LONG_NAMES, ago } from '@/lib/format';
@@ -41,6 +42,9 @@ export function Settings() {
             <Toggle checked={settings?.approvals_enabled ?? true} onChange={(v) => void api.updateSettings({ approvals_enabled: v })} label="Route approvals" />
           </div>
         </Panel>
+      </Section>
+      <Section title="Terminal">
+        <TerminalSettingsPanel />
       </Section>
       <Section title="Failover">
         <FailoverPanel />
@@ -92,6 +96,11 @@ export function Settings() {
         <Panel>
           <Row label="Command palette">⌘K</Row>
           <Row label="Start agent">⌘N</Row>
+          <Row label="New terminal">⌘T</Row>
+          <Row label="Split terminal">⌘D · ⌘⇧D</Row>
+          <Row label="Close pane · tab">⌘W · ⌘⇧W</Row>
+          <Row label="Switch terminal">⌘⇧] · ⌘⇧[ · ⌃Tab · ⌘1-9</Row>
+          <Row label="Search output">⌘F</Row>
           <Row label="Close dialog">Esc</Row>
         </Panel>
       </Section>
