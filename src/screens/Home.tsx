@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { Bot, ArrowRight } from 'lucide-react';
 import { Page } from '@/components/shell/AppShell';
 import { AgentIcon } from '@/components/agents/AgentIcon';
-import { AgentCard } from '@/components/agents/AgentCard';
 import { useStartAgent } from '@/components/agents/StartAgentDialog';
 import { AccountCard } from '@/components/accounts/AccountCard';
 import { TaskList } from '@/components/tasks/TaskCard';
@@ -143,15 +142,6 @@ export function Home() {
           )}
         </Section>
       </div>
-      {live.length > 0 ? (
-        <Section title="Active agents">
-          <div className="list">
-            {live.map((r) => (
-              <AgentCard key={r.id} run={r} />
-            ))}
-          </div>
-        </Section>
-      ) : null}
     </Page>
   );
 }

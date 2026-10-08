@@ -50,6 +50,10 @@ export function CommandPalette() {
         e.preventDefault();
         toggle();
       }
+      if (e.key === 'Escape' && usePalette.getState().isOpen) {
+        e.preventDefault();
+        close();
+      }
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'n' && !e.shiftKey) {
         e.preventDefault();
         openStart();
@@ -57,7 +61,7 @@ export function CommandPalette() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [toggle, openStart]);
+  }, [toggle, close, openStart]);
 
   useEffect(() => {
     if (!isOpen) setQuery('');
