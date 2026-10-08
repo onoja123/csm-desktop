@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Command } from 'cmdk';
 import { ArrowLeftRight, Check, Play, Square, Terminal, UserRound, X, type LucideIcon } from 'lucide-react';
@@ -43,6 +43,7 @@ export function CommandPalette() {
   const openStart = useStartAgent((s) => s.open);
   const openHandoff = useHandoffDialog((s) => s.open);
   const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -65,6 +66,7 @@ export function CommandPalette() {
 
   useEffect(() => {
     if (!isOpen) setQuery('');
+    else setTimeout(() => inputRef.current?.focus(), 0);
   }, [isOpen]);
 
   const items = useMemo<Item[]>(() => {
@@ -105,7 +107,7 @@ export function CommandPalette() {
   return (
     <div className="palette__backdrop" onMouseDown={close}>
       <Command className="palette" label="Command palette" onMouseDown={(e) => e.stopPropagation()} loop>
-        <Command.Input autoFocus value={query} onValueChange={setQuery} placeholder="Search agents, accounts, tasks, actions…" className="palette__input" />
+        <Command.Input ref={inputRef} autoFocus value={query} onValueChange={setQuery} placeholder="Search agents, accounts, tasks, actions…" className="palette__input" />
         <Command.List className="palette__list">
           <Command.Empty className="palette__empty">Nothing matches.</Command.Empty>
           {groups.map((g) => (
