@@ -1,36 +1,24 @@
 import { useState } from 'react';
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { Button, Field, Icon } from '@/components/ui';
+import { slugify } from '@/lib/build';
 import { api } from '@/lib/api';
 import { PROVIDERS, PROVIDER_LONG_NAMES } from '@/lib/format';
-import type { Build, PlanEditTask, ProviderID } from '@/lib/types';
-
-interface Draft extends PlanEditTask {
-  key: number;
-  acceptanceText: string;
-  filesText: string;
-}
+import type { Build, PlanEditTask, PlanTaskDraft, ProviderID } from '@/types';
 
 let seq = 0;
 
-function toDraft(t: PlanEditTask): Draft {
+function toDraft(t: PlanEditTask): PlanTaskDraft {
   return { ...t, key: ++seq, acceptanceText: (t.acceptance ?? []).join('\n'), filesText: (t.files ?? []).join(', ') };
-}
-
-export function slugify(title: string, taken: string[]): string {
-  const base = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30) || 'task';
-  let id = base;
-  for (let n = 2; taken.includes(id); n++) id = `${base}-${n}`;
-  return id;
 }
 
 export function PlanEditor({ build, onSaved, onCancel }: { build: Build; onSaved: (b: Build) => void; onCancel: () => void }) {
   const [summary, setSummary] = useState(build.plan.summary ?? '');
-  const [tasks, setTasks] = useState<Draft[]>(() => build.tasks.filter((t) => t.kind !== 'fix').map((t) => toDraft({ ...t, provider: t.provider ?? '' })));
+  const [tasks, setTasks] = useState<PlanTaskDraft[]>(() => build.tasks.filter((t) => t.kind !== 'fix').map((t) => toDraft({ ...t, provider: t.provider ?? '' })));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
 
-  const update = (key: number, patch: Partial<Draft>) => setTasks((ts) => ts.map((t) => (t.key === key ? { ...t, ...patch } : t)));
+  const update = (key: number, patch: Partial<PlanTaskDraft>) => setTasks((ts) => ts.map((t) => (t.key === key ? { ...t, ...patch } : t)));
   const move = (i: number, by: number) =>
     setTasks((ts) => {
       const next = [...ts];

@@ -1,4 +1,4 @@
-import type { ProviderInfo } from './types';
+import type { ProviderInfo } from '@/types';
 
 export function limitations(info: ProviderInfo | undefined): string[] {
   const c = info?.capabilities;

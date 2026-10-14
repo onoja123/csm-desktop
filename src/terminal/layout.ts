@@ -1,4 +1,4 @@
-import type { LayoutNode, SplitDirection } from './types';
+import type { LayoutNode, SplitDirection } from '@/types';
 
 export function leaf(paneId: string): LayoutNode {
   return { type: 'leaf', paneId };

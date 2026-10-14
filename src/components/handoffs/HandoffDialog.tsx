@@ -1,29 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, ArrowDown, Check, Minus } from 'lucide-react';
-import { create } from 'zustand';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Button, Dialog, Field, Icon } from '@/components/ui';
+import { useHandoffDialog } from '@/store/handoff-dialog';
 import { api } from '@/lib/api';
 import { PROVIDER_LONG_NAMES, PROVIDER_NAMES } from '@/lib/format';
-import type { HandoffPreview, ProviderID } from '@/lib/types';
+import type { HandoffPreview, ProviderID } from '@/types';
 import { useData } from '@/store/data';
-
-interface HandoffDialogState {
-  isOpen: boolean;
-  projectDir?: string;
-  fromProvider?: ProviderID;
-  fromAccount?: string;
-  checkpointId?: string;
-  open: (opts: { projectDir: string; fromProvider?: ProviderID; fromAccount?: string; checkpointId?: string }) => void;
-  close: () => void;
-}
-
-export const useHandoffDialog = create<HandoffDialogState>((set) => ({
-  isOpen: false,
-  open: (opts) => set({ isOpen: true, fromProvider: undefined, fromAccount: undefined, checkpointId: undefined, ...opts }),
-  close: () => set({ isOpen: false }),
-}));
 
 export function HandoffDialog() {
   const { isOpen, close, projectDir, fromProvider, fromAccount, checkpointId } = useHandoffDialog();

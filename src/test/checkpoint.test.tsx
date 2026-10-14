@@ -2,9 +2,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { HandoffCard } from '@/components/handoffs/HandoffCard';
-import { HandoffDetail } from '@/screens/Handoffs';
+import { HandoffDetail } from '@/screens/HandoffDetail';
 import { driftOf, parseSteps, stepsOf, taskOf } from '@/lib/checkpoint';
-import type { Handoff } from '@/lib/types';
+import type { Handoff } from '@/types';
 
 function checkpoint(over: Partial<Handoff> = {}): Handoff {
   return {

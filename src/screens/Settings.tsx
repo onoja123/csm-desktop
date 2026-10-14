@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { openPath } from '@tauri-apps/plugin-opener';
-import { Page } from '@/components/shell/AppShell';
-import { FailoverPanel } from './Accounts';
+import { Page } from '@/components/shell/Page';
+import { FailoverPanel } from '@/components/accounts/FailoverPanel';
 import { TerminalSettingsPanel } from '@/components/terminal/TerminalSettings';
 import { Button, PageHeader, Panel, Row, Section, Toggle } from '@/components/ui';
 import { api, service } from '@/lib/api';

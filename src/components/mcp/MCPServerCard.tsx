@@ -1,40 +1,9 @@
 import { Cable, Globe, Server, type LucideIcon } from 'lucide-react';
 import { IconTile, StatusText } from '@/components/ui';
-import type { MCPServer, MCPStatus } from '@/lib/types';
-import type { Tone } from '@/design/tokens';
+import { mcpLabel, mcpTone } from '@/lib/mcp';
+import type { MCPServer, MCPTransport } from '@/types';
 
-const TRANSPORT_ICON: Record<MCPServer['transport'], LucideIcon> = { stdio: Server, http: Globe, sse: Globe, ws: Cable };
-
-export function mcpTone(status: MCPStatus, requiresAuth: boolean): Tone {
-  if (requiresAuth || status === 'requires_auth') return 'warn';
-  switch (status) {
-    case 'available':
-    case 'migrated':
-      return 'ok';
-    case 'failed':
-      return 'err';
-    case 'unsupported':
-      return 'warn';
-    default:
-      return 'idle';
-  }
-}
-
-export function mcpLabel(status: MCPStatus, requiresAuth: boolean): string {
-  if (requiresAuth || status === 'requires_auth') return 'Authentication required';
-  switch (status) {
-    case 'available':
-      return 'Configured';
-    case 'migrated':
-      return 'Carried over';
-    case 'failed':
-      return 'Failed';
-    case 'unsupported':
-      return 'Unsupported';
-    default:
-      return 'Unknown';
-  }
-}
+const TRANSPORT_ICON: Record<MCPTransport, LucideIcon> = { stdio: Server, http: Globe, sse: Globe, ws: Cable };
 
 export function MCPServerCard({ server }: { server: MCPServer }) {
   const tone = mcpTone(server.status, server.requires_auth);

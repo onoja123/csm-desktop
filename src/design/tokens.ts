@@ -26,4 +26,3 @@ export const iconSize = { sm: 14, md: 18, lg: 22, xl: 28, '2xl': 36, hero: 48 } 
 
 export const duration = { fast: 100, base: 160, slow: 240 } as const;
 
-export type Tone = 'ok' | 'warn' | 'err' | 'limit' | 'idle';

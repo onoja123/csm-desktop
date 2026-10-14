@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { Icon } from '@/components/ui';
-import { handles } from './ShellTerminal';
+import { handles } from '@/terminal/handles';
 import { useTerminal } from '@/terminal/store';
 
 export function TerminalSearch() {

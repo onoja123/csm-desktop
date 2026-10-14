@@ -1,45 +1,11 @@
 import { create } from 'zustand';
 import { pty } from './pty';
 import { leaf, neighbour, paneIds, removePane, resizeSplit, splitPane } from './layout';
-import { DEFAULT_SETTINGS, type LayoutNode, type Pane, type PersistedState, type ShellPane, type SplitDirection, type Tab, type TerminalSettings } from './types';
+import { DEFAULT_SETTINGS } from './defaults';
+import type { LayoutNode, PaneMap, PersistedTerminalState, ShellPane, TerminalSettings, TerminalState } from '@/types';
 
 const STATE_KEY = 'csm.terminal.state';
 const SETTINGS_KEY = 'csm.terminal.settings';
-
-interface TerminalState {
-  tabs: Tab[];
-  panes: Record<string, Pane>;
-  activeTabId?: string;
-  settings: TerminalSettings;
-  shells: { path: string; name: string; is_default: boolean }[];
-  homeDir: string;
-  hydrated: boolean;
-  searchOpen: boolean;
-  closedTabs: PersistedState['tabs'];
-
-  hydrate: () => Promise<void>;
-  newTab: (opts?: { cwd?: string; shell?: string }) => Promise<string>;
-  openAgentTab: (runId: string, title: string) => string;
-  closeTab: (tabId: string, force?: boolean) => Promise<boolean>;
-  reopenTab: () => Promise<void>;
-  activateTab: (tabId: string) => void;
-  cycleTab: (step: 1 | -1) => void;
-  split: (direction: SplitDirection, opts?: { cwd?: string }) => Promise<string | undefined>;
-  closePane: (paneId: string, force?: boolean) => Promise<boolean>;
-  focusPane: (paneId: string) => void;
-  cycleFocus: (step: 1 | -1) => void;
-  resize: (tabId: string, path: number[], index: number, delta: number) => void;
-  restartShell: (paneId: string) => Promise<void>;
-  killProcess: (paneId: string) => Promise<void>;
-  markExited: (sessionId: string, code: number | null) => void;
-  setPaneTitle: (paneId: string, title: string) => void;
-  setPaneCwd: (paneId: string, cwd: string) => void;
-  setSearchOpen: (open: boolean) => void;
-  updateSettings: (patch: Partial<TerminalSettings>) => void;
-  activeTab: () => Tab | undefined;
-  activePane: () => Pane | undefined;
-  persist: () => void;
-}
 
 let counter = 0;
 let hydrating = false;
@@ -60,10 +26,10 @@ function loadSettings(): TerminalSettings {
   }
 }
 
-function loadState(): PersistedState | null {
+function loadState(): PersistedTerminalState | null {
   try {
     const raw = localStorage.getItem(STATE_KEY);
-    const parsed = raw ? (JSON.parse(raw) as PersistedState) : null;
+    const parsed = raw ? (JSON.parse(raw) as PersistedTerminalState) : null;
     return parsed && parsed.version === 1 ? parsed : null;
   } catch {
     return null;
@@ -93,7 +59,7 @@ export const useTerminal = create<TerminalState>((set, get) => ({
 
   persist() {
     const { tabs, panes, activeTabId } = get();
-    const persisted: PersistedState = {
+    const persisted: PersistedTerminalState = {
       version: 1,
       tabs: tabs
         .map((t) => {
@@ -128,7 +94,7 @@ export const useTerminal = create<TerminalState>((set, get) => ({
     if (saved && saved.tabs.length > 0) {
       for (const t of saved.tabs) {
         const ids = paneIds(t.layout);
-        const panes: Record<string, Pane> = {};
+        const panes: PaneMap = {};
         const mapping = new Map<string, string>();
         for (let i = 0; i < ids.length; i++) {
           const spec = t.panes[i] ?? { kind: 'shell', cwd: '' };
@@ -362,7 +328,7 @@ export const useTerminal = create<TerminalState>((set, get) => ({
   },
 }));
 
-function shellOnlyLayout(node: LayoutNode, panes: Record<string, Pane>): LayoutNode | null {
+function shellOnlyLayout(node: LayoutNode, panes: PaneMap): LayoutNode | null {
   let out: LayoutNode | null = node;
   for (const id of paneIds(node)) {
     if (panes[id]?.kind !== 'shell' && out) out = removePane(out, id);

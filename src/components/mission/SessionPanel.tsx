@@ -4,15 +4,15 @@ import { ArrowLeftRight, Bookmark, ExternalLink, FolderOpen, Play, Square, Termi
 import { openPath } from '@tauri-apps/plugin-opener';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { ApprovalCard } from '@/components/approvals/ApprovalCard';
-import { useHandoffDialog } from '@/components/handoffs/HandoffDialog';
-import { useCheckpointDialog } from '@/components/handoffs/CheckpointDialog';
+import { useHandoffDialog } from '@/store/handoff-dialog';
+import { useCheckpointDialog } from '@/store/checkpoint-dialog';
 import { Button, Icon, Row, StatusText } from '@/components/ui';
 import { api } from '@/lib/api';
-import { ago, clock, duration, shortPath, shortSession } from '@/lib/format';
-import { statusTone, type AgentSession } from '@/lib/mission';
-import { liveSeconds } from '@/lib/use-now';
+import { ago, clock, duration, liveSeconds, shortPath, shortSession } from '@/lib/format';
+import { statusTone } from '@/lib/mission';
 import { useData } from '@/store/data';
 import { useTerminal } from '@/terminal/store';
+import type { AgentSession } from '@/types';
 
 export function SessionPanel({ session: s, now, onClose }: { session: AgentSession; now: number; onClose: () => void }) {
   const nav = useNavigate();

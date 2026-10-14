@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { invoke } from '@tauri-apps/api/core';
 import { ReceiptView } from '@/components/build/ReceiptView';
-import type { Build, Receipt } from '@/lib/types';
+import type { Build, Receipt } from '@/types';
 
 const build = { id: '20261014-101500-abc123', updated_at: '2026-10-14T10:00:00Z' } as Build;
 

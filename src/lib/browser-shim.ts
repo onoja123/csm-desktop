@@ -1,11 +1,5 @@
 // Lets the UI run in a plain browser against `npm run dev`: Tauri commands become fetches to the dev server's /__csm proxy.
-type Callback = (payload: unknown) => void;
-
-interface TauriEvent {
-  event: string;
-  id: number;
-  payload: unknown;
-}
+import type { TauriCallback, TauriEvent } from '@/types';
 
 const STREAM_TYPES = ['hello', 'status', 'accounts', 'runs', 'sessions', 'handoffs', 'projects', 'run.output', 'run.exit', 'approval.requested', 'approval.resolved', 'activity', 'build', 'signals'];
 
@@ -13,7 +7,7 @@ export function installBrowserShim() {
   const w = window as unknown as { __TAURI_INTERNALS__?: unknown };
   if (w.__TAURI_INTERNALS__) return;
 
-  const callbacks = new Map<number, Callback>();
+  const callbacks = new Map<number, TauriCallback>();
   const listeners = new Map<string, Set<number>>();
   let nextId = 1;
   let source: EventSource | undefined;
@@ -41,7 +35,7 @@ export function installBrowserShim() {
   };
 
   w.__TAURI_INTERNALS__ = {
-    transformCallback(cb: Callback) {
+    transformCallback(cb: TauriCallback) {
       const id = nextId++;
       callbacks.set(id, cb);
       return id;

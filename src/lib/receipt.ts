@@ -1,5 +1,4 @@
-import type { Tone } from '@/design/tokens';
-import type { ClaimStatus, EvidenceStatus, ReceiptOutcome } from '@/lib/types';
+import type { ClaimStatus, EvidenceStatus, ReceiptOutcome, StatusTone, TestCounts } from '@/types';
 
 export const EVIDENCE_LABEL: Record<EvidenceStatus, string> = {
   passed: 'Passed',
@@ -24,7 +23,7 @@ export const OUTCOME_LABEL: Record<ReceiptOutcome, string> = {
   unverified: 'Unverified',
 };
 
-export function evidenceTone(s: EvidenceStatus): Tone {
+export function evidenceTone(s: EvidenceStatus): StatusTone {
   switch (s) {
     case 'passed':
       return 'ok';
@@ -40,15 +39,15 @@ export function evidenceTone(s: EvidenceStatus): Tone {
   }
 }
 
-export function claimTone(s: ClaimStatus): Tone {
+export function claimTone(s: ClaimStatus): StatusTone {
   return s === 'confirmed' ? 'ok' : s === 'contradicted' ? 'err' : 'idle';
 }
 
-export function outcomeTone(o: ReceiptOutcome): Tone {
+export function outcomeTone(o: ReceiptOutcome): StatusTone {
   return o === 'verified' ? 'ok' : o === 'failed' ? 'err' : o === 'partially_verified' ? 'warn' : 'idle';
 }
 
-export function testsLine(t?: { passed: number; total: number; unit: string; failed: number }): string {
+export function testsLine(t?: Pick<TestCounts, 'passed' | 'total' | 'unit' | 'failed'>): string {
   if (!t) return '';
   return `${t.passed}/${t.total} ${t.unit} passed`;
 }

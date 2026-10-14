@@ -3,11 +3,11 @@ import { ChevronRight, FolderOpen } from 'lucide-react';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { AgentStatus } from '@/components/agents/AgentStatus';
 import { Icon } from '@/components/ui';
-import type { ExternalRun, Run } from '@/lib/types';
-import { PROVIDER_NAMES, ago, baseName, duration } from '@/lib/format';
-import { liveSeconds, useNow } from '@/lib/use-now';
+import type { AnyRun } from '@/types';
+import { ago, baseName, duration, liveSeconds, PROVIDER_NAMES } from '@/lib/format';
+import { useNow } from '@/hooks/useNow';
 
-export function TaskCard({ run }: { run: Run | ExternalRun }) {
+export function TaskCard({ run }: { run: AnyRun }) {
   const task = 'task' in run ? run.task : undefined;
   const now = useNow();
   const seconds = liveSeconds(run.started_at, 'ended_at' in run ? run.ended_at : undefined, now);
@@ -31,16 +31,5 @@ export function TaskCard({ run }: { run: Run | ExternalRun }) {
       </div>
       <Icon icon={ChevronRight} size="md" className="agent-card__chevron" />
     </Link>
-  );
-}
-
-export function TaskList({ runs, empty }: { runs: (Run | ExternalRun)[]; empty: React.ReactNode }) {
-  if (runs.length === 0) return <>{empty}</>;
-  return (
-    <div className="list">
-      {runs.map((r) => (
-        <TaskCard key={r.id} run={r} />
-      ))}
-    </div>
   );
 }

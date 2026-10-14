@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { useData } from '@/store/data';
 import { outputBus } from '@/lib/output-bus';
-import type { Approval } from '@/lib/types';
+import type { Approval } from '@/types';
 
 const approval: Approval = {
   id: 'a1',

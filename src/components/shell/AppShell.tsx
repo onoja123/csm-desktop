@@ -13,7 +13,3 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
     </div>
   );
 }
-
-export function Page({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
-  return <div className={`page ${wide ? 'page--wide' : ''}`}>{children}</div>;
-}

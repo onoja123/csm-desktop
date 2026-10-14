@@ -3,11 +3,11 @@ import { ChevronRight, FolderOpen, GitBranch } from 'lucide-react';
 import { AgentIcon } from './AgentIcon';
 import { AgentStatus } from './AgentStatus';
 import { Icon } from '@/components/ui';
-import type { ExternalRun, Run } from '@/lib/types';
-import { PROVIDER_LONG_NAMES, baseName, duration, plural } from '@/lib/format';
-import { liveSeconds, useNow } from '@/lib/use-now';
+import type { AnyRun } from '@/types';
+import { baseName, duration, liveSeconds, plural, PROVIDER_LONG_NAMES } from '@/lib/format';
+import { useNow } from '@/hooks/useNow';
 
-export function AgentCard({ run, compact = false }: { run: Run | ExternalRun; compact?: boolean }) {
+export function AgentCard({ run, compact = false }: { run: AnyRun; compact?: boolean }) {
   const task = 'task' in run ? run.task : undefined;
   const now = useNow();
   const seconds = liveSeconds(run.started_at, 'ended_at' in run ? run.ended_at : undefined, now);

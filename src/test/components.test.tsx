@@ -3,8 +3,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { ApprovalCard } from '@/components/approvals/ApprovalCard';
 import { AccountCard } from '@/components/accounts/AccountCard';
 import { AgentCard } from '@/components/agents/AgentCard';
-import { bucketOf } from '@/screens/Tasks';
-import type { Account, Approval, Run } from '@/lib/types';
+import { bucketOf } from '@/lib/runs';
+import type { Account, Approval, Run } from '@/types';
 
 const run: Run = {
   id: 'r1',

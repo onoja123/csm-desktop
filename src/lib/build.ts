@@ -1,5 +1,20 @@
-import type { Tone } from '@/design/tokens';
-import type { Build, BuildStatus, BuildSummary, BuildTask, BuildTaskStatus, CheckState, Finding, Reproduction, Verdict } from './types';
+import type {
+  Build,
+  BuildGroup,
+  BuildStatus,
+  BuildSummary,
+  BuildTask,
+  BuildTaskStatus,
+  CheckState,
+  CurrentAgent,
+  Finding,
+  FindingStatus,
+  PrimaryAction,
+  Reproduction,
+  StageStep,
+  StatusTone,
+  Verdict,
+} from '@/types';
 
 export const BUILD_STATUS_LABEL: Record<BuildStatus, string> = {
   draft: 'Draft',
@@ -20,7 +35,7 @@ export const BUILD_STATUS_LABEL: Record<BuildStatus, string> = {
   reproducing: 'Reproducing',
 };
 
-export function buildTone(status: BuildStatus): Tone {
+export function buildTone(status: BuildStatus): StatusTone {
   switch (status) {
     case 'completed':
       return 'ok';
@@ -50,7 +65,7 @@ export const TASK_STATUS_LABEL: Record<BuildTaskStatus, string> = {
   cancelled: 'Cancelled',
 };
 
-export function taskTone(status: BuildTaskStatus): Tone {
+export function taskTone(status: BuildTaskStatus): StatusTone {
   switch (status) {
     case 'completed':
       return 'ok';
@@ -77,7 +92,7 @@ export const CHECK_LABEL: Record<CheckState, string> = {
   baseline_failure: 'Already failing on base',
 };
 
-export function checkTone(state: CheckState): Tone {
+export function checkTone(state: CheckState): StatusTone {
   switch (state) {
     case 'passed':
       return 'ok';
@@ -91,21 +106,19 @@ export function checkTone(state: CheckState): Tone {
   }
 }
 
-export function severityTone(f: Finding): Tone {
+export function severityTone(f: Finding): StatusTone {
   if (f.status === 'rechecked' || f.status === 'accepted') return 'idle';
   if (f.severity === 'critical' || f.severity === 'high') return 'err';
   if (f.severity === 'medium') return 'warn';
   return 'idle';
 }
 
-export const FINDING_STATUS_LABEL: Record<Finding['status'], string> = {
+export const FINDING_STATUS_LABEL: Record<FindingStatus, string> = {
   open: 'Open',
   fix_requested: 'Sent for fixing',
   rechecked: 'Re-reviewed',
   accepted: 'Accepted by you',
 };
-
-export type BuildGroup = 'attention' | 'approval' | 'active' | 'completed' | 'stopped';
 
 export function groupOf(b: Pick<BuildSummary, 'status'>): BuildGroup {
   switch (b.status) {
@@ -164,7 +177,7 @@ export function graphColumns(tasks: BuildTask[]): BuildTask[][] {
 }
 
 // The next thing the user can do, if anything; the server re-checks every action.
-export function primaryAction(b: Build): { action: 'approve-plan' | 'approve-pr' | 'finish'; label: string } | undefined {
+export function primaryAction(b: Build): PrimaryAction | undefined {
   if (b.status === 'awaiting_plan_approval') return { action: 'approve-plan', label: 'Approve plan and start' };
   if (b.status === 'awaiting_final_approval' && b.pr.state === 'prepared') {
     if (b.policy.allow_remote && !b.pr.blocker && !b.pr.url) return { action: 'approve-pr', label: 'Push branch and open pull request' };
@@ -173,14 +186,14 @@ export function primaryAction(b: Build): { action: 'approve-plan' | 'approve-pr'
   return undefined;
 }
 
-export function currentAgent(b: Build, t: BuildTask): { provider?: string; account?: string } {
+export function currentAgent(b: Build, t: BuildTask): CurrentAgent {
   const attempt = [...(b.attempts ?? [])].reverse().find((a) => a.task_id === t.id);
   const live = attempt ? b.live[attempt.id] : undefined;
   if (live) return { provider: live.provider, account: live.account };
   return { provider: t.provider || undefined, account: t.account };
 }
 
-export function stageSteps(b: Build): { key: string; label: string; state: 'done' | 'current' | 'todo' }[] {
+export function stageSteps(b: Build): StageStep[] {
   if (b.kind === 'autofix') return autofixSteps(b);
   const order: BuildStatus[] = ['planning', 'awaiting_plan_approval', 'running', 'integrating', 'validating', 'reviewing', 'awaiting_final_approval', 'completed'];
   const labels = ['Plan', 'Approve', 'Implement', 'Integrate', 'Check', 'Review', 'Approve', 'Done'];
@@ -194,7 +207,7 @@ export function stageSteps(b: Build): { key: string; label: string; state: 'done
   return order.map((key, i) => ({ key: `${key}-${i}`, label: labels[i], state: i < at || (key === 'completed' && b.status === 'completed') ? 'done' : i === at ? 'current' : 'todo' }));
 }
 
-function autofixSteps(b: Build): { key: string; label: string; state: 'done' | 'current' | 'todo' }[] {
+function autofixSteps(b: Build): StageStep[] {
   const order: BuildStatus[] = ['investigating', 'reproducing', 'running', 'integrating', 'validating', 'reviewing', 'awaiting_final_approval', 'completed'];
   const labels = ['Investigate', 'Reproduce', 'Fix', 'Integrate', 'Verify', 'Review', 'Approve PR', 'Done'];
   let at = order.indexOf(b.status === 'fixing' ? 'reviewing' : b.status === 'draft' || b.status === 'ready' ? 'investigating' : b.status);
@@ -224,21 +237,28 @@ export const VERDICT_LABEL: Record<Verdict, string> = {
   verification_blocked: 'Verification blocked',
 };
 
-export function verdictTone(v: Verdict): Tone {
+export function verdictTone(v: Verdict): StatusTone {
   if (v === 'fixed_and_verified') return 'ok';
   if (v === 'verification_failed') return 'err';
   if (v === 'not_run') return 'idle';
   return 'warn';
 }
 
-export function reproTone(r: Reproduction): Tone {
+export function reproTone(r: Reproduction): StatusTone {
   if (r === 'reproduced') return 'ok';
   if (r === 'not_attempted') return 'idle';
   return 'warn';
 }
 
-export function severityToneOf(s?: string): Tone {
+export function severityToneOf(s?: string): StatusTone {
   if (s === 'critical' || s === 'high') return 'err';
   if (s === 'medium') return 'warn';
   return 'idle';
+}
+
+export function slugify(title: string, taken: string[]): string {
+  const base = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30) || 'task';
+  let id = base;
+  for (let n = 2; taken.includes(id); n++) id = `${base}-${n}`;
+  return id;
 }

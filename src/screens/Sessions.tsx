@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { History } from 'lucide-react';
-import { Page } from '@/components/shell/AppShell';
+import { Page } from '@/components/shell/Page';
 import { SessionCard } from '@/components/sessions/SessionCard';
-import { useHandoffDialog } from '@/components/handoffs/HandoffDialog';
+import { useHandoffDialog } from '@/store/handoff-dialog';
 import { EmptyState, PageHeader, Section } from '@/components/ui';
 import { api } from '@/lib/api';
 import { useData } from '@/store/data';

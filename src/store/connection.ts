@@ -1,21 +1,8 @@
 import { create } from 'zustand';
 import { listen } from '@tauri-apps/api/event';
 import { api, service } from '@/lib/api';
-import type { ServiceInfo, StreamEvent } from '@/lib/types';
+import type { ConnectionEventPayload, ConnectionState, ServiceInfo, StreamEvent } from '@/types';
 import { useData } from './data';
-
-export type Phase = 'booting' | 'connecting' | 'starting' | 'connected' | 'disconnected' | 'missing';
-
-interface ConnectionState {
-  phase: Phase;
-  error?: string;
-  info?: ServiceInfo;
-  lastEventAt?: number;
-  bootstrap: () => Promise<void>;
-  retry: () => Promise<void>;
-  startService: () => Promise<void>;
-  setConnected: (connected: boolean, error?: string) => void;
-}
 
 let listening = false;
 let ticking = false;
@@ -33,7 +20,7 @@ function startTicker() {
 async function attachListeners() {
   if (listening) return;
   listening = true;
-  await listen<{ connected: boolean; error?: string }>('csm:connection', (ev) => {
+  await listen<ConnectionEventPayload>('csm:connection', (ev) => {
     useConnection.getState().setConnected(ev.payload.connected, ev.payload.error);
   });
   await listen<StreamEvent>('csm:event', (ev) => {

@@ -1,13 +1,13 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { SessionRow } from '@/components/mission/SessionRow';
-import { countByStatus, filterSessions, groupSessions, mentionsProject, normalizeSessions, type MissionInput } from '@/lib/mission';
-import type { Activity, Approval, ExternalRun, Run, Status } from '@/lib/types';
+import { countByStatus, filterSessions, groupSessions, mentionsProject, normalizeSessions } from '@/lib/mission';
+import type { Activity, Approval, ExternalRun, MissionInput, Run, ServiceStatus } from '@/types';
 import { leaf } from '@/terminal/layout';
 
 const NOW = new Date('2026-10-12T10:10:00Z').getTime();
 
-const status: Status = {
+const status: ServiceStatus = {
   service: { version: '1', pid: 1, started_at: '2026-10-12T09:00:00Z', socket: '/tmp/csm.sock', home: '/Users/me/.csm' },
   failover_policy: 'automatic',
   providers: [

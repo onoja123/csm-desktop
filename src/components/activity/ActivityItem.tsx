@@ -1,12 +1,11 @@
 import { ArrowLeftRight, Check, CircleDot, Play, Power, ShieldAlert, Square, UserRound, Workflow, Zap, type LucideIcon, Bookmark, Settings2, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { IconTile } from '@/components/ui';
-import { providerIcon } from '@/components/agents/AgentIcon';
-import type { Activity } from '@/lib/types';
-import type { Tone } from '@/design/tokens';
+import { providerIcon } from '@/lib/provider-icons';
+import type { Activity, StatusTone } from '@/types';
 import { ago } from '@/lib/format';
 
-function iconFor(a: Activity): { icon: LucideIcon; tone?: Tone } {
+function iconFor(a: Activity): { icon: LucideIcon; tone?: StatusTone } {
   switch (a.kind) {
     case 'run.started':
       return { icon: Play, tone: 'ok' };

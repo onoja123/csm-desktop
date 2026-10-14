@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { open } from '@tauri-apps/plugin-dialog';
 import { FolderOpen, Plug } from 'lucide-react';
-import { Page } from '@/components/shell/AppShell';
+import { Page } from '@/components/shell/Page';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { MCPServerCard } from '@/components/mcp/MCPServerCard';
 import { Button, EmptyState, PageHeader, Section } from '@/components/ui';

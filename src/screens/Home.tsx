@@ -1,36 +1,18 @@
 import { Link } from 'react-router-dom';
-import { Bot, ArrowRight } from 'lucide-react';
-import { Page } from '@/components/shell/AppShell';
+import { Bot } from 'lucide-react';
+import { Page } from '@/components/shell/Page';
 import { AgentIcon } from '@/components/agents/AgentIcon';
-import { useStartAgent } from '@/components/agents/StartAgentDialog';
+import { useStartAgent } from '@/store/start-agent-dialog';
 import { AccountCard } from '@/components/accounts/AccountCard';
-import { TaskList } from '@/components/tasks/TaskCard';
+import { TaskList } from '@/components/tasks/TaskList';
 import { ApprovalCard } from '@/components/approvals/ApprovalCard';
 import { ActivityItem } from '@/components/activity/ActivityItem';
-import { Button, EmptyState, Icon, Panel, Section, StatusText } from '@/components/ui';
+import { Button, EmptyState, Section, StatusText } from '@/components/ui';
+import { FailoverNote } from '@/components/accounts/FailoverNote';
 import { api } from '@/lib/api';
 import { PROVIDERS, PROVIDER_LONG_NAMES } from '@/lib/format';
 import { useData } from '@/store/data';
-import type { Tone } from '@/design/tokens';
-
-function FailoverNote() {
-  const activity = useData((s) => s.activity);
-  const sw = activity.find((a) => a.kind === 'switch');
-  if (!sw) return null;
-  const limit = activity.find((a) => a.kind === 'usage_limit' && new Date(a.at) <= new Date(sw.at));
-  return (
-    <Panel className="failover-note">
-      <div className="failover-note__body">
-        <h3>{limit ? limit.title : 'CSM switched accounts'}</h3>
-        <p>{sw.title}</p>
-        {sw.detail ? <p className="failover-note__detail">Reason: {sw.detail}</p> : null}
-      </div>
-      <Link to="/activity" className="failover-note__link">
-        Activity <Icon icon={ArrowRight} size="sm" />
-      </Link>
-    </Panel>
-  );
-}
+import type { StatusTone } from '@/types';
 
 export function Home() {
   const { status, accounts, runs, approvals, activity } = useData();
@@ -59,7 +41,7 @@ export function Home() {
             const run = live.find((r) => r.provider === p);
             const hasAccounts = accounts.some((a) => a.provider === p);
             const worst = accounts.filter((a) => a.provider === p && a.enabled).map((a) => a.health);
-            let tone: Tone = 'idle';
+            let tone: StatusTone = 'idle';
             let label = 'Idle';
             if (run) {
               tone = 'ok';

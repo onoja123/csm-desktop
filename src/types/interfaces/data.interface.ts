@@ -1,0 +1,38 @@
+import type { StreamEvent } from '../aliases/event.alias';
+import type { DataSection } from '../enums/data.enum';
+import type { Account, Failover } from './account.interface';
+import type { Activity } from './activity.interface';
+import type { RunsView } from './agent.interface';
+import type { ApprovalsView } from './approval.interface';
+import type { Incident } from './autofix.interface';
+import type { BuildSummary } from './build.interface';
+import type { Handoff } from './handoff.interface';
+import type { MCPAccount } from './mcp.interface';
+import type { Project } from './project.interface';
+import type { ServiceStatus } from './service.interface';
+import type { SessionEntry } from './session.interface';
+import type { ServiceSettings } from './settings.interface';
+
+export interface DataState {
+  status?: ServiceStatus;
+  settings?: ServiceSettings;
+  accounts: Account[];
+  runs: RunsView;
+  sessions: SessionEntry[];
+  handoffs: Handoff[];
+  mcp: MCPAccount[];
+  mcpProject?: string;
+  approvals: ApprovalsView;
+  activity: Activity[];
+  projects: Project[];
+  failover?: Failover;
+  builds: BuildSummary[];
+  signals: Incident[];
+  buildStamps: Record<string, number>;
+  loaded: Partial<Record<DataSection, boolean>>;
+  errors: Partial<Record<DataSection, string>>;
+  refresh: (section: DataSection, arg?: string) => Promise<void>;
+  refreshAll: () => Promise<void>;
+  handleEvent: (ev: StreamEvent) => void;
+  applyEvent: (ev: StreamEvent) => DataSection[];
+}

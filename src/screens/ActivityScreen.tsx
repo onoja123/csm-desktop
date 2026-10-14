@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { Activity as ActivityIcon } from 'lucide-react';
-import { Page } from '@/components/shell/AppShell';
+import { Page } from '@/components/shell/Page';
 import { ActivityItem } from '@/components/activity/ActivityItem';
 import { EmptyState, PageHeader, Tabs } from '@/components/ui';
 import { useData } from '@/store/data';
+import type { ActivityFilter } from '@/types';
 
-type Filter = 'all' | 'agents' | 'accounts' | 'approvals' | 'handoffs';
-
-function matches(kind: string, f: Filter): boolean {
+function matches(kind: string, f: ActivityFilter): boolean {
   switch (f) {
     case 'agents':
       return kind.startsWith('run.') || kind === 'session.resumed';
@@ -24,12 +23,12 @@ function matches(kind: string, f: Filter): boolean {
 
 export function ActivityScreen() {
   const activity = useData((s) => s.activity);
-  const [filter, setFilter] = useState<Filter>('all');
+  const [filter, setFilter] = useState<ActivityFilter>('all');
   const shown = activity.filter((a) => matches(a.kind, filter));
   return (
     <Page>
       <PageHeader title="Activity" subtitle="What CSM did and why, newest first." />
-      <Tabs<Filter>
+      <Tabs<ActivityFilter>
         tabs={[
           { id: 'all', label: 'All' },
           { id: 'agents', label: 'Agents' },

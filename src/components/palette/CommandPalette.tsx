@@ -1,43 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Command } from 'cmdk';
-import { ArrowLeftRight, Bookmark, Check, Columns2, Eraser, Play, RotateCcw, Rows2, Search, Square, Terminal, TerminalSquare, UserRound, X, type LucideIcon } from 'lucide-react';
+import { ArrowLeftRight, Bookmark, Check, Columns2, Eraser, Play, RotateCcw, Rows2, Search, Square, Terminal, TerminalSquare, UserRound, X } from 'lucide-react';
+import { usePalette } from '@/store/palette';
 import { useTerminal } from '@/terminal/store';
-import { create } from 'zustand';
 import { Icon } from '@/components/ui';
-import { NAV } from '@/components/shell/Sidebar';
-import { providerIcon } from '@/components/agents/AgentIcon';
-import { useStartAgent } from '@/components/agents/StartAgentDialog';
-import { useHandoffDialog } from '@/components/handoffs/HandoffDialog';
-import { useCheckpointDialog } from '@/components/handoffs/CheckpointDialog';
+import { NAV } from '@/lib/navigation';
+import { providerIcon } from '@/lib/provider-icons';
+import { useStartAgent } from '@/store/start-agent-dialog';
+import { useHandoffDialog } from '@/store/handoff-dialog';
+import { useCheckpointDialog } from '@/store/checkpoint-dialog';
 import { api } from '@/lib/api';
-import { handles } from '@/components/terminal/ShellTerminal';
+import { handles } from '@/terminal/handles';
 import { PROVIDER_LONG_NAMES, PROVIDER_NAMES, baseName } from '@/lib/format';
 import { useData } from '@/store/data';
-
-interface PaletteState {
-  isOpen: boolean;
-  open: () => void;
-  close: () => void;
-  toggle: () => void;
-}
-
-export const usePalette = create<PaletteState>((set) => ({
-  isOpen: false,
-  open: () => set({ isOpen: true }),
-  close: () => set({ isOpen: false }),
-  toggle: () => set((s) => ({ isOpen: !s.isOpen })),
-}));
-
-interface Item {
-  id: string;
-  group: string;
-  label: string;
-  hint?: string;
-  icon: LucideIcon;
-  keywords?: string;
-  run: () => void | Promise<unknown>;
-}
+import type { PaletteItem } from '@/types';
 
 export function CommandPalette() {
   const { isOpen, close, toggle } = usePalette();
@@ -73,9 +50,9 @@ export function CommandPalette() {
     else setTimeout(() => inputRef.current?.focus(), 0);
   }, [isOpen]);
 
-  const items = useMemo<Item[]>(() => {
+  const items = useMemo<PaletteItem[]>(() => {
     const live = runs.runs.filter((r) => r.status === 'running');
-    const list: Item[] = [];
+    const list: PaletteItem[] = [];
 
     for (const n of NAV) list.push({ id: `nav:${n.to}`, group: 'Go to', label: n.label, icon: n.icon, run: () => nav(n.to) });
     list.push({ id: 'nav:/settings', group: 'Go to', label: 'Settings', icon: NAV[0].icon, run: () => nav('/settings') });

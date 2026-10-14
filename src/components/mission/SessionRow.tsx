@@ -2,9 +2,9 @@ import { memo } from 'react';
 import { GitBranch, TerminalSquare } from 'lucide-react';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Icon, StatusText } from '@/components/ui';
-import { statusTone, type AgentSession } from '@/lib/mission';
-import { duration } from '@/lib/format';
-import { liveSeconds } from '@/lib/use-now';
+import { statusTone } from '@/lib/mission';
+import { duration, liveSeconds } from '@/lib/format';
+import type { AgentSession } from '@/types';
 
 export const SessionRow = memo(function SessionRow({ session: s, selected, now, onSelect }: { session: AgentSession; selected: boolean; now: number; onSelect: (id: string) => void }) {
   const elapsed = duration(liveSeconds(s.startedAt, s.endedAt, now));

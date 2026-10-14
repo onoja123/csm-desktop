@@ -7,9 +7,11 @@ import { Unicode11Addon } from '@xterm/addon-unicode11';
 import { WebglAddon } from '@xterm/addon-webgl';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import '@xterm/xterm/css/xterm.css';
+import { handles } from '@/terminal/handles';
+import { parseOsc7 } from '@/terminal/osc';
 import { pty } from '@/terminal/pty';
 import { useTerminal } from '@/terminal/store';
-import type { ShellPane, TerminalSettings } from '@/terminal/types';
+import type { ShellPane, TerminalSettings } from '@/types';
 import { Button } from '@/components/ui';
 
 const THEME = {
@@ -37,27 +39,7 @@ const THEME = {
   brightCyan: '#a5f3fc',
 };
 
-export interface TerminalHandle {
-  term: Terminal;
-  search: SearchAddon;
-  fit: () => void;
-}
-
-export const handles = new Map<string, TerminalHandle>();
 let autorunDone = false;
-
-function parseOsc7(data: string): string | null {
-  // file://host/path, with percent-encoding allowed in the path.
-  const m = /^file:\/\/[^/]*(\/.*)$/.exec(data);
-  if (!m) return null;
-  try {
-    return decodeURIComponent(m[1]);
-  } catch {
-    return m[1];
-  }
-}
-
-export { parseOsc7 };
 
 // One xterm instance per shell pane. The renderer owns the buffer; React only knows the pane's title, cwd and exit state.
 export const ShellTerminal = memo(function ShellTerminal({ pane, active, settings }: { pane: ShellPane; active: boolean; settings: TerminalSettings }) {

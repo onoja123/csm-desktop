@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { ShieldAlert, TerminalSquare } from 'lucide-react';
 import { Button, IconTile } from '@/components/ui';
-import type { Approval } from '@/lib/types';
+import type { Approval, ApprovalDecision } from '@/types';
 import { PROVIDER_LONG_NAMES, ago } from '@/lib/format';
 
-export function ApprovalCard({ approval, onDecide, busy }: { approval: Approval; onDecide: (decision: 'allow' | 'deny') => void; busy?: boolean }) {
+export function ApprovalCard({ approval, onDecide, busy }: { approval: Approval; onDecide: (decision: ApprovalDecision) => void; busy?: boolean }) {
   const [armed, setArmed] = useState(false);
   const agent = PROVIDER_LONG_NAMES[approval.provider] ?? approval.provider;
   return (

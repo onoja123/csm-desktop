@@ -1,5 +1,5 @@
 import { buildTimeline, duration, offset } from '@/lib/timeline';
-import type { Build, BuildEvent, CheckResult } from '@/lib/types';
+import type { Build, BuildEvent, CheckResult } from '@/types';
 
 const at = (s: number) => new Date(Date.UTC(2026, 9, 12, 10, 0, 0, s * 1000)).toISOString();
 const ev = (s: number, kind: string, message = '', task_id?: string): BuildEvent => ({ at: at(s), kind, message, task_id });

@@ -1,29 +1,25 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bot, Search, SearchX, TerminalSquare } from 'lucide-react';
-import { Page } from '@/components/shell/AppShell';
-import { useStartAgent } from '@/components/agents/StartAgentDialog';
+import { Page } from '@/components/shell/Page';
+import { useStartAgent } from '@/store/start-agent-dialog';
 import { SessionRow } from '@/components/mission/SessionRow';
 import { SessionPanel } from '@/components/mission/SessionPanel';
-import { useSessions } from '@/components/mission/useSessions';
+import { useSessions } from '@/hooks/useSessions';
 import { Button, EmptyState, Icon, LoadingState, PageHeader } from '@/components/ui';
 import { api } from '@/lib/api';
-import { STATUS_LABEL, STATUS_ORDER, countByStatus, filterSessions, groupSessions, type GroupBy, type StatusFilter } from '@/lib/mission';
+import { STATUS_LABEL, STATUS_ORDER, countByStatus, filterSessions, groupSessions } from '@/lib/mission';
 import { plural } from '@/lib/format';
-import { useNow } from '@/lib/use-now';
+import { useNow } from '@/hooks/useNow';
 import { useData } from '@/store/data';
+import type { MissionView, SessionGroupBy, SessionStatusFilter } from '@/types';
 
 const VIEW_KEY = 'csm.mission.view';
 
-interface View {
-  group: GroupBy;
-  filter: StatusFilter;
-}
-
-function loadView(): View {
+function loadView(): MissionView {
   try {
     const raw = localStorage.getItem(VIEW_KEY);
-    const parsed = raw ? (JSON.parse(raw) as Partial<View>) : {};
+    const parsed = raw ? (JSON.parse(raw) as Partial<MissionView>) : {};
     return { group: parsed.group ?? 'status', filter: parsed.filter ?? 'all' };
   } catch {
     return { group: 'status', filter: 'all' };
@@ -38,7 +34,7 @@ export function MissionControl() {
   const loaded = useData((s) => s.loaded.runs);
   const error = useData((s) => s.errors.runs);
   const refresh = useData((s) => s.refresh);
-  const [view, setView] = useState<View>(loadView);
+  const [view, setView] = useState<MissionView>(loadView);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string>();
 
@@ -60,7 +56,7 @@ export function MissionControl() {
     if (selectedId && !selected) setSelectedId(undefined);
   }, [selectedId, selected]);
 
-  const filters: StatusFilter[] = ['all', ...STATUS_ORDER.filter((st) => counts[st] > 0 || st === view.filter)];
+  const filters: SessionStatusFilter[] = ['all', ...STATUS_ORDER.filter((st) => counts[st] > 0 || st === view.filter)];
 
   if (!loaded && !error) {
     return (
@@ -139,7 +135,7 @@ export function MissionControl() {
             </div>
             <div className="select-wrap">
               <span className="mc-toolbar__label">Group</span>
-              <select className="input input--sm" value={view.group} aria-label="Group by" onChange={(e) => setView((v) => ({ ...v, group: e.target.value as GroupBy }))}>
+              <select className="input input--sm" value={view.group} aria-label="Group by" onChange={(e) => setView((v) => ({ ...v, group: e.target.value as SessionGroupBy }))}>
                 <option value="status">Status</option>
                 <option value="project">Project</option>
                 <option value="provider">Provider</option>
@@ -150,7 +146,7 @@ export function MissionControl() {
           <div className={`mc-layout ${selected ? 'mc-layout--panel' : ''}`}>
             <div className="mc-list" role="table" aria-label="Agent sessions">
               {visible.length === 0 ? (
-                <EmptyState icon={SearchX} title="Nothing matches" body={query ? `No session matches “${query}”.` : `No session is ${STATUS_LABEL[view.filter as Exclude<StatusFilter, 'all'>].toLowerCase()} right now.`} action={<Button onClick={() => { setQuery(''); setView((v) => ({ ...v, filter: 'all' })); }}>Show all</Button>} />
+                <EmptyState icon={SearchX} title="Nothing matches" body={query ? `No session matches “${query}”.` : `No session is ${STATUS_LABEL[view.filter as Exclude<SessionStatusFilter, 'all'>].toLowerCase()} right now.`} action={<Button onClick={() => { setQuery(''); setView((v) => ({ ...v, filter: 'all' })); }}>Show all</Button>} />
               ) : (
                 groups.map((g) => (
                   <section key={g.key} className={`mc-group mc-group--${view.group === 'status' ? g.key : 'plain'}`}>

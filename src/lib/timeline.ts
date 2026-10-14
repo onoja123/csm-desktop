@@ -1,37 +1,5 @@
-import type { Build, BuildEvent, CheckResult } from './types';
+import type { Build, BuildEvent, CheckResult, CheckStage, Timeline, TimelinePhase, TimelineStep, TimelineStepState } from '@/types';
 import { isTerminal } from './build';
-
-export type StepState = 'done' | 'running' | 'failed' | 'skipped' | 'point';
-
-export interface TimelineStep {
-  id: string;
-  phase: string;
-  label: string;
-  agent?: string;
-  start: number;
-  end?: number;
-  state: StepState;
-  // background steps run alongside the phase's main work, so the bar leaves them out.
-  background?: boolean;
-  // was is the same measurement on the base commit, for a before/after reading.
-  notes: { text: string; was?: string }[];
-}
-
-export interface TimelinePhase {
-  name: string;
-  start: number;
-  end: number;
-  steps: TimelineStep[];
-  current: boolean;
-}
-
-export interface Timeline {
-  origin: number;
-  end: number;
-  steps: TimelineStep[];
-  phases: TimelinePhase[];
-  live: boolean;
-}
 
 const t = (e: BuildEvent) => new Date(e.at).getTime();
 
@@ -53,7 +21,7 @@ function agentOf(message: string): string | undefined {
   return /^(.+?\))[: ]/.exec(message)?.[1];
 }
 
-function checkNotes(checks: CheckResult[], stage: 'baseline' | 'integration', base: CheckResult[]): TimelineStep['notes'] {
+function checkNotes(checks: CheckResult[], stage: CheckStage, base: CheckResult[]): TimelineStep['notes'] {
   return checks
     .filter((c) => c.stage === stage)
     .map((c) => {
@@ -81,7 +49,7 @@ export function buildTimeline(b: Build, now = Date.now()): Timeline {
     open.set(key, step);
     return step;
   };
-  const finish = (key: string, at: number, state: StepState = 'done') => {
+  const finish = (key: string, at: number, state: TimelineStepState = 'done') => {
     const step = open.get(key);
     if (!step) return undefined;
     step.end = at;
@@ -89,7 +57,7 @@ export function buildTimeline(b: Build, now = Date.now()): Timeline {
     open.delete(key);
     return step;
   };
-  const point = (phase: string, label: string, at: number, state: StepState = 'point') => steps.push({ id: `p-${steps.length}`, phase, label, start: at, end: at, state, notes: [] });
+  const point = (phase: string, label: string, at: number, state: TimelineStepState = 'point') => steps.push({ id: `p-${steps.length}`, phase, label, start: at, end: at, state, notes: [] });
 
   for (const e of events) {
     const at = t(e);
@@ -231,4 +199,8 @@ export function buildTimeline(b: Build, now = Date.now()): Timeline {
   const latest = [...phases].reverse().find((p) => p.steps.some((s) => s.state !== 'point' && s.state !== 'skipped'));
   if (latest) latest.current = true;
   return { origin, end, steps, phases, live };
+}
+
+export function stepDuration(s: TimelineStep, tl: Timeline): number {
+  return (s.end ?? tl.end) - s.start;
 }

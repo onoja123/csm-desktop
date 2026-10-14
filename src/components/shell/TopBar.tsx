@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Search } from 'lucide-react';
 import { Icon, Kbd } from '@/components/ui';
-import { usePalette } from '@/components/palette/CommandPalette';
+import { usePalette } from '@/store/palette';
 
 export function TopBar({ title }: { title?: string }) {
   const nav = useNavigate();

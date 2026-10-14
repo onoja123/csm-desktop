@@ -7,10 +7,10 @@ import { DiffView } from '@/components/build/DiffView';
 import { Button, Icon, Panel, Row, StatusText } from '@/components/ui';
 import { TASK_STATUS_LABEL, currentAgent, taskTone } from '@/lib/build';
 import { PROVIDERS, PROVIDER_LONG_NAMES, ago, shortPath } from '@/lib/format';
-import type { Build, BuildAction, BuildAttempt, BuildTask, ProviderID } from '@/lib/types';
+import type { Build, BuildAction, BuildActionRequest, BuildAttemptStatus, BuildTask, ProviderID } from '@/types';
 import { useTerminal } from '@/terminal/store';
 
-const ATTEMPT_LABEL: Record<BuildAttempt['status'], string> = {
+const ATTEMPT_LABEL: Record<BuildAttemptStatus, string> = {
   running: 'Running',
   reported: 'Reported, stopping',
   completed: 'Report received',
@@ -19,7 +19,7 @@ const ATTEMPT_LABEL: Record<BuildAttempt['status'], string> = {
   interrupted: 'Interrupted',
 };
 
-export function TaskDetail({ build, task: t, busy, onAct }: { build: Build; task: BuildTask; busy?: string; onAct: (a: BuildAction, req?: { task?: string; provider?: string }) => Promise<void> }) {
+export function TaskDetail({ build, task: t, busy, onAct }: { build: Build; task: BuildTask; busy?: string; onAct: (a: BuildAction, req?: BuildActionRequest) => Promise<void> }) {
   const nav = useNavigate();
   const home = useTerminal((s) => s.homeDir);
   const [showDiff, setShowDiff] = useState(false);

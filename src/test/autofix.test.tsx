@@ -3,10 +3,12 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { AutoFix } from '@/screens/AutoFix';
 import { BuildRun } from '@/screens/BuildRun';
-import { IncidentPanel, VerificationPanel } from '@/components/autofix/AutofixPanels';
-import { SentryConnect, deliveryHealth } from '@/components/autofix/SentryConnect';
+import { IncidentPanel } from '@/components/autofix/IncidentPanel';
+import { VerificationPanel } from '@/components/autofix/VerificationPanel';
+import { SentryConnect } from '@/components/autofix/SentryConnect';
+import { deliveryHealth } from '@/lib/hub';
 import { stageSteps } from '@/lib/build';
-import type { AutofixConfig, Build, BuildSummary, HubIntegration, HubStatus, Incident, Signal } from '@/lib/types';
+import type { AutofixConfig, Build, BuildSummary, HubIntegration, HubStatus, Incident, Signal } from '@/types';
 import { useData } from '@/store/data';
 
 const signal: Signal = {

@@ -1,5 +1,5 @@
 import { leaf, neighbour, paneIds, removePane, resizeSplit, splitPane } from '@/terminal/layout';
-import { parseOsc7 } from '@/components/terminal/ShellTerminal';
+import { parseOsc7 } from '@/terminal/osc';
 import { titleFromCwd } from '@/terminal/store';
 
 describe('terminal layout', () => {

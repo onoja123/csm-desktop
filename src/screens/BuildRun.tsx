@@ -1,33 +1,26 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangle, Check, CircleSlash, Pause, Pencil, Play } from 'lucide-react';
-import { Page } from '@/components/shell/AppShell';
-import { AgentIcon } from '@/components/agents/AgentIcon';
-import { DiffView } from '@/components/build/DiffView';
-import { IncidentPanel, InvestigationPanel, VerificationPanel } from '@/components/autofix/AutofixPanels';
+import { Check, CircleSlash, Pause, Play } from 'lucide-react';
+import { Page } from '@/components/shell/Page';
+import { IncidentPanel } from '@/components/autofix/IncidentPanel';
+import { InvestigationPanel } from '@/components/autofix/InvestigationPanel';
+import { VerificationPanel } from '@/components/autofix/VerificationPanel';
 import { PlanEditor } from '@/components/build/PlanEditor';
 import { ReceiptView } from '@/components/build/ReceiptView';
 import { TaskDetail } from '@/components/build/TaskDetail';
-import { RunBar, RunOutcome, RunTimeline } from '@/components/build/RunTimeline';
-import { Button, ErrorState, Icon, LoadingState, PageHeader, Panel, Row, StatusText, Tabs } from '@/components/ui';
+import { RunBar } from '@/components/build/RunBar';
+import { Button, ErrorState, LoadingState, PageHeader, Panel, StatusText, Tabs } from '@/components/ui';
+import { useBuild } from '@/hooks/useBuild';
+import { TaskNode } from '@/components/build/TaskNode';
+import { BuildPlanTab } from '@/components/build/BuildPlanTab';
+import { BuildReviewTab } from '@/components/build/BuildReviewTab';
+import { BuildIntegrationTab } from '@/components/build/BuildIntegrationTab';
+import { BuildTimelineTab } from '@/components/build/BuildTimelineTab';
+import { RunFacts } from '@/components/build/RunFacts';
 import { api } from '@/lib/api';
-import {
-  BUILD_STATUS_LABEL,
-  FINDING_STATUS_LABEL,
-  TASK_STATUS_LABEL,
-  buildTone,
-  currentAgent,
-  graphColumns,
-  isTerminal,
-  primaryAction,
-  severityTone,
-  stageSteps,
-  taskTone,
-} from '@/lib/build';
-import { PROVIDER_LONG_NAMES, ago, clock, plural, shortPath } from '@/lib/format';
-import type { Build, BuildAction, BuildRecovery, BuildTask } from '@/lib/types';
-import { useData } from '@/store/data';
-import { useTerminal } from '@/terminal/store';
+import { BUILD_STATUS_LABEL, buildTone, graphColumns, isTerminal, primaryAction, stageSteps } from '@/lib/build';
+import { ago, plural } from '@/lib/format';
+import type { BuildAction, BuildActionRequest, BuildRecovery, BuildRunTab } from '@/types';
 
 const RECOVERY: Record<BuildRecovery, { action?: BuildAction; label: string }> = {
   retry: { action: 'retry', label: 'Try again' },
@@ -50,53 +43,18 @@ const RECOVERY: Record<BuildRecovery, { action?: BuildAction; label: string }> =
   continue_unreproduced: { action: 'continue-unreproduced', label: 'Fix without a reproduction' },
 };
 
-type Tab = 'timeline' | 'plan' | 'checks' | 'review' | 'integration';
-
-export function useBuild(id: string) {
-  const [build, setBuild] = useState<Build>();
-  const [error, setError] = useState<string>();
-  const stamp = useData((s) => s.buildStamps[id] ?? 0);
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  const load = useCallback(() => {
-    api
-      .build(id)
-      .then((b) => {
-        setBuild(b);
-        setError(undefined);
-      })
-      .catch((e) => setError((e as Error).message));
-  }, [id]);
-
-  useEffect(() => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(load, stamp ? 150 : 0);
-    return () => clearTimeout(timer.current);
-  }, [load, stamp]);
-
-  const live = build && !isTerminal(build.status);
-
-  useEffect(() => {
-    if (!live) return;
-    const t = setInterval(load, 4000);
-    return () => clearInterval(t);
-  }, [live, load]);
-
-  return { build, setBuild, error, reload: load };
-}
-
 export function BuildRun() {
   const { id = '' } = useParams();
   const nav = useNavigate();
   const { build, setBuild, error, reload } = useBuild(id);
   const [selected, setSelected] = useState<string>();
-  const [tab, setTab] = useState<Tab>('timeline');
+  const [tab, setTab] = useState<BuildRunTab>('timeline');
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState<string>();
   const [actionError, setActionError] = useState<string>();
   const [confirmCancel, setConfirmCancel] = useState(false);
 
-  const act = async (action: BuildAction, req: { task?: string; provider?: string } = {}) => {
+  const act = async (action: BuildAction, req: BuildActionRequest = {}) => {
     setBusy(action);
     setActionError(undefined);
     try {
@@ -288,10 +246,10 @@ export function BuildRun() {
             )}
           </section>
 
-          <Tabs<Tab>
+          <Tabs<BuildRunTab>
             tabs={[
               { id: 'timeline', label: 'Timeline' },
-              ...(build.kind === 'autofix' ? [] : [{ id: 'plan' as Tab, label: 'Plan' }]),
+              ...(build.kind === 'autofix' ? [] : [{ id: 'plan' as BuildRunTab, label: 'Plan' }]),
               {
                 id: 'checks',
                 label: 'Receipt',
@@ -319,273 +277,18 @@ export function BuildRun() {
                   }}
                 />
               ) : (
-                <PlanTab build={build} onEdit={() => setEditing(true)} />
+                <BuildPlanTab build={build} onEdit={() => setEditing(true)} />
               )
             ) : null}
             {tab === 'checks' ? <ReceiptView build={build} /> : null}
-            {tab === 'review' ? <ReviewTab build={build} /> : null}
-            {tab === 'integration' ? <IntegrationTab build={build} /> : null}
-            {tab === 'timeline' ? <TimelineTab build={build} /> : null}
+            {tab === 'review' ? <BuildReviewTab build={build} /> : null}
+            {tab === 'integration' ? <BuildIntegrationTab build={build} /> : null}
+            {tab === 'timeline' ? <BuildTimelineTab build={build} /> : null}
           </div>
         </div>
 
         <aside className="build-ws__side">{focus ? <TaskDetail key={focus.id} build={build} task={focus} busy={busy} onAct={act} /> : <RunFacts build={build} blockingOpen={blockingOpen} />}</aside>
       </div>
     </Page>
-  );
-}
-
-function TaskNode({ build, task: t, selected, onSelect }: { build: Build; task: BuildTask; selected: boolean; onSelect: () => void }) {
-  const agent = currentAgent(build, t);
-  return (
-    <button className={`build-node ${selected ? 'build-node--selected' : ''} build-node--${t.status}`} onClick={onSelect} aria-pressed={selected}>
-      <span className="build-node__top">
-        <span className="build-node__title">{t.title}</span>
-        {agent.provider ? <AgentIcon provider={agent.provider} size="md" /> : null}
-      </span>
-      <span className="build-node__meta mono">
-        {t.id}
-        {t.depends_on?.length ? ` · after ${t.depends_on.join(', ')}` : ''}
-      </span>
-      <span className="build-node__foot">
-        <StatusText tone={taskTone(t.status)} pulse={t.status === 'running'}>
-          {TASK_STATUS_LABEL[t.status]}
-        </StatusText>
-        {agent.provider ? <span className="muted">{agent.account ?? PROVIDER_LONG_NAMES[agent.provider as keyof typeof PROVIDER_LONG_NAMES]}</span> : null}
-      </span>
-      {t.switches?.length ? <span className="build-node__switch">{t.switches.map((s) => `${s.from} → ${s.to}`).join(', ')}</span> : null}
-    </button>
-  );
-}
-
-function RunFacts({ build, blockingOpen }: { build: Build; blockingOpen: number }) {
-  return (
-    <Panel className="build-facts">
-      <RunOutcome build={build}>
-        {blockingOpen ? <p className="tone-err build-facts__line">{plural(blockingOpen, 'blocking finding')} open</p> : null}
-        {build.integration.branch ? <p className="mono muted build-facts__line">{build.integration.branch}</p> : null}
-        {build.pr.url ? (
-          <a className="link build-facts__line" href={build.pr.url} target="_blank" rel="noreferrer">
-            {build.pr.url}
-          </a>
-        ) : null}
-      </RunOutcome>
-      <p className="muted build-facts__note">Select a task to see its agent, worktree, attempts and diff.</p>
-    </Panel>
-  );
-}
-
-function TimelineTab({ build }: { build: Build }) {
-  return (
-    <div className="build-timeline">
-      <RunTimeline build={build} />
-      <details className="build-timeline__raw">
-        <summary>All events ({build.events.length})</summary>
-        <HistoryTab build={build} />
-      </details>
-    </div>
-  );
-}
-
-function PlanTab({ build, onEdit }: { build: Build; onEdit: () => void }) {
-  const p = build.plan;
-  const editable = build.status === 'awaiting_plan_approval';
-  if (!build.tasks.length && !p.summary) return <p className="muted">{build.status === 'planning' ? 'Waiting for the planner.' : 'No plan.'}</p>;
-  return (
-    <div className="build-plan">
-      <div className="build-plan__head">
-        <span className="muted">{p.source ? `Drafted by ${p.source}${p.edited_by_user ? ', edited by you' : ''}` : ''}</span>
-        {editable ? (
-          <Button size="sm" icon={Pencil} onClick={onEdit}>
-            Edit plan
-          </Button>
-        ) : null}
-      </div>
-      {p.summary ? <p className="selectable">{p.summary}</p> : null}
-      {p.layers?.length ? <PlainList title="Parts of the codebase" items={p.layers} /> : null}
-      {p.considerations?.length ? <PlainList title="Considerations" items={p.considerations} /> : null}
-      {p.suggested_checks?.length ? <PlainList title="Checks the planner suggested" note="shown only; CSM runs the repository's own commands" items={p.suggested_checks} mono /> : null}
-      <div className="build-plan__tasks">
-        {build.tasks.map((t) => (
-          <div key={t.id} className="build-plan__task">
-            <div className="build-plan__task-head">
-              <span className="mono muted">{t.id}</span>
-              <strong>{t.title}</strong>
-              <span className="muted">{t.provider ? PROVIDER_LONG_NAMES[t.provider] : 'any ready agent'}</span>
-            </div>
-            <p className="selectable">{t.objective}</p>
-            {t.acceptance?.length ? (
-              <ul className="build-plan__criteria">
-                {t.acceptance.map((a) => (
-                  <li key={a}>{a}</li>
-                ))}
-              </ul>
-            ) : null}
-            {t.depends_on?.length ? <p className="muted">After {t.depends_on.join(', ')}</p> : null}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function PlainList({ title, items, note, mono }: { title: string; items: string[]; note?: string; mono?: boolean }) {
-  return (
-    <div className="handoff-list">
-      <h4>
-        {title}
-        {note ? <span className="handoff-list__note">{note}</span> : null}
-      </h4>
-      <ul>
-        {items.map((i) => (
-          <li key={i} className={`selectable ${mono ? 'mono' : ''}`}>
-            {i}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function ReviewTab({ build }: { build: Build }) {
-  const reviews = build.reviews ?? [];
-  const findings = build.findings ?? [];
-  if (!reviews.length && !findings.length) return <p className="muted">{build.policy.review ? 'The review runs after the tasks are integrated and checked.' : 'Agent review is off for this run.'}</p>;
-  return (
-    <div className="build-review">
-      {reviews.map((r) => (
-        <div key={r.cycle} className="build-review__round">
-          <div className="build-review__head">
-            <AgentIcon provider={r.provider} size="md" />
-            <strong>Round {r.cycle}</strong>
-            <span className="muted">
-              {PROVIDER_LONG_NAMES[r.provider]}
-              {r.account ? ` (${r.account})` : ''} · {r.status === 'running' ? 'reviewing' : r.verdict?.replace(/_/g, ' ') || r.status}
-            </span>
-          </div>
-          {!r.independent && r.note ? (
-            <p className="build-note">
-              <Icon icon={AlertTriangle} size="sm" className="tone-warn" /> {r.note}
-            </p>
-          ) : null}
-          {r.summary ? <p className="selectable">{r.summary}</p> : null}
-          {r.ignored_edits?.length ? <p className="muted">The reviewer edited {plural(r.ignored_edits.length, 'file')} in its review copy; those edits were not used.</p> : null}
-        </div>
-      ))}
-      {findings.length ? (
-        <div className="build-findings">
-          {findings.map((f) => (
-            <div key={f.id} className="build-finding">
-              <div className="build-finding__head">
-                <StatusText tone={severityTone(f)}>{f.severity}</StatusText>
-                <strong>{f.title}</strong>
-                {f.blocking ? <span className="build-finding__tag">blocking</span> : null}
-                <span className="muted">
-                  round {f.cycle} · {FINDING_STATUS_LABEL[f.status]}
-                </span>
-              </div>
-              {f.file ? (
-                <p className="mono muted">
-                  {f.file}
-                  {f.line ? `:${f.line}` : ''}
-                  {f.task_id ? ` · task ${f.task_id}` : ''}
-                </p>
-              ) : null}
-              {f.explanation ? <pre className="build-finding__text selectable">{f.explanation}</pre> : null}
-              {f.reasoning ? <p className="selectable muted">{f.reasoning}</p> : null}
-              {f.recommendation ? <p className="selectable">Suggested fix: {f.recommendation}</p> : null}
-              <p className="build-finding__source">Source: {f.source}</p>
-            </div>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function IntegrationTab({ build }: { build: Build }) {
-  const ig = build.integration;
-  const home = useTerminal((s) => s.homeDir);
-  return (
-    <div className="build-integration">
-      <Panel>
-        <Row label="Branch" mono>
-          {ig.branch ?? 'Not created yet'}
-        </Row>
-        {ig.worktree ? (
-          <Row label="Worktree" mono>
-            <span className="selectable">{shortPath(ig.worktree, home)}</span>
-          </Row>
-        ) : null}
-        <Row label="Merged">{ig.merged?.length ? ig.merged.join(', ') : 'Nothing yet'}</Row>
-        {ig.overlaps?.length ? (
-          <Row label="Shared files">
-            {ig.overlaps.map((o) => (
-              <span key={o.file} className="mono">
-                {o.file} ({o.tasks.join(', ')})
-              </span>
-            ))}
-          </Row>
-        ) : null}
-        {ig.conflicts?.map((c) => (
-          <Row key={c.task_id + c.at} label={`Conflict · ${c.task_id}`}>
-            <span>
-              {c.files.join(', ')} with {c.tasks?.join(', ') || 'earlier work'}: {c.status.replace(/_/g, ' ')}
-              {c.resolution ? <span className="muted"> · {c.resolution}</span> : null}
-            </span>
-          </Row>
-        ))}
-        <Row label="Pull request">
-          {build.pr.url ? (
-            <a className="link" href={build.pr.url} target="_blank" rel="noreferrer">
-              {build.pr.url}
-            </a>
-          ) : build.pr.state === 'prepared' ? (
-            <span>
-              Description ready at <span className="mono selectable">{shortPath(build.pr.body_file ?? '', home)}</span>
-              {build.pr.blocker ? (
-                <span className="muted"> · cannot push from here: {build.pr.blocker}</span>
-              ) : !build.policy.allow_remote ? (
-                <span className="muted"> · remote operations are off for this run</span>
-              ) : null}
-            </span>
-          ) : (
-            <span className="muted">Prepared once checks and review are done</span>
-          )}
-        </Row>
-        {build.pr.error ? (
-          <Row label="Last error">
-            <span className="form-error">{build.pr.error}</span>
-          </Row>
-        ) : null}
-      </Panel>
-      {ig.head ? (
-        <>
-          <h4 className="panel__h4 build-checks__sub">Integrated diff</h4>
-          <DiffView buildId={build.id} target="integration" stamp={ig.head} />
-        </>
-      ) : null}
-    </div>
-  );
-}
-
-function HistoryTab({ build }: { build: Build }) {
-  const events = [...build.events].reverse();
-  return (
-    <ol className="build-history">
-      {events.map((e, i) => (
-        <li key={i}>
-          <span className="build-history__time mono" title={clock(e.at)}>
-            {new Date(e.at).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-            })}
-          </span>
-          <span className="build-history__msg selectable">{e.message}</span>
-          {e.task_id ? <span className="build-history__task mono">{e.task_id}</span> : null}
-        </li>
-      ))}
-    </ol>
   );
 }

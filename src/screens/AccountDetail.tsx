@@ -1,33 +1,14 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { RefreshCw } from 'lucide-react';
-import { Page } from '@/components/shell/AppShell';
+import { Page } from '@/components/shell/Page';
 import { AgentIcon } from '@/components/agents/AgentIcon';
-import { AccountHealth } from '@/components/accounts/AccountCard';
+import { AccountHealth } from '@/components/accounts/AccountHealth';
 import { Button, ErrorState, Panel, PanelHeader, Row, Section } from '@/components/ui';
+import { UsageWindowRow } from '@/components/accounts/UsageWindowRow';
 import { api } from '@/lib/api';
-import { ago, clock, percent, until } from '@/lib/format';
-import type { UsageWindow } from '@/lib/types';
+import { ago, until } from '@/lib/format';
 import { useData } from '@/store/data';
-
-function Window({ label, w }: { label: string; w?: UsageWindow }) {
-  if (!w || !w.resets_at || w.resets_at.startsWith('0001')) return null;
-  const open = new Date(w.resets_at).getTime() > Date.now();
-  return (
-    <Row label={label}>
-      {open ? (
-        <>
-          <span className="usage-bar" aria-hidden="true">
-            <span className="usage-bar__fill" style={{ width: `${Math.min(100, Math.max(0, w.used_percent))}%` }} />
-          </span>
-          {percent(w.used_percent)} · resets {until(w.resets_at)}
-        </>
-      ) : (
-        `window reset at ${clock(w.resets_at)} (was ${percent(w.used_percent)})`
-      )}
-    </Row>
-  );
-}
 
 export function AccountDetail() {
   const { name = '' } = useParams();
@@ -128,9 +109,9 @@ export function AccountDetail() {
               <>
                 <PanelHeader title="As reported by the agent" meta={`checked ${ago(account.usage_updated_at)}`} />
                 {usage.limited ? <p className="tone-limit">Limit reached: requests are currently rejected.</p> : null}
-                <Window label="5-hour" w={usage.five_hour} />
-                <Window label="7-day" w={usage.seven_day} />
-                <Window label="Spend" w={usage.spend_limit} />
+                <UsageWindowRow label="5-hour" w={usage.five_hour} />
+                <UsageWindowRow label="7-day" w={usage.seven_day} />
+                <UsageWindowRow label="Spend" w={usage.spend_limit} />
               </>
             ) : (
               <>

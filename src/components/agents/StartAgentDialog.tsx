@@ -2,26 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { open } from '@tauri-apps/plugin-dialog';
 import { FolderOpen } from 'lucide-react';
-import { create } from 'zustand';
 import { Button, Dialog, Field } from '@/components/ui';
+import { useStartAgent } from '@/store/start-agent-dialog';
 import { api } from '@/lib/api';
 import { PROVIDERS, PROVIDER_LONG_NAMES } from '@/lib/format';
-import type { ProviderID } from '@/lib/types';
+import type { ProviderID } from '@/types';
 import { useData } from '@/store/data';
-
-interface StartState {
-  isOpen: boolean;
-  provider?: ProviderID;
-  projectDir?: string;
-  open: (opts?: { provider?: ProviderID; projectDir?: string }) => void;
-  close: () => void;
-}
-
-export const useStartAgent = create<StartState>((set) => ({
-  isOpen: false,
-  open: (opts) => set({ isOpen: true, provider: opts?.provider, projectDir: opts?.projectDir }),
-  close: () => set({ isOpen: false }),
-}));
 
 export function StartAgentDialog() {
   const { isOpen, close, provider: preset, projectDir: presetDir } = useStartAgent();

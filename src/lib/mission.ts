@@ -1,77 +1,24 @@
-import type { Account, Activity, Approval, ExternalRun, Health, ProviderID, Run, Status } from './types';
-import type { Pane, Tab } from '@/terminal/types';
+import type {
+  Activity,
+  AgentSession,
+  ExternalRun,
+  MissionInput,
+  Pane,
+  PaneMap,
+  ProjectActivityEvents,
+  ProviderID,
+  Run,
+  SessionAttention,
+  SessionGroup,
+  SessionGroupBy,
+  SessionStatus,
+  SessionStatusFilter,
+  StatusTone,
+  TerminalLink,
+  TerminalTab,
+} from '@/types';
 import { paneIds } from '@/terminal/layout';
 import { PROVIDER_LONG_NAMES, PROVIDER_NAMES, baseName, duration, isZeroTime } from './format';
-import type { Tone } from '@/design/tokens';
-
-export type SessionStatus = 'attention' | 'waiting' | 'running' | 'idle' | 'completed' | 'disconnected';
-
-export type AttentionKind = 'exit' | 'usage_limit' | 'login' | 'handoff';
-
-export interface SessionAttention {
-  kind: AttentionKind;
-  reason: string;
-  detail?: string;
-}
-
-export interface SessionSwitch {
-  from: string;
-  to: string;
-  reason: string;
-  at: string;
-}
-
-export interface TerminalLink {
-  tabId: string;
-  tabIndex: number;
-  paneId: string;
-  kind: 'agent' | 'shell';
-}
-
-export interface AgentSession {
-  id: string;
-  kind: 'agent' | 'handoff' | 'external';
-  runId?: string;
-  provider: ProviderID;
-  providerName: string;
-  account: string;
-  accountHealth?: Health;
-  projectDir: string;
-  project: string;
-  branch?: string;
-  title?: string;
-  buildId?: string;
-  sessionId?: string;
-  status: SessionStatus;
-  label: string;
-  detail?: string;
-  attention?: SessionAttention;
-  approval?: Approval;
-  switched?: SessionSwitch;
-  terminal?: TerminalLink;
-  startedAt: string;
-  endedAt?: string;
-  lastOutputAt?: string;
-  exitCode?: number;
-  live: boolean;
-  observable: boolean;
-  filesModified: number;
-  messages?: number;
-  canResume: boolean;
-}
-
-export interface MissionInput {
-  runs: Run[];
-  external: ExternalRun[];
-  approvals: Approval[];
-  activity: Activity[];
-  accounts: Account[];
-  status?: Status;
-  tabs: Tab[];
-  panes: Record<string, Pane>;
-  connected: boolean;
-  now: number;
-}
 
 export const IDLE_AFTER_MS = 60_000;
 
@@ -88,7 +35,7 @@ export const STATUS_LABEL: Record<SessionStatus, string> = {
   disconnected: 'Disconnected',
 };
 
-export function statusTone(status: SessionStatus): Tone {
+export function statusTone(status: SessionStatus): StatusTone {
   switch (status) {
     case 'attention':
       return 'err';
@@ -123,14 +70,8 @@ function parseSwitch(a: Activity): { from: string; to: string } | undefined {
   return h ? { from: h[1], to: h[2] } : undefined;
 }
 
-interface ProjectEvents {
-  usageLimit?: Activity;
-  switched?: Activity;
-  handoffFailed?: Activity;
-}
-
-function eventsFor(activity: Activity[], provider: ProviderID, projectDir: string, since: number): ProjectEvents {
-  const out: ProjectEvents = {};
+function eventsFor(activity: Activity[], provider: ProviderID, projectDir: string, since: number): ProjectActivityEvents {
+  const out: ProjectActivityEvents = {};
   for (const a of activity) {
     if (a.provider !== provider || time(a.at) < since || !mentionsProject(a.detail, projectDir)) continue;
     if (a.kind === 'usage_limit' && !out.usageLimit) out.usageLimit = a;
@@ -140,7 +81,7 @@ function eventsFor(activity: Activity[], provider: ProviderID, projectDir: strin
   return out;
 }
 
-function findTerminal(tabs: Tab[], panes: Record<string, Pane>, match: (p: Pane) => boolean): TerminalLink | undefined {
+function findTerminal(tabs: TerminalTab[], panes: PaneMap, match: (p: Pane) => boolean): TerminalLink | undefined {
   for (let i = 0; i < tabs.length; i++) {
     for (const id of paneIds(tabs[i].layout)) {
       const pane = panes[id];
@@ -288,17 +229,6 @@ export function sortSessions(sessions: AgentSession[]): AgentSession[] {
   });
 }
 
-export type StatusFilter = 'all' | SessionStatus;
-
-export type GroupBy = 'status' | 'project' | 'provider';
-
-export interface SessionGroup {
-  key: string;
-  title: string;
-  meta?: string;
-  sessions: AgentSession[];
-}
-
 export function matchesQuery(s: AgentSession, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
@@ -309,7 +239,7 @@ export function matchesQuery(s: AgentSession, query: string): boolean {
   return q.split(/\s+/).every((part) => hay.includes(part));
 }
 
-export function filterSessions(sessions: AgentSession[], filter: StatusFilter, query: string): AgentSession[] {
+export function filterSessions(sessions: AgentSession[], filter: SessionStatusFilter, query: string): AgentSession[] {
   return sessions.filter((s) => (filter === 'all' || s.status === filter) && matchesQuery(s, query));
 }
 
@@ -319,7 +249,7 @@ export function countByStatus(sessions: AgentSession[]): Record<SessionStatus, n
   return counts;
 }
 
-export function groupSessions(sessions: AgentSession[], by: GroupBy): SessionGroup[] {
+export function groupSessions(sessions: AgentSession[], by: SessionGroupBy): SessionGroup[] {
   const groups = new Map<string, SessionGroup>();
   const push = (key: string, title: string, s: AgentSession, meta?: string) => {
     const g = groups.get(key) ?? { key, title, meta, sessions: [] };

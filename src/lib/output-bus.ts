@@ -1,6 +1,6 @@
-type Listener = (bytes: Uint8Array) => void;
+import type { OutputListener } from '@/types';
 
-const listeners = new Map<string, Set<Listener>>();
+const listeners = new Map<string, Set<OutputListener>>();
 
 export function decodeBase64(data: string): Uint8Array {
   const binary = atob(data);
@@ -16,8 +16,8 @@ export function encodeBase64(bytes: Uint8Array): string {
 }
 
 export const outputBus = {
-  subscribe(runId: string, fn: Listener): () => void {
-    const set = listeners.get(runId) ?? new Set<Listener>();
+  subscribe(runId: string, fn: OutputListener): () => void {
+    const set = listeners.get(runId) ?? new Set<OutputListener>();
     set.add(fn);
     listeners.set(runId, set);
     return () => {

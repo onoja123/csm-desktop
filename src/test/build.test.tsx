@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
-import { BuildRoom, NewBuildRun } from '@/screens/BuildRoom';
+import { BuildRoom } from '@/screens/BuildRoom';
+import { NewBuildRun } from '@/screens/NewBuildRun';
 import { BuildRun } from '@/screens/BuildRun';
-import { parseDiff } from '@/components/build/DiffView';
-import { slugify } from '@/components/build/PlanEditor';
-import { graphColumns, groupOf, primaryAction, stageSteps } from '@/lib/build';
-import type { Build, BuildPreflight, BuildSummary, BuildTask } from '@/lib/types';
+import { parseDiff } from '@/lib/diff';
+import { graphColumns, groupOf, primaryAction, slugify, stageSteps } from '@/lib/build';
+import type { Build, BuildPreflight, BuildSummary, BuildTask } from '@/types';
 import { useData } from '@/store/data';
 
 function task(id: string, over: Partial<BuildTask> = {}): BuildTask {

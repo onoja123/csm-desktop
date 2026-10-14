@@ -1,5 +1,4 @@
-import type { Health, ProviderID } from './types';
-import type { Tone } from '@/design/tokens';
+import type { Health, ProviderID, StatusTone } from '@/types';
 
 export const PROVIDER_NAMES: Record<ProviderID, string> = {
   claude: 'Claude',
@@ -99,7 +98,7 @@ export const HEALTH_LABEL: Record<Health, string> = {
   unknown: 'Unknown',
 };
 
-export function healthTone(h: Health): Tone {
+export function healthTone(h: Health): StatusTone {
   switch (h) {
     case 'healthy':
       return 'ok';
@@ -125,4 +124,10 @@ export function kindLabel(kind: string): string {
 
 export function plural(n: number, word: string): string {
   return `${n} ${word}${n === 1 ? '' : 's'}`;
+}
+
+export function liveSeconds(startedAt: string, endedAt: string | undefined, now: number): number {
+  const start = new Date(startedAt).getTime();
+  const end = endedAt && !endedAt.startsWith('0001') ? new Date(endedAt).getTime() : now;
+  return Math.max(0, Math.floor((end - start) / 1000));
 }

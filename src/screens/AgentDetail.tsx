@@ -1,29 +1,27 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeftRight, FileDiff, Send, Square, TerminalSquare, UserRound } from 'lucide-react';
-import { Page } from '@/components/shell/AppShell';
+import { Page } from '@/components/shell/Page';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { AgentStatus } from '@/components/agents/AgentStatus';
-import { useHandoffDialog } from '@/components/handoffs/HandoffDialog';
+import { useHandoffDialog } from '@/store/handoff-dialog';
 import { TerminalPanel } from '@/components/terminal/TerminalPanel';
 import { ActivityItem } from '@/components/activity/ActivityItem';
 import { MCPServerCard } from '@/components/mcp/MCPServerCard';
 import { ApprovalCard } from '@/components/approvals/ApprovalCard';
 import { Button, EmptyState, ErrorState, Icon, Panel, Row, Tabs } from '@/components/ui';
 import { api } from '@/lib/api';
-import { PROVIDER_LONG_NAMES, ago, clock, duration, shortPath } from '@/lib/format';
-import type { MCPAccount } from '@/lib/types';
+import { ago, clock, duration, liveSeconds, PROVIDER_LONG_NAMES, shortPath } from '@/lib/format';
+import type { AgentDetailTab, MCPAccount } from '@/types';
 import { useData } from '@/store/data';
-import { liveSeconds, useNow } from '@/lib/use-now';
-
-type Tab = 'output' | 'files' | 'activity' | 'session' | 'mcp';
+import { useNow } from '@/hooks/useNow';
 
 export function AgentDetail() {
   const { id = '' } = useParams();
   const [params, setParams] = useSearchParams();
   const nav = useNavigate();
-  const tab = (params.get('tab') as Tab) || 'output';
-  const setTab = (t: Tab) => setParams({ tab: t }, { replace: true });
+  const tab = (params.get('tab') as AgentDetailTab) || 'output';
+  const setTab = (t: AgentDetailTab) => setParams({ tab: t }, { replace: true });
   const { runs, accounts, activity, approvals, status } = useData();
   const run = runs.runs.find((r) => r.id === id);
   const openHandoff = useHandoffDialog((s) => s.open);
@@ -140,7 +138,7 @@ export function AgentDetail() {
 
       <div className="agent-layout">
         <div className="agent-layout__main">
-          <Tabs<Tab>
+          <Tabs<AgentDetailTab>
             tabs={[
               { id: 'output', label: 'Output' },
               { id: 'files', label: 'Files', count: run.task.files_modified?.length },

@@ -1,7 +1,7 @@
 import { GitBranch, FolderOpen } from 'lucide-react';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Button, Icon, StatusText } from '@/components/ui';
-import type { SessionEntry } from '@/lib/types';
+import type { SessionEntry } from '@/types';
 import { PROVIDER_NAMES, ago, baseName, shortSession } from '@/lib/format';
 
 export function SessionCard({ session, onResume, onHandoff, busy }: { session: SessionEntry; onResume?: () => void; onHandoff?: () => void; busy?: boolean }) {

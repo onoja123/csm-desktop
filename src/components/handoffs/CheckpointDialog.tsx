@@ -1,23 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { create } from 'zustand';
 import { Button, Dialog, Field } from '@/components/ui';
+import { useCheckpointDialog } from '@/store/checkpoint-dialog';
 import { api } from '@/lib/api';
 import { PROVIDER_NAMES, baseName } from '@/lib/format';
 import { useData } from '@/store/data';
-
-interface CheckpointDialogState {
-  isOpen: boolean;
-  projectDir?: string;
-  open: (opts?: { projectDir?: string }) => void;
-  close: () => void;
-}
-
-export const useCheckpointDialog = create<CheckpointDialogState>((set) => ({
-  isOpen: false,
-  open: (opts) => set({ isOpen: true, projectDir: opts?.projectDir }),
-  close: () => set({ isOpen: false }),
-}));
 
 // Saving needs only the project: the context comes from the agent's session record and git, and is edited afterwards.
 export function CheckpointDialog() {

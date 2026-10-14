@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { MousePointer2 } from 'lucide-react';
-import { providerIcon } from '@/components/agents/AgentIcon';
+import { providerIcon } from '@/lib/provider-icons';
 import { canReceiveHandoff, limitations } from '@/lib/capabilities';
 import { PROVIDERS, PROVIDER_LONG_NAMES, providerName } from '@/lib/format';
-import type { Account, ProviderCapabilities, ProviderInfo, Status } from '@/lib/types';
+import type { Account, ProviderCapabilities, ProviderInfo, ServiceStatus } from '@/types';
 import { Accounts } from '@/screens/Accounts';
 import { AccountDetail } from '@/screens/AccountDetail';
 import { Settings } from '@/screens/Settings';
@@ -35,7 +35,7 @@ const cursor: ProviderInfo = {
 
 const claude: ProviderInfo = { id: 'claude', name: 'Claude Code', installed: true, version: '2.1.294', resume: true, capabilities: all };
 
-const status: Status = {
+const status: ServiceStatus = {
   service: { version: '0.12.0', pid: 1, started_at: '2026-10-14T09:00:00Z', socket: '/tmp/csm.sock', home: '/Users/me/.csm' },
   failover_policy: 'automatic',
   providers: [claude, { id: 'codex', name: 'Codex', installed: false }, cursor],

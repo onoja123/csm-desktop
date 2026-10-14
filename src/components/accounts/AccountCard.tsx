@@ -1,16 +1,9 @@
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { AgentIcon } from '@/components/agents/AgentIcon';
-import { Icon, StatusText } from '@/components/ui';
-import type { Account } from '@/lib/types';
-import { HEALTH_LABEL, healthTone, until } from '@/lib/format';
-
-export function AccountHealth({ account }: { account: Account }) {
-  const tone = healthTone(account.health);
-  let label = HEALTH_LABEL[account.health];
-  if (account.health === 'rate_limited' && account.cooldown_until) label += ` · ${until(account.cooldown_until)}`;
-  return <StatusText tone={tone}>{label}</StatusText>;
-}
+import { Icon } from '@/components/ui';
+import { AccountHealth } from './AccountHealth';
+import type { Account } from '@/types';
 
 export function AccountCard({ account, compact = false }: { account: Account; compact?: boolean }) {
   return (

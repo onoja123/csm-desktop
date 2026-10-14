@@ -1,25 +1,12 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Activity, ArrowLeftRight, History, Home, LayoutList, ListTodo, Plug, Settings, TerminalSquare, Siren, UserRound, Workflow, type LucideIcon } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Icon, StatusDot } from '@/components/ui';
+import { NAV } from '@/lib/navigation';
 import { useConnection } from '@/store/connection';
 import { useData } from '@/store/data';
-import { useSessions } from '@/components/mission/useSessions';
+import { useSessions } from '@/hooks/useSessions';
 import { needsAttention } from '@/lib/mission';
 import { Logo } from './Logo';
-
-export const NAV: { to: string; label: string; icon: LucideIcon; end?: boolean }[] = [
-  { to: '/', label: 'Home', icon: Home, end: true },
-  { to: '/terminal', label: 'Terminal', icon: TerminalSquare },
-  { to: '/mission', label: 'Mission Control', icon: LayoutList },
-  { to: '/build', label: 'Build Room', icon: Workflow },
-  { to: '/autofix', label: 'AutoFix', icon: Siren },
-  { to: '/accounts', label: 'Accounts', icon: UserRound },
-  { to: '/mcp', label: 'MCP', icon: Plug },
-  { to: '/sessions', label: 'Sessions', icon: History },
-  { to: '/handoffs', label: 'Handoffs', icon: ArrowLeftRight },
-  { to: '/tasks', label: 'Tasks', icon: ListTodo },
-  { to: '/activity', label: 'Activity', icon: Activity },
-];
 
 export function Sidebar() {
   const phase = useConnection((s) => s.phase);

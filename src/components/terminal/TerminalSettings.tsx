@@ -1,6 +1,7 @@
 import { Panel, Row, Toggle } from '@/components/ui';
 import { useTerminal } from '@/terminal/store';
-import { DEFAULT_SETTINGS } from '@/terminal/types';
+import { DEFAULT_SETTINGS } from '@/terminal/defaults';
+import type { ScrollbackSize } from '@/types';
 
 const FONTS = [
   { label: 'Geist Mono', value: DEFAULT_SETTINGS.fontFamily },
@@ -44,7 +45,7 @@ export function TerminalSettingsPanel() {
         <Toggle checked={settings.cursorBlink} onChange={(v) => updateSettings({ cursorBlink: v })} />
       </Row>
       <Row label="Scrollback">
-        <select className="input input--sm" value={settings.scrollback} onChange={(e) => updateSettings({ scrollback: Number(e.target.value) as 10000 })}>
+        <select className="input input--sm" value={settings.scrollback} onChange={(e) => updateSettings({ scrollback: Number(e.target.value) as ScrollbackSize })}>
           {[10000, 25000, 50000, 100000].map((n) => (
             <option key={n} value={n}>
               {n.toLocaleString()} lines

@@ -1,56 +1,15 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { decodeBase64, outputBus } from '@/lib/output-bus';
-import type {
-  Account,
-  Activity,
-  ApprovalsView,
-  BuildSummary,
-  Failover,
-  Incident,
-  Handoff,
-  MCPAccount,
-  Project,
-  RunsView,
-  SessionEntry,
-  Settings,
-  Status,
-  StreamEvent,
-} from '@/lib/types';
-
-export type Section = 'status' | 'accounts' | 'runs' | 'sessions' | 'handoffs' | 'mcp' | 'approvals' | 'activity' | 'projects' | 'failover' | 'settings' | 'builds' | 'signals';
-
-interface DataState {
-  status?: Status;
-  settings?: Settings;
-  accounts: Account[];
-  runs: RunsView;
-  sessions: SessionEntry[];
-  handoffs: Handoff[];
-  mcp: MCPAccount[];
-  mcpProject?: string;
-  approvals: ApprovalsView;
-  activity: Activity[];
-  projects: Project[];
-  failover?: Failover;
-  builds: BuildSummary[];
-  signals: Incident[];
-  buildStamps: Record<string, number>;
-  loaded: Partial<Record<Section, boolean>>;
-  errors: Partial<Record<Section, string>>;
-  refresh: (section: Section, arg?: string) => Promise<void>;
-  refreshAll: () => Promise<void>;
-  handleEvent: (ev: StreamEvent) => void;
-  applyEvent: (ev: StreamEvent) => Section[];
-}
+import type { ApprovalsView, DataSection, DataState, RunsView } from '@/types';
 
 const EMPTY_RUNS: RunsView = { runs: [], external: [] };
 const EMPTY_APPROVALS: ApprovalsView = { pending: [], recent: [] };
 
 // Refreshes coalesce so a burst of events costs one request per section.
-const pending = new Map<Section, ReturnType<typeof setTimeout>>();
+const pending = new Map<DataSection, ReturnType<typeof setTimeout>>();
 
-function schedule(section: Section, fn: () => void) {
+function schedule(section: DataSection, fn: () => void) {
   if (pending.has(section)) return;
   pending.set(
     section,
@@ -130,7 +89,7 @@ export const useData = create<DataState>((set, get) => ({
   },
 
   async refreshAll() {
-    const sections: Section[] = ['status', 'settings', 'accounts', 'runs', 'approvals', 'activity', 'sessions', 'handoffs', 'projects', 'failover', 'builds', 'signals'];
+    const sections: DataSection[] = ['status', 'settings', 'accounts', 'runs', 'approvals', 'activity', 'sessions', 'handoffs', 'projects', 'failover', 'builds', 'signals'];
     await Promise.all(sections.map((s) => get().refresh(s)));
   },
 
