@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { HandoffCard } from '@/components/handoffs/HandoffCard';
@@ -176,8 +176,8 @@ describe('checkpoint views', () => {
     fireEvent.change(steps, { target: { value: '1. Cap retries at 5\n2. Add a jitter test' } });
     fireEvent.click(screen.getByText('Save changes'));
 
-    await waitFor(() => expect(screen.getByText('Finish webhook retries')).toBeInTheDocument());
-    expect(screen.getByText('Written by you')).toBeInTheDocument();
+    expect(await screen.findByText('Written by you')).toBeInTheDocument();
+    expect(screen.getByText('Finish webhook retries')).toBeInTheDocument();
 
     const patch = vi
       .mocked(invoke)
