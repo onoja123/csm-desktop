@@ -1,4 +1,4 @@
-import { Asterisk, Braces, Gem, Github, type LucideIcon } from 'lucide-react';
+import { Asterisk, Braces, Gem, Github, MousePointer2, type LucideIcon } from 'lucide-react';
 import { IconTile } from '@/components/ui';
 import type { ProviderID } from '@/lib/types';
 import type { Tone } from '@/design/tokens';
@@ -8,6 +8,7 @@ export const PROVIDER_ICON: Record<ProviderID, LucideIcon> = {
   codex: Braces,
   gemini: Gem,
   copilot: Github,
+  cursor: MousePointer2,
 };
 
 export function providerIcon(id: string | undefined): LucideIcon {

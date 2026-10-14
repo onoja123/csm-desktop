@@ -3,6 +3,7 @@ import { Page } from '@/components/shell/AppShell';
 import { AccountCard } from '@/components/accounts/AccountCard';
 import { EmptyState, PageHeader, Panel, Row, Section } from '@/components/ui';
 import { api } from '@/lib/api';
+import { canReceiveHandoff } from '@/lib/capabilities';
 import { PROVIDERS, PROVIDER_LONG_NAMES } from '@/lib/format';
 import type { FailoverPolicy, ProviderID } from '@/lib/types';
 import { useData } from '@/store/data';
@@ -43,6 +44,7 @@ export function FailoverPanel() {
 
 // Clicking adds an agent to the end of the order or takes it out; the service validates and stores the list.
 function HandoffOrder({ order, description, automatic }: { order: ProviderID[]; description?: string; automatic: boolean }) {
+  const providers = useData((s) => s.status?.providers);
   const toggle = (p: ProviderID) => void api.setHandoffTo(order.includes(p) ? order.filter((x) => x !== p) : [...order, p]);
   return (
     <div className="failover-panel__provider handoff-order">
@@ -50,8 +52,9 @@ function HandoffOrder({ order, description, automatic }: { order: ProviderID[]; 
         <span className="handoff-order__chips" role="group" aria-label="Agents to hand off to">
           {PROVIDERS.map((p) => {
             const at = order.indexOf(p);
+            const usable = canReceiveHandoff(providers?.find((i) => i.id === p));
             return (
-              <button key={p} className={`chip ${at >= 0 ? 'chip--active' : ''}`} aria-pressed={at >= 0} onClick={() => toggle(p)}>
+              <button key={p} className={`chip ${at >= 0 ? 'chip--active' : ''}`} aria-pressed={at >= 0} disabled={!usable && at < 0} title={usable ? undefined : `${PROVIDER_LONG_NAMES[p]} cannot receive a handoff`} onClick={() => toggle(p)}>
                 {at >= 0 ? `${at + 1} · ` : ''}
                 {PROVIDER_LONG_NAMES[p]}
               </button>
@@ -68,16 +71,27 @@ function HandoffOrder({ order, description, automatic }: { order: ProviderID[]; 
   );
 }
 
+function SharedLoginNote({ provider }: { provider: ProviderID }) {
+  const info = useData((s) => s.status?.providers.find((p) => p.id === provider));
+  if (!info?.shared_login) return null;
+  return (
+    <p className="muted section-note">
+      {info.name} keeps one sign-in for your user account, so CSM manages a single {info.name} account and cannot switch between accounts. To work as someone else, sign out of {info.name} and run <code>csm account login &lt;name&gt;</code>.
+    </p>
+  );
+}
+
 export function Accounts() {
   const accounts = useData((s) => s.accounts);
   return (
     <Page>
       <PageHeader title="Accounts" subtitle="Every profile CSM manages, with the health it uses to pick where a switch goes." />
       {accounts.length === 0 ? (
-        <EmptyState icon={UserRound} title="No accounts yet" body={<>Add one in a terminal with <code>csm account add &lt;name&gt; --provider claude|codex|gemini|copilot</code>. Logging in needs a browser, so it stays in the terminal.</>} />
+        <EmptyState icon={UserRound} title="No accounts yet" body={<>Add one in a terminal with <code>csm account add &lt;name&gt; --provider claude|codex|gemini|copilot|cursor</code>. Logging in needs a browser, so it stays in the terminal.</>} />
       ) : (
         PROVIDERS.filter((p) => accounts.some((a) => a.provider === p)).map((p) => (
           <Section key={p} title={PROVIDER_LONG_NAMES[p]} meta={String(accounts.filter((a) => a.provider === p).length)}>
+            <SharedLoginNote provider={p} />
             <div className="list">
               {accounts
                 .filter((a) => a.provider === p)

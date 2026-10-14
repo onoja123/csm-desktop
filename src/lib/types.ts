@@ -1,4 +1,4 @@
-export type ProviderID = 'claude' | 'codex' | 'gemini' | 'copilot';
+export type ProviderID = 'claude' | 'codex' | 'gemini' | 'copilot' | 'cursor';
 
 export type Health = 'healthy' | 'warning' | 'rate_limited' | 'authentication_required' | 'unavailable' | 'unknown';
 
@@ -18,6 +18,19 @@ export interface Usage {
   limited?: boolean;
 }
 
+export interface ProviderCapabilities {
+  interactive: boolean;
+  session_tracking: boolean;
+  session_resume: boolean;
+  tasks: boolean;
+  handoff_target: boolean;
+  handoff_context: boolean;
+  usage_limits: boolean;
+  usage_report: boolean;
+  account_switching: boolean;
+  mcp: boolean;
+}
+
 export interface ProviderInfo {
   id: ProviderID;
   name: string;
@@ -25,6 +38,8 @@ export interface ProviderInfo {
   version?: string;
   error?: string;
   resume?: boolean;
+  shared_login?: boolean;
+  capabilities?: ProviderCapabilities;
 }
 
 export interface Status {

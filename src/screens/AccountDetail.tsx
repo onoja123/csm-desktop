@@ -32,6 +32,7 @@ function Window({ label, w }: { label: string; w?: UsageWindow }) {
 export function AccountDetail() {
   const { name = '' } = useParams();
   const account = useData((s) => s.accounts.find((a) => a.name === decodeURIComponent(name)));
+  const providers = useData((s) => s.status?.providers);
   const [busy, setBusy] = useState<string>();
   const [message, setMessage] = useState<string>();
   const [error, setError] = useState<string>();
@@ -60,6 +61,7 @@ export function AccountDetail() {
   };
 
   const usage = account.usage;
+  const reportsUsage = providers?.find((p) => p.id === account.provider)?.capabilities?.usage_report ?? true;
 
   return (
     <Page>
@@ -90,7 +92,7 @@ export function AccountDetail() {
                 Enable
               </Button>
             )}
-            <Button icon={RefreshCw} loading={busy === 'usage'} onClick={() => void act('usage', () => api.refreshUsage(account.name), 'Usage checked')}>
+            <Button icon={RefreshCw} loading={busy === 'usage'} disabled={!reportsUsage} title={reportsUsage ? undefined : `${account.provider_name} does not report plan usage`} onClick={() => void act('usage', () => api.refreshUsage(account.name), 'Usage checked')}>
               Check usage
             </Button>
           </div>
@@ -133,7 +135,7 @@ export function AccountDetail() {
             ) : (
               <>
                 <Row label="Usage">Unknown</Row>
-                <p className="muted">The agent has not reported usage for this account. CSM never estimates it. Run a live check with the button above.</p>
+                <p className="muted">{reportsUsage ? 'The agent has not reported usage for this account. CSM never estimates it. Run a live check with the button above.' : `${account.provider_name} does not report plan usage, so CSM shows none and cannot see a limit coming.`}</p>
               </>
             )}
           </Panel>

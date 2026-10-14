@@ -5,6 +5,7 @@ import { FailoverPanel } from './Accounts';
 import { TerminalSettingsPanel } from '@/components/terminal/TerminalSettings';
 import { Button, PageHeader, Panel, Row, Section, Toggle } from '@/components/ui';
 import { api, service } from '@/lib/api';
+import { limitations } from '@/lib/capabilities';
 import { PROVIDER_LONG_NAMES, ago } from '@/lib/format';
 import { useConnection } from '@/store/connection';
 import { useData } from '@/store/data';
@@ -85,11 +86,21 @@ export function Settings() {
       </Section>
       <Section title="Agents">
         <Panel>
-          {status?.providers.map((p) => (
-            <Row key={p.id} label={PROVIDER_LONG_NAMES[p.id]}>
-              {p.installed ? <span className="mono">{p.version ?? 'installed'}</span> : <span className="muted">{p.error ?? 'not installed'}</span>}
-            </Row>
-          ))}
+          {status?.providers.map((p) => {
+            const limits = limitations(p);
+            return (
+              <Row key={p.id} label={PROVIDER_LONG_NAMES[p.id] ?? p.name}>
+                {p.installed ? <span className="mono">{p.version ?? 'installed'}</span> : <span className="muted">{p.error ?? 'not installed'}</span>}
+                {limits.length ? (
+                  <ul className="agent-limits muted" aria-label={`What CSM cannot do with ${p.name}`}>
+                    {limits.map((l) => (
+                      <li key={l}>{l}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </Row>
+            );
+          })}
         </Panel>
       </Section>
       <Section title="Shortcuts">

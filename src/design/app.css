@@ -612,6 +612,24 @@ select.input {
   border-color: var(--line-4);
 }
 
+.chip:disabled {
+  color: var(--fg-4);
+  border-color: var(--line-1);
+  cursor: not-allowed;
+}
+
+.agent-limits {
+  flex-basis: 100%;
+  margin: 0;
+  padding-left: var(--space-4);
+  font-size: var(--text-sm);
+}
+
+.section-note {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-sm);
+}
+
 .toggle {
   width: 36px;
   height: 20px;

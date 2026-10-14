@@ -6,6 +6,7 @@ export const PROVIDER_NAMES: Record<ProviderID, string> = {
   codex: 'Codex',
   gemini: 'Gemini',
   copilot: 'Copilot',
+  cursor: 'Cursor',
 };
 
 export const PROVIDER_LONG_NAMES: Record<ProviderID, string> = {
@@ -13,9 +14,10 @@ export const PROVIDER_LONG_NAMES: Record<ProviderID, string> = {
   codex: 'Codex',
   gemini: 'Gemini CLI',
   copilot: 'GitHub Copilot CLI',
+  cursor: 'Cursor CLI',
 };
 
-export const PROVIDERS: ProviderID[] = ['claude', 'codex', 'gemini', 'copilot'];
+export const PROVIDERS: ProviderID[] = ['claude', 'codex', 'gemini', 'copilot', 'cursor'];
 
 export function providerName(id: string | undefined): string {
   return (id && PROVIDER_NAMES[id as ProviderID]) || id || 'Unknown';
