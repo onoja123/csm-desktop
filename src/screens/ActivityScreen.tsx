@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity as ActivityIcon } from 'lucide-react';
+import { Pulse01Icon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { ActivityItem } from '@/components/activity/ActivityItem';
 import { EmptyState, PageHeader, Tabs } from '@/components/ui';
@@ -40,7 +40,7 @@ export function ActivityScreen() {
         onChange={setFilter}
       />
       {shown.length === 0 ? (
-        <EmptyState icon={ActivityIcon} title="Nothing here yet" body="Agent starts, switches, approvals and handoffs appear as they happen." />
+        <EmptyState icon={Pulse01Icon} title="Nothing here yet" body="Agent starts, switches, approvals and handoffs appear as they happen." />
       ) : (
         <div className="list list--tight">
           {shown.map((a) => (

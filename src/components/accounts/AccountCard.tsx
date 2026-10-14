@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Icon } from '@/components/ui';
 import { AccountHealth } from './AccountHealth';
@@ -22,7 +22,7 @@ export function AccountCard({ account, compact = false }: { account: Account; co
         </div>
       </div>
       <AccountHealth account={account} />
-      <Icon icon={ChevronRight} size="md" className="agent-card__chevron" />
+      <Icon icon={ArrowRight01Icon} size="md" className="agent-card__chevron" />
     </Link>
   );
 }

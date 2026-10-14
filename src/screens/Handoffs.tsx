@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Bookmark } from 'lucide-react';
+import { ArrowDataTransferHorizontalIcon, Bookmark02Icon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { HandoffCard } from '@/components/handoffs/HandoffCard';
 import { useHandoffDialog } from '@/store/handoff-dialog';
@@ -24,11 +24,11 @@ export function Handoffs() {
         action={
           <div className="page__actions">
             {lastProject ? (
-              <Button icon={ArrowLeftRight} onClick={() => openHandoff({ projectDir: lastProject })}>
+              <Button icon={ArrowDataTransferHorizontalIcon} onClick={() => openHandoff({ projectDir: lastProject })}>
                 New handoff
               </Button>
             ) : null}
-            <Button variant="primary" icon={Bookmark} onClick={() => openCheckpoint()}>
+            <Button variant="primary" icon={Bookmark02Icon} onClick={() => openCheckpoint()}>
               Save checkpoint
             </Button>
           </div>
@@ -36,11 +36,11 @@ export function Handoffs() {
       />
       {handoffs.length === 0 ? (
         <EmptyState
-          icon={Bookmark}
+          icon={Bookmark02Icon}
           title="No checkpoints yet"
           body="Save a checkpoint while an agent works on a task. CSM records the task, the files it touched and the repository state, so another agent can pick it up."
           action={
-            <Button variant="primary" icon={Bookmark} onClick={() => openCheckpoint()}>
+            <Button variant="primary" icon={Bookmark02Icon} onClick={() => openCheckpoint()}>
               Save checkpoint
             </Button>
           }

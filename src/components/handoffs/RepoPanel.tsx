@@ -1,4 +1,4 @@
-import { AlertTriangle, Check } from 'lucide-react';
+import { Alert02Icon, Tick02Icon } from '@hugeicons/core-free-icons';
 import { Icon, Panel, Row } from '@/components/ui';
 import { ago, shortPath } from '@/lib/format';
 import { driftOf, shortSha } from '@/lib/checkpoint';
@@ -34,7 +34,7 @@ export function RepoPanel({ handoff, home }: { handoff: Handoff; home: string })
           </Row>
           {current ? (
             <div className={`repo-now ${drift.length ? 'repo-now--drift' : ''}`} role="status">
-              <Icon icon={drift.length ? AlertTriangle : Check} size="sm" className={drift.length ? 'tone-warn' : 'tone-ok'} />
+              <Icon icon={drift.length ? Alert02Icon : Tick02Icon} size="sm" className={drift.length ? 'tone-warn' : 'tone-ok'} />
               <div>
                 {drift.length ? drift.map((d) => <p key={d}>{d}</p>) : <p>The repository still matches this checkpoint.</p>}
                 <p className="muted">Checked {ago(current.checked_at)}</p>

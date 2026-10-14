@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeftRight, Pencil } from 'lucide-react';
+import { ArrowDataTransferHorizontalIcon, PencilEdit01Icon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { useHandoffDialog } from '@/store/handoff-dialog';
 import { AgentIcon } from '@/components/agents/AgentIcon';
@@ -29,7 +29,7 @@ export function CheckpointDetail({ handoff, onChange }: { handoff: Handoff; onCh
         subtitle={`${handoff.git.root ? handoff.git.root.split('/').pop() + ' · ' : ''}saved ${ago(handoff.created_at)}${handoff.edits?.edited_at ? ` · edited ${ago(handoff.edits.edited_at)}` : ''}`}
         action={
           projectDir ? (
-            <Button variant="primary" icon={ArrowLeftRight} onClick={() => openHandoff({ projectDir, fromProvider: (handoff.source.provider || undefined) as ProviderID | undefined, fromAccount: handoff.source.account, checkpointId: handoff.id })}>
+            <Button variant="primary" icon={ArrowDataTransferHorizontalIcon} onClick={() => openHandoff({ projectDir, fromProvider: (handoff.source.provider || undefined) as ProviderID | undefined, fromAccount: handoff.source.account, checkpointId: handoff.id })}>
               Continue with another agent
             </Button>
           ) : null
@@ -44,7 +44,7 @@ export function CheckpointDetail({ handoff, onChange }: { handoff: Handoff; onCh
                 <span className="panel__meta">{originLabel(handoff)}</span>
               </div>
               {!editing ? (
-                <Button size="sm" variant="ghost" icon={Pencil} onClick={() => setEditing(true)}>
+                <Button size="sm" variant="ghost" icon={PencilEdit01Icon} onClick={() => setEditing(true)}>
                   Edit
                 </Button>
               ) : null}

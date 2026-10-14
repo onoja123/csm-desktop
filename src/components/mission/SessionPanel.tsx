@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeftRight, Bookmark, ExternalLink, FolderOpen, Play, Square, TerminalSquare, UserRound, Workflow, X } from 'lucide-react';
+import { ArrowDataTransferHorizontalIcon, Bookmark02Icon, Cancel01Icon, ComputerTerminal01Icon, Folder02Icon, LinkSquare02Icon, PlayIcon, StopIcon, UserIcon, WorkflowSquare03Icon } from '@hugeicons/core-free-icons';
 import { openPath } from '@tauri-apps/plugin-opener';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { ApprovalCard } from '@/components/approvals/ApprovalCard';
@@ -61,7 +61,7 @@ export function SessionPanel({ session: s, now, onClose }: { session: AgentSessi
           </StatusText>
         </div>
         <button className="mc-panel__close" onClick={onClose} aria-label="Close details">
-          <Icon icon={X} size="sm" />
+          <Icon icon={Cancel01Icon} size="sm" />
         </button>
       </div>
 
@@ -78,24 +78,24 @@ export function SessionPanel({ session: s, now, onClose }: { session: AgentSessi
 
       <div className="mc-panel__actions">
         {terminalLabel ? (
-          <Button icon={TerminalSquare} variant="primary" onClick={goToTerminal}>
+          <Button icon={ComputerTerminal01Icon} variant="primary" onClick={goToTerminal}>
             {terminalLabel}
           </Button>
         ) : null}
         {s.runId ? (
-          <Button icon={ExternalLink} onClick={() => nav(`/agents/${s.runId}`)}>
+          <Button icon={LinkSquare02Icon} onClick={() => nav(`/agents/${s.runId}`)}>
             Details
           </Button>
         ) : null}
         {s.buildId ? (
-          <Button icon={Workflow} onClick={() => nav(`/build/${s.buildId}`)}>
+          <Button icon={WorkflowSquare03Icon} onClick={() => nav(`/build/${s.buildId}`)}>
             Build run
           </Button>
         ) : null}
         <Button variant="ghost" onClick={() => nav(`/terminal?cwd=${encodeURIComponent(s.projectDir)}`)}>
           Shell here
         </Button>
-        <Button variant="ghost" icon={FolderOpen} onClick={() => void attempt('reveal', () => openPath(s.projectDir))} loading={busy === 'reveal'}>
+        <Button variant="ghost" icon={Folder02Icon} onClick={() => void attempt('reveal', () => openPath(s.projectDir))} loading={busy === 'reveal'}>
           Reveal
         </Button>
       </div>
@@ -104,7 +104,7 @@ export function SessionPanel({ session: s, now, onClose }: { session: AgentSessi
         <div className="mc-panel__actions">
           {sameProvider.length > 0 ? (
             <div className="select-wrap">
-              <Icon icon={UserRound} size="sm" />
+              <Icon icon={UserIcon} size="sm" />
               <select className="input input--sm" value="" disabled={busy === 'switch'} aria-label="Switch account" onChange={(e) => e.target.value && void attempt('switch', () => api.switchAccount(e.target.value, s.projectDir))}>
                 <option value="">Switch account…</option>
                 {sameProvider.map((a) => (
@@ -115,14 +115,14 @@ export function SessionPanel({ session: s, now, onClose }: { session: AgentSessi
               </select>
             </div>
           ) : null}
-          <Button size="sm" icon={Bookmark} onClick={() => openCheckpoint({ projectDir: s.projectDir })}>
+          <Button size="sm" icon={Bookmark02Icon} onClick={() => openCheckpoint({ projectDir: s.projectDir })}>
             Checkpoint
           </Button>
-          <Button size="sm" icon={ArrowLeftRight} onClick={() => openHandoff({ projectDir: s.projectDir, fromProvider: s.provider, fromAccount: s.account })}>
+          <Button size="sm" icon={ArrowDataTransferHorizontalIcon} onClick={() => openHandoff({ projectDir: s.projectDir, fromProvider: s.provider, fromAccount: s.account })}>
             Handoff
           </Button>
           {s.runId ? (
-            <Button size="sm" icon={Square} variant="danger" onClick={() => void attempt('stop', () => api.stopRun(s.runId!))} loading={busy === 'stop'}>
+            <Button size="sm" icon={StopIcon} variant="danger" onClick={() => void attempt('stop', () => api.stopRun(s.runId!))} loading={busy === 'stop'}>
               Stop
             </Button>
           ) : null}
@@ -132,7 +132,7 @@ export function SessionPanel({ session: s, now, onClose }: { session: AgentSessi
           {s.canResume ? (
             <Button
               size="sm"
-              icon={Play}
+              icon={PlayIcon}
               onClick={() =>
                 void attempt('resume', async () => {
                   const run = await api.resumeSession({ provider: s.provider, project_dir: s.projectDir, session_id: s.sessionId! });

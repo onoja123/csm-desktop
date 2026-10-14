@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import type { IconSvgElement } from '@hugeicons/react';
 import { IconTile } from './IconTile';
 
-export function EmptyState({ icon, title, body, action }: { icon: LucideIcon; title: string; body?: ReactNode; action?: ReactNode }) {
+export function EmptyState({ icon, title, body, action }: { icon: IconSvgElement; title: string; body?: ReactNode; action?: ReactNode }) {
   return (
     <div className="state">
       <IconTile icon={icon} size="hero" />

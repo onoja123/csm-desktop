@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight, FolderOpen, GitBranch } from 'lucide-react';
+import { ArrowRight01Icon, Folder02Icon, GitBranchIcon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from './AgentIcon';
 import { AgentStatus } from './AgentStatus';
 import { Icon } from '@/components/ui';
@@ -27,11 +27,11 @@ export function AgentCard({ run, compact = false }: { run: AnyRun; compact?: boo
           <span className="mono">{run.account}</span>
           <span className="agent-card__sep" />
           <span>
-            <Icon icon={FolderOpen} size="sm" /> {baseName(run.project_dir)}
+            <Icon icon={Folder02Icon} size="sm" /> {baseName(run.project_dir)}
           </span>
           {'branch' in run && run.branch ? (
             <span>
-              <Icon icon={GitBranch} size="sm" /> {run.branch}
+              <Icon icon={GitBranchIcon} size="sm" /> {run.branch}
             </span>
           ) : null}
           <span className="agent-card__sep" />
@@ -39,7 +39,7 @@ export function AgentCard({ run, compact = false }: { run: AnyRun; compact?: boo
           {files > 0 ? <span>{plural(files, 'file')} touched</span> : null}
         </div>
       </div>
-      {run.kind !== 'external' ? <Icon icon={ChevronRight} size="md" className="agent-card__chevron" /> : null}
+      {run.kind !== 'external' ? <Icon icon={ArrowRight01Icon} size="md" className="agent-card__chevron" /> : null}
     </Link>
   );
 }

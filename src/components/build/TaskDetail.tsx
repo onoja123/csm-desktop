@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { openPath } from '@tauri-apps/plugin-opener';
-import { Check, FolderOpen, Minus, RotateCcw, TerminalSquare } from 'lucide-react';
+import { ComputerTerminal01Icon, Folder02Icon, MinusSignIcon, Tick02Icon, Undo02Icon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { DiffView } from '@/components/build/DiffView';
 import { Button, Icon, Panel, Row, StatusText } from '@/components/ui';
@@ -53,12 +53,12 @@ export function TaskDetail({ build, task: t, busy, onAct }: { build: Build; task
 
       <div className="build-task__actions">
         {live?.run_id ? (
-          <Button size="sm" icon={TerminalSquare} onClick={() => nav(`/terminal?run=${encodeURIComponent(live.run_id!)}`)}>
+          <Button size="sm" icon={ComputerTerminal01Icon} onClick={() => nav(`/terminal?run=${encodeURIComponent(live.run_id!)}`)}>
             Open terminal
           </Button>
         ) : null}
         {t.worktree ? (
-          <Button size="sm" icon={FolderOpen} onClick={() => void openPath(t.worktree!)}>
+          <Button size="sm" icon={Folder02Icon} onClick={() => void openPath(t.worktree!)}>
             Open worktree
           </Button>
         ) : null}
@@ -81,7 +81,7 @@ export function TaskDetail({ build, task: t, busy, onAct }: { build: Build; task
           </select>
           {stuck ? (
             <>
-              <Button size="sm" icon={RotateCcw} onClick={() => void onAct('retry-task', { task: t.id, provider: agent || undefined })} loading={busy === 'retry-task'}>
+              <Button size="sm" icon={Undo02Icon} onClick={() => void onAct('retry-task', { task: t.id, provider: agent || undefined })} loading={busy === 'retry-task'}>
                 Retry
               </Button>
               {t.worktree ? (
@@ -212,7 +212,7 @@ export function TaskDetail({ build, task: t, busy, onAct }: { build: Build; task
               <div className="checklist">
                 {c.acceptance.map((a) => (
                   <div key={a.criterion} className="checklist__row">
-                    <Icon icon={a.addressed ? Check : Minus} size="sm" className={a.addressed ? 'tone-ok' : 'tone-warn'} />
+                    <Icon icon={a.addressed ? Tick02Icon : MinusSignIcon} size="sm" className={a.addressed ? 'tone-ok' : 'tone-warn'} />
                     <span className="checklist__label">{a.criterion}</span>
                     <span className="checklist__text">{a.note}</span>
                   </div>

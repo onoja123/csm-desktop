@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { open } from '@tauri-apps/plugin-dialog';
-import { FolderOpen } from 'lucide-react';
+import { Folder02Icon } from '@hugeicons/core-free-icons';
 import { Button, Dialog, Field } from '@/components/ui';
 import { useStartAgent } from '@/store/start-agent-dialog';
 import { api } from '@/lib/api';
@@ -72,7 +72,7 @@ export function StartAgentDialog() {
           <Field label="Project directory">
             <div className="input-row">
               <input className="input mono" value={dir} onChange={(e) => setDir(e.target.value)} placeholder="~/Projects/my-project" spellCheck={false} />
-              <Button icon={FolderOpen} onClick={() => void browse()}>
+              <Button icon={Folder02Icon} onClick={() => void browse()}>
                 Browse
               </Button>
             </div>

@@ -1,4 +1,4 @@
-import { AlertTriangle } from 'lucide-react';
+import { Alert02Icon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Icon, StatusText } from '@/components/ui';
 import { FINDING_STATUS_LABEL, severityTone } from '@/lib/build';
@@ -23,7 +23,7 @@ export function BuildReviewTab({ build }: { build: Build }) {
           </div>
           {!r.independent && r.note ? (
             <p className="build-note">
-              <Icon icon={AlertTriangle} size="sm" className="tone-warn" /> {r.note}
+              <Icon icon={Alert02Icon} size="sm" className="tone-warn" /> {r.note}
             </p>
           ) : null}
           {r.summary ? <p className="selectable">{r.summary}</p> : null}

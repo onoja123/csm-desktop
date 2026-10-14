@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ArrowDown01Icon, ArrowUp01Icon, Cancel01Icon } from '@hugeicons/core-free-icons';
 import { Icon } from '@/components/ui';
 import { handles } from '@/terminal/handles';
 import { useTerminal } from '@/terminal/store';
@@ -42,13 +42,13 @@ export function TerminalSearch() {
         Aa
       </button>
       <button className="term-search__btn" onClick={prev} title="Previous (Shift+Enter)">
-        <Icon icon={ChevronUp} size="sm" />
+        <Icon icon={ArrowUp01Icon} size="sm" />
       </button>
       <button className="term-search__btn" onClick={next} title="Next (Enter)">
-        <Icon icon={ChevronDown} size="sm" />
+        <Icon icon={ArrowDown01Icon} size="sm" />
       </button>
       <button className="term-search__btn" onClick={() => setSearchOpen(false)} title="Close (Esc)">
-        <Icon icon={X} size="sm" />
+        <Icon icon={Cancel01Icon} size="sm" />
       </button>
     </div>
   );

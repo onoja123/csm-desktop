@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight, FolderOpen } from 'lucide-react';
+import { ArrowRight01Icon, Folder02Icon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { AgentStatus } from '@/components/agents/AgentStatus';
 import { Icon } from '@/components/ui';
@@ -19,7 +19,7 @@ export function TaskCard({ run }: { run: AnyRun }) {
       <div className="task-card__main">
         <span className="task-card__title">{task?.summary || (run.kind === 'handoff' ? 'Handoff' : 'No request recorded yet')}</span>
         <span className="task-card__meta">
-          {PROVIDER_NAMES[run.provider]} · <span className="mono">{run.account}</span> · <Icon icon={FolderOpen} size="sm" /> {baseName(run.project_dir)}
+          {PROVIDER_NAMES[run.provider]} · <span className="mono">{run.account}</span> · <Icon icon={Folder02Icon} size="sm" /> {baseName(run.project_dir)}
         </span>
       </div>
       <div className="task-card__status">
@@ -29,7 +29,7 @@ export function TaskCard({ run }: { run: AnyRun }) {
           {run.status === 'running' && last ? ` · last activity ${ago(last, now)}` : ''}
         </span>
       </div>
-      <Icon icon={ChevronRight} size="md" className="agent-card__chevron" />
+      <Icon icon={ArrowRight01Icon} size="md" className="agent-card__chevron" />
     </Link>
   );
 }

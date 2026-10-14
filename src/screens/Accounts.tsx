@@ -1,4 +1,4 @@
-import { UserRound } from 'lucide-react';
+import { UserIcon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { AccountCard } from '@/components/accounts/AccountCard';
 import { EmptyState, PageHeader, Section } from '@/components/ui';
@@ -13,7 +13,7 @@ export function Accounts() {
     <Page>
       <PageHeader title="Accounts" subtitle="Every profile CSM manages, with the health it uses to pick where a switch goes." />
       {accounts.length === 0 ? (
-        <EmptyState icon={UserRound} title="No accounts yet" body={<>Add one in a terminal with <code>csm account add &lt;name&gt; --provider claude|codex|gemini|copilot|cursor</code>. Logging in needs a browser, so it stays in the terminal.</>} />
+        <EmptyState icon={UserIcon} title="No accounts yet" body={<>Add one in a terminal with <code>csm account add &lt;name&gt; --provider claude|codex|gemini|copilot|cursor</code>. Logging in needs a browser, so it stays in the terminal.</>} />
       ) : (
         PROVIDERS.filter((p) => accounts.some((a) => a.provider === p)).map((p) => (
           <Section key={p} title={PROVIDER_LONG_NAMES[p]} meta={String(accounts.filter((a) => a.provider === p).length)}>

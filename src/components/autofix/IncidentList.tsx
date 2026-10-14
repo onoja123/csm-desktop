@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Siren } from 'lucide-react';
+import { SirenIcon } from '@hugeicons/core-free-icons';
 import { Button, EmptyState, ErrorState, LoadingState } from '@/components/ui';
 import { IncidentRow } from './IncidentRow';
 import { api } from '@/lib/api';
@@ -19,7 +19,7 @@ export function IncidentList({ onSetup }: { onSetup: () => void }) {
   if (!incidents.length)
     return (
       <EmptyState
-        icon={Siren}
+        icon={SirenIcon}
         title="No incidents yet"
         body="Connect Sentry in Settings: sign in to CSM Hub, pick the project and repository, and paste the webhook URL into Sentry. Every error Sentry reports then becomes an incident here."
         action={

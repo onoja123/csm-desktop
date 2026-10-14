@@ -1,4 +1,4 @@
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown02Icon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Icon } from '@/components/ui';
 import { PROVIDER_NAMES } from '@/lib/format';
@@ -15,7 +15,7 @@ export function AgentPair({ handoff, vertical = false }: { handoff: Handoff; ver
           {src.account ? <span className="mono"> {src.account}</span> : null}
         </span>
       </div>
-      <Icon icon={ArrowDown} size={vertical ? 'lg' : 'sm'} className={vertical ? '' : 'rotate-270'} />
+      <Icon icon={ArrowDown02Icon} size={vertical ? 'lg' : 'sm'} className={vertical ? '' : 'rotate-270'} />
       <div className="agent-pair__agent">
         <AgentIcon provider={handoff.target.provider} size={vertical ? 'xl' : 'md'} />
         <span>

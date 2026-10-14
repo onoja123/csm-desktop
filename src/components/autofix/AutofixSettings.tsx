@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { open } from '@tauri-apps/plugin-dialog';
-import { FolderOpen, Plus, Trash2 } from 'lucide-react';
+import { Delete02Icon, Folder02Icon, PlusSignIcon } from '@hugeicons/core-free-icons';
 import { SentryConnectPanel } from '@/components/autofix/SentryConnectPanel';
 import { Button, ErrorState, Field, Icon, LoadingState, Panel, Section, Toggle } from '@/components/ui';
 import { api } from '@/lib/api';
@@ -76,16 +76,16 @@ export function AutofixSettings() {
               <input className="input input--sm mono" value={m.project} onChange={(e) => update(i, { project: e.target.value })} placeholder="project slug or id" aria-label="Project" />
               <div className="input-row">
                 <input className="input input--sm mono" value={m.repo} onChange={(e) => update(i, { repo: e.target.value })} placeholder="/path/to/repository" aria-label="Repository" />
-                <Button size="sm" icon={FolderOpen} onClick={() => void browse(i)} aria-label="Browse" />
+                <Button size="sm" icon={Folder02Icon} onClick={() => void browse(i)} aria-label="Browse" />
               </div>
               <input className="input input--sm mono" value={m.base_branch ?? ''} onChange={(e) => update(i, { base_branch: e.target.value })} placeholder="base branch" aria-label="Base branch" />
               <button className="icon-btn" onClick={() => setMappings((ms) => ms.filter((_, n) => n !== i))} aria-label="Remove mapping">
-                <Icon icon={Trash2} size="sm" />
+                <Icon icon={Delete02Icon} size="sm" />
               </button>
             </div>
           ))}
           <div className="af-mappings__actions">
-            <Button size="sm" icon={Plus} onClick={() => setMappings((ms) => [...ms, { source: 'sentry', project: '', repo: '', base_branch: 'main' }])}>
+            <Button size="sm" icon={PlusSignIcon} onClick={() => setMappings((ms) => [...ms, { source: 'sentry', project: '', repo: '', base_branch: 'main' }])}>
               Add mapping
             </Button>
             <Button size="sm" variant="primary" onClick={() => void save({ mappings }, 'Repository mappings')} loading={busy}>

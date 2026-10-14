@@ -1,4 +1,4 @@
-import { Check, Minus, X } from 'lucide-react';
+import { Cancel01Icon, MinusSignIcon, Tick02Icon } from '@hugeicons/core-free-icons';
 import { Icon } from '@/components/ui';
 import type { OutcomeFactState } from '@/types';
 
@@ -6,12 +6,12 @@ export function OutcomeCheckCircle({ state }: { state: OutcomeFactState }) {
   if (state === 'skipped')
     return (
       <span className="cc cc--skipped">
-        <Icon icon={Minus} size="sm" />
+        <Icon icon={MinusSignIcon} size="sm" />
       </span>
     );
   return (
     <span className={`cc cc--${state}`}>
-      <Icon icon={state === 'failed' ? X : Check} size="sm" />
+      <Icon icon={state === 'failed' ? Cancel01Icon : Tick02Icon} size="sm" />
     </span>
   );
 }

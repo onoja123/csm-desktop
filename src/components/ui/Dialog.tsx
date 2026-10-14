@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { Cancel01Icon } from '@hugeicons/core-free-icons';
 
 export function Dialog({ open, onClose, title, children, width = 520 }: { open: boolean; onClose: () => void; title: ReactNode; children: ReactNode; width?: number }) {
   useEffect(() => {
@@ -19,7 +20,7 @@ export function Dialog({ open, onClose, title, children, width = 520 }: { open: 
         <div className="dialog__header">
           <h2>{title}</h2>
           <button className="dialog__close" onClick={onClose} aria-label="Close">
-            <X size={16} />
+            <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} size={16} />
           </button>
         </div>
         <div className="dialog__body">{children}</div>

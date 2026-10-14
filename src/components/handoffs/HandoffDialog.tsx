@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, ArrowDown, Check, Minus } from 'lucide-react';
+import { Alert02Icon, ArrowDown02Icon, MinusSignIcon, Tick02Icon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Button, Dialog, Field, Icon } from '@/components/ui';
 import { useHandoffDialog } from '@/store/handoff-dialog';
@@ -77,7 +77,7 @@ export function HandoffDialog() {
             {preview?.source_account || fromAccount ? <span className="mono"> {preview?.source_account ?? fromAccount}</span> : null}
           </span>
         </div>
-        <Icon icon={ArrowDown} size="lg" />
+        <Icon icon={ArrowDown02Icon} size="lg" />
         <div className="handoff-dialog__agent">
           <AgentIcon provider={targetAccount?.provider} size="xl" />
           <span>
@@ -99,14 +99,14 @@ export function HandoffDialog() {
         <div className="checklist">
           {checks.map((c) => (
             <div key={c.label} className="checklist__row">
-              <Icon icon={c.ok ? Check : Minus} size="sm" className={c.ok ? 'tone-ok' : 'tone-idle'} />
+              <Icon icon={c.ok ? Tick02Icon : MinusSignIcon} size="sm" className={c.ok ? 'tone-ok' : 'tone-idle'} />
               <span className="checklist__label">{c.label}</span>
               <span className="checklist__text">{c.text}</span>
             </div>
           ))}
           {preview.changes?.length ? (
             <div className="handoff-drift" role="status">
-              <Icon icon={AlertTriangle} size="sm" className="tone-warn" />
+              <Icon icon={Alert02Icon} size="sm" className="tone-warn" />
               <div>
                 {preview.changes.map((c) => (
                   <p key={c}>{c}</p>

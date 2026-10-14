@@ -1,4 +1,4 @@
-import { GitBranch, FolderOpen } from 'lucide-react';
+import { Folder02Icon, GitBranchIcon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Button, Icon, StatusText } from '@/components/ui';
 import type { SessionEntry } from '@/types';
@@ -18,11 +18,11 @@ export function SessionCard({ session, onResume, onHandoff, busy }: { session: S
         </div>
         <div className="session-card__meta">
           <span>
-            <Icon icon={FolderOpen} size="sm" /> {baseName(session.project_dir)}
+            <Icon icon={Folder02Icon} size="sm" /> {baseName(session.project_dir)}
           </span>
           {session.branch ? (
             <span>
-              <Icon icon={GitBranch} size="sm" /> {session.branch}
+              <Icon icon={GitBranchIcon} size="sm" /> {session.branch}
             </span>
           ) : null}
           {session.session_id ? <span className="mono">{shortSession(session.session_id)}</span> : null}

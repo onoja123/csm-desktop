@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ListTodo } from 'lucide-react';
+import { CheckListIcon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { TaskList } from '@/components/tasks/TaskList';
 import { EmptyState, PageHeader, Tabs } from '@/components/ui';
@@ -29,7 +29,7 @@ export function Tasks() {
         value={tab}
         onChange={setTab}
       />
-      <TaskList runs={buckets[tab]} empty={<EmptyState icon={ListTodo} title={`Nothing ${tab}`} body={tab === 'waiting' ? 'Agents waiting for an approval show up here.' : 'Tasks are the sessions CSM runs; start one from Agents.'} />} />
+      <TaskList runs={buckets[tab]} empty={<EmptyState icon={CheckListIcon} title={`Nothing ${tab}`} body={tab === 'waiting' ? 'Agents waiting for an approval show up here.' : 'Tasks are the sessions CSM runs; start one from Agents.'} />} />
     </Page>
   );
 }

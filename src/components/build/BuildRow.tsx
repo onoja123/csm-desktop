@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { GitBranch } from 'lucide-react';
+import { GitBranchIcon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Icon, StatusText } from '@/components/ui';
 import { BUILD_STATUS_LABEL, buildTone, groupOf } from '@/lib/build';
@@ -13,7 +13,7 @@ export function BuildRow({ build: b }: { build: BuildSummary }) {
       <div className="build-row__main">
         <span className="build-row__title">{b.title}</span>
         <span className="build-row__meta">
-          <Icon icon={GitBranch} size="sm" />
+          <Icon icon={GitBranchIcon} size="sm" />
           {b.repo_name} · {b.base_branch} · {ago(b.updated_at)}
         </span>
         {b.attention ? <span className="build-row__attention">{b.attention}</span> : null}

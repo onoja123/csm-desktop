@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { open } from '@tauri-apps/plugin-dialog';
-import { AlertTriangle, FolderOpen } from 'lucide-react';
+import { Alert02Icon, Folder02Icon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Button, ErrorState, Field, Icon, LoadingState, PageHeader, Toggle } from '@/components/ui';
@@ -117,7 +117,7 @@ export function NewBuildRun() {
           <Field label="Repository">
             <div className="input-row">
               <input className="input mono" value={dir} onChange={(e) => setDir(e.target.value)} placeholder="~/Projects/my-project" spellCheck={false} />
-              <Button icon={FolderOpen} onClick={() => void browse()}>
+              <Button icon={Folder02Icon} onClick={() => void browse()}>
                 Browse
               </Button>
             </div>
@@ -149,7 +149,7 @@ export function NewBuildRun() {
               </Field>
               {pre.dirty?.length && base === pre.branch ? (
                 <div className="build-note" role="status">
-                  <Icon icon={AlertTriangle} size="sm" className="tone-warn" />
+                  <Icon icon={Alert02Icon} size="sm" className="tone-warn" />
                   <span>
                     {plural(pre.dirty.length, 'uncommitted change')} in your working tree {pre.dirty.length === 1 ? 'is' : 'are'} not part of the run. CSM leaves {pre.dirty.length === 1 ? 'it' : 'them'} untouched; commit first if the agents need {pre.dirty.length === 1 ? 'it' : 'them'}.
                   </span>

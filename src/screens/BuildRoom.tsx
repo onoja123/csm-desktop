@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Workflow } from 'lucide-react';
+import { PlusSignIcon, WorkflowSquare03Icon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { Button, EmptyState, LoadingState, PageHeader } from '@/components/ui';
 import { BuildRow } from '@/components/build/BuildRow';
@@ -26,7 +26,7 @@ export function BuildRoom() {
       title="Build Room"
       subtitle="Give CSM a task. It plans the work, runs agents in isolated worktrees, checks and reviews the result, and prepares a pull request for you."
       action={
-        <Button variant="primary" icon={Plus} onClick={() => nav('/build/new')}>
+        <Button variant="primary" icon={PlusSignIcon} onClick={() => nav('/build/new')}>
           New build run
         </Button>
       }
@@ -57,11 +57,11 @@ export function BuildRoom() {
       ) : null}
       {builds.length === 0 && !error ? (
         <EmptyState
-          icon={Workflow}
+          icon={WorkflowSquare03Icon}
           title="No build runs yet"
           body="Describe a change in a repository. CSM drafts a plan for you to approve, then coordinates your agents, runs the repository's checks and asks another agent to review the result."
           action={
-            <Button variant="primary" icon={Plus} onClick={() => nav('/build/new')}>
+            <Button variant="primary" icon={PlusSignIcon} onClick={() => nav('/build/new')}>
               New build run
             </Button>
           }

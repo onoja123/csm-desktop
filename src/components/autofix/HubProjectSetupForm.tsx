@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { open } from '@tauri-apps/plugin-dialog';
-import { FolderOpen } from 'lucide-react';
+import { Folder02Icon } from '@hugeicons/core-free-icons';
 import { Button, Field } from '@/components/ui';
 import { api } from '@/lib/api';
 import type { HubSignin, HubStatus } from '@/types';
@@ -76,7 +76,7 @@ export function HubProjectSetupForm({ signin, onDone }: { signin: HubSignin; onD
       <Field label="Repository on this Mac" hint="Where CSM reproduces and fixes this project's errors.">
         <div className="input-row">
           <input className="input mono" value={repo} onChange={(e) => setRepo(e.target.value)} placeholder="/path/to/repository" aria-label="Repository on this Mac" />
-          <Button type="button" icon={FolderOpen} onClick={() => void browse()} aria-label="Browse" />
+          <Button type="button" icon={Folder02Icon} onClick={() => void browse()} aria-label="Browse" />
         </div>
       </Field>
       <div className="sc-grid">

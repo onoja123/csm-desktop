@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Bookmark, ChevronRight } from 'lucide-react';
+import { ArrowRight01Icon, Bookmark02Icon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Icon, StatusText } from '@/components/ui';
 import { AgentPair } from './AgentPair';
@@ -23,7 +23,7 @@ export function HandoffCard({ handoff }: { handoff: Handoff }) {
               {handoff.source.account ? <span className="mono"> {handoff.source.account}</span> : null}
             </span>
           </div>
-          <Icon icon={Bookmark} size="sm" />
+          <Icon icon={Bookmark02Icon} size="sm" />
         </div>
       ) : (
         <AgentPair handoff={handoff} />
@@ -39,7 +39,7 @@ export function HandoffCard({ handoff }: { handoff: Handoff }) {
         </span>
       </div>
       <StatusText tone={checkpoint ? 'idle' : handoffTone(handoff)}>{handoffLabel(handoff)}</StatusText>
-      <Icon icon={ChevronRight} size="md" className="agent-card__chevron" />
+      <Icon icon={ArrowRight01Icon} size="md" className="agent-card__chevron" />
     </Link>
   );
 }

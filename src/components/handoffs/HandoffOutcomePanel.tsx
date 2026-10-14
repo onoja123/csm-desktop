@@ -1,4 +1,4 @@
-import { Check, Minus } from 'lucide-react';
+import { MinusSignIcon, Tick02Icon } from '@hugeicons/core-free-icons';
 import { Icon, Panel, StatusText } from '@/components/ui';
 import { ago } from '@/lib/format';
 import { deliveryLabel, driftOf, handoffLabel, handoffTone } from '@/lib/checkpoint';
@@ -24,7 +24,7 @@ export function HandoffOutcomePanel({ handoff }: { handoff: Handoff }) {
       <div className="checklist">
         {checks.map((c) => (
           <div key={c.label} className="checklist__row">
-            <Icon icon={c.ok ? Check : Minus} size="sm" className={c.ok ? 'tone-ok' : 'tone-warn'} />
+            <Icon icon={c.ok ? Tick02Icon : MinusSignIcon} size="sm" className={c.ok ? 'tone-ok' : 'tone-warn'} />
             <span className="checklist__label">{c.label}</span>
             <span className="checklist__text">{c.text}</span>
           </div>

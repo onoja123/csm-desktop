@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { MousePointer2 } from 'lucide-react';
+import { Cursor02Icon } from '@hugeicons/core-free-icons';
 import { providerIcon } from '@/lib/provider-icons';
 import { canReceiveHandoff, limitations } from '@/lib/capabilities';
 import { PROVIDERS, PROVIDER_LONG_NAMES, providerName } from '@/lib/format';
@@ -68,7 +68,7 @@ describe('Cursor as a provider', () => {
     expect(PROVIDERS).toContain('cursor');
     expect(PROVIDER_LONG_NAMES.cursor).toBe('Cursor CLI');
     expect(providerName('cursor')).toBe('Cursor');
-    expect(providerIcon('cursor')).toBe(MousePointer2);
+    expect(providerIcon('cursor')).toBe(Cursor02Icon);
   });
 
   it('states every capability CSM lacks for Cursor, and nothing it has', () => {

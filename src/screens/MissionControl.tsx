@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bot, Search, SearchX, TerminalSquare } from 'lucide-react';
+import { ComputerTerminal01Icon, Robot01Icon, Search01Icon, SearchRemoveIcon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { useStartAgent } from '@/store/start-agent-dialog';
 import { SessionRow } from '@/components/mission/SessionRow';
@@ -99,7 +99,7 @@ export function MissionControl() {
 
       {sessions.length === 0 ? (
         <EmptyState
-          icon={Bot}
+          icon={Robot01Icon}
           title="No agent sessions"
           body="Start Claude, Codex, Gemini or Copilot from here, or run csm in a terminal; every session shows up in this list as soon as CSM sees it."
           action={
@@ -107,7 +107,7 @@ export function MissionControl() {
               <Button variant="primary" onClick={() => openStart()}>
                 Start agent
               </Button>
-              <Button icon={TerminalSquare} onClick={() => nav('/terminal')}>
+              <Button icon={ComputerTerminal01Icon} onClick={() => nav('/terminal')}>
                 Open terminal
               </Button>
             </>
@@ -117,7 +117,7 @@ export function MissionControl() {
         <>
           <div className="mc-toolbar">
             <label className="mc-search">
-              <Icon icon={Search} size="sm" />
+              <Icon icon={Search01Icon} size="sm" />
               <input className="mc-search__input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search project, task, account, branch…" spellCheck={false} aria-label="Search sessions" />
               {query ? (
                 <button className="mc-search__clear" onClick={() => setQuery('')} aria-label="Clear search">
@@ -146,7 +146,7 @@ export function MissionControl() {
           <div className={`mc-layout ${selected ? 'mc-layout--panel' : ''}`}>
             <div className="mc-list" role="table" aria-label="Agent sessions">
               {visible.length === 0 ? (
-                <EmptyState icon={SearchX} title="Nothing matches" body={query ? `No session matches “${query}”.` : `No session is ${STATUS_LABEL[view.filter as Exclude<SessionStatusFilter, 'all'>].toLowerCase()} right now.`} action={<Button onClick={() => { setQuery(''); setView((v) => ({ ...v, filter: 'all' })); }}>Show all</Button>} />
+                <EmptyState icon={SearchRemoveIcon} title="Nothing matches" body={query ? `No session matches “${query}”.` : `No session is ${STATUS_LABEL[view.filter as Exclude<SessionStatusFilter, 'all'>].toLowerCase()} right now.`} action={<Button onClick={() => { setQuery(''); setView((v) => ({ ...v, filter: 'all' })); }}>Show all</Button>} />
               ) : (
                 groups.map((g) => (
                   <section key={g.key} className={`mc-group mc-group--${view.group === 'status' ? g.key : 'plain'}`}>

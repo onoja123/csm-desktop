@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShieldAlert, TerminalSquare } from 'lucide-react';
+import { ComputerTerminal01Icon, SecurityWarningIcon } from '@hugeicons/core-free-icons';
 import { Button, IconTile } from '@/components/ui';
 import type { Approval, ApprovalDecision } from '@/types';
 import { PROVIDER_LONG_NAMES, ago } from '@/lib/format';
@@ -9,7 +9,7 @@ export function ApprovalCard({ approval, onDecide, busy }: { approval: Approval;
   const agent = PROVIDER_LONG_NAMES[approval.provider] ?? approval.provider;
   return (
     <div className={`approval-card ${approval.destructive ? 'approval-card--destructive' : ''}`} role="alertdialog" aria-label="Approval required">
-      <IconTile icon={approval.destructive ? ShieldAlert : TerminalSquare} size="xl" tone={approval.destructive ? 'err' : undefined} />
+      <IconTile icon={approval.destructive ? SecurityWarningIcon : ComputerTerminal01Icon} size="xl" tone={approval.destructive ? 'err' : undefined} />
       <div className="approval-card__main">
         <div className="approval-card__eyebrow">Approval required · {ago(approval.requested_at)}</div>
         <h3 className="approval-card__title">

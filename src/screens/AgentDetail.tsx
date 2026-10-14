@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeftRight, FileDiff, Send, Square, TerminalSquare, UserRound } from 'lucide-react';
+import { ArrowDataTransferHorizontalIcon, ComputerTerminal01Icon, FileEditIcon, SentIcon, StopIcon, UserIcon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { AgentStatus } from '@/components/agents/AgentStatus';
@@ -94,7 +94,7 @@ export function AgentDetail() {
               <>
                 {sameProvider.length > 0 ? (
                   <div className="select-wrap">
-                    <Icon icon={UserRound} size="sm" />
+                    <Icon icon={UserIcon} size="sm" />
                     <select className="input input--sm" value="" disabled={switching} onChange={(e) => e.target.value && void switchTo(e.target.value)}>
                       <option value="">Switch account…</option>
                       {sameProvider.map((a) => (
@@ -105,16 +105,16 @@ export function AgentDetail() {
                     </select>
                   </div>
                 ) : null}
-                <Button icon={ArrowLeftRight} onClick={() => openHandoff({ projectDir: run.project_dir, fromProvider: run.provider, fromAccount: run.account })}>
+                <Button icon={ArrowDataTransferHorizontalIcon} onClick={() => openHandoff({ projectDir: run.project_dir, fromProvider: run.provider, fromAccount: run.account })}>
                   Handoff
                 </Button>
-                <Button icon={TerminalSquare} onClick={() => nav(`/terminal?run=${encodeURIComponent(run.id)}`)}>
+                <Button icon={ComputerTerminal01Icon} onClick={() => nav(`/terminal?run=${encodeURIComponent(run.id)}`)}>
                   Open in Terminal
                 </Button>
                 <Button variant="ghost" onClick={() => nav(`/terminal?cwd=${encodeURIComponent(run.project_dir)}`)}>
                   Shell here
                 </Button>
-                <Button icon={Square} variant="danger" onClick={() => void api.stopRun(id)}>
+                <Button icon={StopIcon} variant="danger" onClick={() => void api.stopRun(id)}>
                   Stop
                 </Button>
               </>
@@ -161,7 +161,7 @@ export function AgentDetail() {
                   }}
                 >
                   <input className="input mono" value={message} onChange={(e) => setMessage(e.target.value)} placeholder={`Send a message to ${PROVIDER_LONG_NAMES[run.provider]}`} spellCheck={false} />
-                  <Button type="submit" icon={Send} loading={busy} disabled={!message.trim()}>
+                  <Button type="submit" icon={SentIcon} loading={busy} disabled={!message.trim()}>
                     Send
                   </Button>
                 </form>
@@ -174,14 +174,14 @@ export function AgentDetail() {
                 <ul className="file-list">
                   {run.task.files_modified.map((f) => (
                     <li key={f} className="mono selectable">
-                      <Icon icon={FileDiff} size="sm" /> {f}
+                      <Icon icon={FileEditIcon} size="sm" /> {f}
                     </li>
                   ))}
                 </ul>
                 <p className="muted">Files the agent edited according to its own session record{run.task.read_at ? `, read ${ago(run.task.read_at)}` : ''}.</p>
               </Panel>
             ) : (
-              <EmptyState icon={FileDiff} title="No files recorded" body={live ? 'The agent has not edited anything yet, or its session record is not readable.' : 'Nothing was recorded for this run.'} />
+              <EmptyState icon={FileEditIcon} title="No files recorded" body={live ? 'The agent has not edited anything yet, or its session record is not readable.' : 'Nothing was recorded for this run.'} />
             )
           ) : null}
           {tab === 'activity' ? (

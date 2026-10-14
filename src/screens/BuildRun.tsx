@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Check, CircleSlash, Pause, Play } from 'lucide-react';
+import { PauseIcon, PlayIcon, Tick02Icon, UnavailableIcon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { IncidentPanel } from '@/components/autofix/IncidentPanel';
 import { InvestigationPanel } from '@/components/autofix/InvestigationPanel';
@@ -119,11 +119,11 @@ export function BuildRun() {
           <div className="page__actions">
             {!terminal && !build.cancel_requested && build.status !== 'awaiting_plan_approval' && build.status !== 'awaiting_final_approval' ? (
               build.paused ? (
-                <Button icon={Play} onClick={() => void act('resume')} loading={busy === 'resume'}>
+                <Button icon={PlayIcon} onClick={() => void act('resume')} loading={busy === 'resume'}>
                   Resume
                 </Button>
               ) : (
-                <Button icon={Pause} onClick={() => void act('pause')} loading={busy === 'pause'}>
+                <Button icon={PauseIcon} onClick={() => void act('pause')} loading={busy === 'pause'}>
                   Pause
                 </Button>
               )
@@ -139,13 +139,13 @@ export function BuildRun() {
                   </Button>
                 </>
               ) : (
-                <Button variant="ghost" icon={CircleSlash} onClick={() => setConfirmCancel(true)}>
+                <Button variant="ghost" icon={UnavailableIcon} onClick={() => setConfirmCancel(true)}>
                   Cancel run
                 </Button>
               )
             ) : null}
             {primary ? (
-              <Button variant="primary" icon={Check} onClick={() => void act(primary.action)} loading={busy === primary.action} disabled={build.ops.includes('push')}>
+              <Button variant="primary" icon={Tick02Icon} onClick={() => void act(primary.action)} loading={busy === primary.action} disabled={build.ops.includes('push')}>
                 {primary.label}
               </Button>
             ) : null}

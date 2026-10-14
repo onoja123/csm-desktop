@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { GitBranch } from 'lucide-react';
+import { GitBranchIcon } from '@hugeicons/core-free-icons';
 import { Icon, Kbd } from '@/components/ui';
 import { useTerminal } from '@/terminal/store';
 
@@ -38,7 +38,7 @@ export function TerminalStatus() {
             <>
               <span className="term-status__sep" />
               <span className="term-status__branch">
-                <Icon icon={GitBranch} size="sm" /> {branch}
+                <Icon icon={GitBranchIcon} size="sm" /> {branch}
               </span>
             </>
           ) : null}

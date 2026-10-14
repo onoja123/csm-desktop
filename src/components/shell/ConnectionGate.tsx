@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect } from 'react';
-import { PowerOff } from 'lucide-react';
+import { PowerOffIcon } from '@hugeicons/core-free-icons';
 import { Button, EmptyState, ErrorState, LoadingState } from '@/components/ui';
 import { useConnection } from '@/store/connection';
 
@@ -30,7 +30,7 @@ export function ConnectionGate({ children }: { children: ReactNode }) {
     return (
       <div className="gate">
         <EmptyState
-          icon={PowerOff}
+          icon={PowerOffIcon}
           title="csm isn't installed"
           body={
             <>

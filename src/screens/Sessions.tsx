@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { History } from 'lucide-react';
+import { TimeQuarter02Icon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { SessionCard } from '@/components/sessions/SessionCard';
 import { useHandoffDialog } from '@/store/handoff-dialog';
@@ -36,7 +36,7 @@ export function Sessions() {
       <PageHeader title="Sessions" subtitle="Live sessions and every checkpoint CSM saved before a switch." />
       {error ? <p className="form-error selectable">{error}</p> : null}
       {sessions.length === 0 ? (
-        <EmptyState icon={History} title="No sessions recorded" body="Checkpoints appear here when CSM switches or hands off a running agent." />
+        <EmptyState icon={TimeQuarter02Icon} title="No sessions recorded" body="Checkpoints appear here when CSM switches or hands off a running agent." />
       ) : (
         <>
           {live.length > 0 ? (

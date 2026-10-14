@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight02Icon } from '@hugeicons/core-free-icons';
 import { Icon, Panel } from '@/components/ui';
 import { useData } from '@/store/data';
 
@@ -16,7 +16,7 @@ export function FailoverNote() {
         {sw.detail ? <p className="failover-note__detail">Reason: {sw.detail}</p> : null}
       </div>
       <Link to="/activity" className="failover-note__link">
-        Activity <Icon icon={ArrowRight} size="sm" />
+        Activity <Icon icon={ArrowRight02Icon} size="sm" />
       </Link>
     </Panel>
   );

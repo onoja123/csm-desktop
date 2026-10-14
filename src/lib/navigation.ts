@@ -1,16 +1,16 @@
-import { Activity, ArrowLeftRight, History, Home, LayoutList, ListTodo, Plug, Siren, TerminalSquare, UserRound, Workflow } from 'lucide-react';
+import { ArrowDataTransferHorizontalIcon, CheckListIcon, ComputerTerminal01Icon, DashboardSquare02Icon, Home03Icon, Plug01Icon, Pulse01Icon, SirenIcon, TimeQuarter02Icon, UserIcon, WorkflowSquare03Icon } from '@hugeicons/core-free-icons';
 import type { NavItem } from '@/types';
 
 export const NAV: NavItem[] = [
-  { to: '/', label: 'Home', icon: Home, end: true },
-  { to: '/terminal', label: 'Terminal', icon: TerminalSquare },
-  { to: '/mission', label: 'Mission Control', icon: LayoutList },
-  { to: '/build', label: 'Build Room', icon: Workflow },
-  { to: '/autofix', label: 'AutoFix', icon: Siren },
-  { to: '/accounts', label: 'Accounts', icon: UserRound },
-  { to: '/mcp', label: 'MCP', icon: Plug },
-  { to: '/sessions', label: 'Sessions', icon: History },
-  { to: '/handoffs', label: 'Handoffs', icon: ArrowLeftRight },
-  { to: '/tasks', label: 'Tasks', icon: ListTodo },
-  { to: '/activity', label: 'Activity', icon: Activity },
+  { to: '/', label: 'Home', icon: Home03Icon, end: true },
+  { to: '/terminal', label: 'Terminal', icon: ComputerTerminal01Icon },
+  { to: '/mission', label: 'Mission Control', icon: DashboardSquare02Icon },
+  { to: '/build', label: 'Build Room', icon: WorkflowSquare03Icon },
+  { to: '/autofix', label: 'AutoFix', icon: SirenIcon },
+  { to: '/accounts', label: 'Accounts', icon: UserIcon },
+  { to: '/mcp', label: 'MCP', icon: Plug01Icon },
+  { to: '/sessions', label: 'Sessions', icon: TimeQuarter02Icon },
+  { to: '/handoffs', label: 'Handoffs', icon: ArrowDataTransferHorizontalIcon },
+  { to: '/tasks', label: 'Tasks', icon: CheckListIcon },
+  { to: '/activity', label: 'Activity', icon: Pulse01Icon },
 ];

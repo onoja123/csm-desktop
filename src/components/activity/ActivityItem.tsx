@@ -1,43 +1,44 @@
-import { ArrowLeftRight, Check, CircleDot, Play, Power, ShieldAlert, Square, UserRound, Workflow, Zap, type LucideIcon, Bookmark, Settings2, X } from 'lucide-react';
+import type { IconSvgElement } from '@hugeicons/react';
+import { ArrowDataTransferHorizontalIcon, Bookmark02Icon, Cancel01Icon, FilterHorizontalIcon, FlashIcon, PlayIcon, PowerIcon, RadioButtonIcon, SecurityWarningIcon, StopIcon, Tick02Icon, UserIcon, WorkflowSquare03Icon } from '@hugeicons/core-free-icons';
 import { Link } from 'react-router-dom';
 import { IconTile } from '@/components/ui';
 import { providerIcon } from '@/lib/provider-icons';
 import type { Activity, StatusTone } from '@/types';
 import { ago } from '@/lib/format';
 
-function iconFor(a: Activity): { icon: LucideIcon; tone?: StatusTone } {
+function iconFor(a: Activity): { icon: IconSvgElement; tone?: StatusTone } {
   switch (a.kind) {
     case 'run.started':
-      return { icon: Play, tone: 'ok' };
+      return { icon: PlayIcon, tone: 'ok' };
     case 'run.exited':
-      return { icon: Power };
+      return { icon: PowerIcon };
     case 'run.stop':
-      return { icon: Square };
+      return { icon: StopIcon };
     case 'usage_limit':
-      return { icon: Zap, tone: 'limit' };
+      return { icon: FlashIcon, tone: 'limit' };
     case 'switch':
     case 'switch.requested':
-      return { icon: ArrowLeftRight };
+      return { icon: ArrowDataTransferHorizontalIcon };
     case 'account.activated':
-      return { icon: UserRound };
+      return { icon: UserIcon };
     case 'approval.requested':
-      return { icon: ShieldAlert, tone: 'warn' };
+      return { icon: SecurityWarningIcon, tone: 'warn' };
     case 'approval.allowed':
-      return { icon: Check, tone: 'ok' };
+      return { icon: Tick02Icon, tone: 'ok' };
     case 'approval.denied':
-      return { icon: X, tone: 'err' };
+      return { icon: Cancel01Icon, tone: 'err' };
     case 'approval.expired':
-      return { icon: ShieldAlert };
+      return { icon: SecurityWarningIcon };
     case 'checkpoint':
-      return { icon: Bookmark };
+      return { icon: Bookmark02Icon };
     case 'failover.policy':
-      return { icon: Settings2 };
+      return { icon: FilterHorizontalIcon };
     case 'session.resumed':
-      return { icon: Play };
+      return { icon: PlayIcon };
     default:
-      if (a.kind.startsWith('build.')) return { icon: a.kind === 'build.fallback.handoff' || a.kind === 'build.fallback.account' ? ArrowLeftRight : Workflow, tone: a.kind.endsWith('failed') || a.kind.endsWith('attention') || a.kind.endsWith('conflict') ? 'err' : a.kind.endsWith('completed') ? 'ok' : undefined };
-      if (a.kind.startsWith('handoff.')) return { icon: ArrowLeftRight, tone: a.kind.endsWith('failed') ? 'err' : a.kind.endsWith('target_started') ? 'ok' : undefined };
-      return a.provider ? { icon: providerIcon(a.provider) } : { icon: CircleDot };
+      if (a.kind.startsWith('build.')) return { icon: a.kind === 'build.fallback.handoff' || a.kind === 'build.fallback.account' ? ArrowDataTransferHorizontalIcon : WorkflowSquare03Icon, tone: a.kind.endsWith('failed') || a.kind.endsWith('attention') || a.kind.endsWith('conflict') ? 'err' : a.kind.endsWith('completed') ? 'ok' : undefined };
+      if (a.kind.startsWith('handoff.')) return { icon: ArrowDataTransferHorizontalIcon, tone: a.kind.endsWith('failed') ? 'err' : a.kind.endsWith('target_started') ? 'ok' : undefined };
+      return a.provider ? { icon: providerIcon(a.provider) } : { icon: RadioButtonIcon };
   }
 }
 

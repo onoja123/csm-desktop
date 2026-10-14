@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeftRight } from 'lucide-react';
+import { ArrowDataTransferHorizontalIcon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { AgentPair } from '@/components/handoffs/AgentPair';
 import { useHandoffDialog } from '@/store/handoff-dialog';
@@ -59,7 +59,7 @@ export function HandoffDetail() {
         subtitle={`${clock(handoff.created_at)} · ${ago(handoff.created_at)}`}
         action={
           handoff.git.root ? (
-            <Button icon={ArrowLeftRight} onClick={() => openHandoff({ projectDir: handoff.git.root!, fromProvider: handoff.target.provider as ProviderID, fromAccount: handoff.target.account })}>
+            <Button icon={ArrowDataTransferHorizontalIcon} onClick={() => openHandoff({ projectDir: handoff.git.root!, fromProvider: handoff.target.provider as ProviderID, fromAccount: handoff.target.account })}>
               Hand off again
             </Button>
           ) : null

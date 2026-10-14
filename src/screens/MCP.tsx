@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { open } from '@tauri-apps/plugin-dialog';
-import { FolderOpen, Plug } from 'lucide-react';
+import { Folder02Icon, Plug01Icon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { MCPServerCard } from '@/components/mcp/MCPServerCard';
@@ -42,7 +42,7 @@ export function MCP() {
                 ))}
               {projects.length === 0 ? <option value="">Home directory</option> : null}
             </select>
-            <Button size="sm" icon={FolderOpen} onClick={() => void browse()}>
+            <Button size="sm" icon={Folder02Icon} onClick={() => void browse()}>
               Browse
             </Button>
           </div>
@@ -50,7 +50,7 @@ export function MCP() {
       />
       {errors.mcp ? <p className="form-error selectable">{errors.mcp}</p> : null}
       {loaded.mcp && total === 0 ? (
-        <EmptyState icon={Plug} title="No MCP servers" body="None of the enabled accounts has an MCP server configured for this directory." />
+        <EmptyState icon={Plug01Icon} title="No MCP servers" body="None of the enabled accounts has an MCP server configured for this directory." />
       ) : (
         mcp.map((a) => (
           <Section

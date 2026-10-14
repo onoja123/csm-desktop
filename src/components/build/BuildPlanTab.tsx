@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide-react';
+import { PencilEdit01Icon } from '@hugeicons/core-free-icons';
 import { Button, TitledList } from '@/components/ui';
 import { PROVIDER_LONG_NAMES } from '@/lib/format';
 import type { Build } from '@/types';
@@ -12,7 +12,7 @@ export function BuildPlanTab({ build, onEdit }: { build: Build; onEdit: () => vo
       <div className="build-plan__head">
         <span className="muted">{p.source ? `Drafted by ${p.source}${p.edited_by_user ? ', edited by you' : ''}` : ''}</span>
         {editable ? (
-          <Button size="sm" icon={Pencil} onClick={onEdit}>
+          <Button size="sm" icon={PencilEdit01Icon} onClick={onEdit}>
             Edit plan
           </Button>
         ) : null}

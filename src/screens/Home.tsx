@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Bot } from 'lucide-react';
+import { Robot01Icon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { useStartAgent } from '@/store/start-agent-dialog';
@@ -91,7 +91,7 @@ export function Home() {
           runs={live}
           empty={
             <EmptyState
-              icon={Bot}
+              icon={Robot01Icon}
               title="No agents running"
               body="Start Claude, Codex, Gemini or Copilot to see active tasks here."
               action={<Button variant="primary" onClick={() => openStart()}>Start agent</Button>}

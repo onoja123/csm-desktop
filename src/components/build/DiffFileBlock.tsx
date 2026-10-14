@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ArrowDown01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons';
 import { Icon } from '@/components/ui';
 import type { FileDiff } from '@/types';
 
@@ -20,7 +20,7 @@ export function DiffFileBlock({ file, startOpen }: { file: FileDiff; startOpen: 
   return (
     <div className="diff__file">
       <button className="diff__file-head" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-        <Icon icon={open ? ChevronDown : ChevronRight} size="sm" />
+        <Icon icon={open ? ArrowDown01Icon : ArrowRight01Icon} size="sm" />
         <span className="mono diff__path">{file.path}</span>
         <span className="diff__count diff__count--add">+{file.added}</span>
         <span className="diff__count diff__count--del">−{file.removed}</span>

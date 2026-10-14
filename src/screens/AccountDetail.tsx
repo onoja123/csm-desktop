@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { RefreshCw } from 'lucide-react';
+import { ReloadIcon } from '@hugeicons/core-free-icons';
 import { Page } from '@/components/shell/Page';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { AccountHealth } from '@/components/accounts/AccountHealth';
@@ -73,7 +73,7 @@ export function AccountDetail() {
                 Enable
               </Button>
             )}
-            <Button icon={RefreshCw} loading={busy === 'usage'} disabled={!reportsUsage} title={reportsUsage ? undefined : `${account.provider_name} does not report plan usage`} onClick={() => void act('usage', () => api.refreshUsage(account.name), 'Usage checked')}>
+            <Button icon={ReloadIcon} loading={busy === 'usage'} disabled={!reportsUsage} title={reportsUsage ? undefined : `${account.provider_name} does not report plan usage`} onClick={() => void act('usage', () => api.refreshUsage(account.name), 'Usage checked')}>
               Check usage
             </Button>
           </div>

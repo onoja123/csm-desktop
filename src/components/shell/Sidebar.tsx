@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings02Icon } from '@hugeicons/core-free-icons';
 import { Icon, StatusDot } from '@/components/ui';
 import { NAV } from '@/lib/navigation';
 import { useConnection } from '@/store/connection';
@@ -46,7 +46,7 @@ export function Sidebar() {
       </nav>
       <div className="sidebar__footer">
         <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'nav-item--active' : ''}`}>
-          <Icon icon={Settings} size="lg" />
+          <Icon icon={Settings02Icon} size="lg" />
           <span>Settings</span>
         </NavLink>
         <div className="sidebar__status">

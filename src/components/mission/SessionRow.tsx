@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { GitBranch, TerminalSquare } from 'lucide-react';
+import { ComputerTerminal01Icon, GitBranchIcon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Icon, StatusText } from '@/components/ui';
 import { statusTone } from '@/lib/mission';
@@ -37,13 +37,13 @@ export const SessionRow = memo(function SessionRow({ session: s, selected, now, 
         <span className="mc-row__sub">
           {s.branch ? (
             <span className="mc-row__chip">
-              <Icon icon={GitBranch} size="sm" />
+              <Icon icon={GitBranchIcon} size="sm" />
               {s.branch}
             </span>
           ) : null}
           {s.terminal ? (
             <span className="mc-row__chip">
-              <Icon icon={TerminalSquare} size="sm" />
+              <Icon icon={ComputerTerminal01Icon} size="sm" />
               {`Tab ${s.terminal.tabIndex}`}
             </span>
           ) : null}

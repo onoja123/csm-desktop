@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown02Icon, ArrowUp02Icon, Delete02Icon, PlusSignIcon } from '@hugeicons/core-free-icons';
 import { Button, Field, Icon } from '@/components/ui';
 import { slugify } from '@/lib/build';
 import { api } from '@/lib/api';
@@ -79,13 +79,13 @@ export function PlanEditor({ build, onSaved, onCancel }: { build: Build; onSaved
               ))}
             </select>
             <button className="icon-btn" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">
-              <Icon icon={ArrowUp} size="sm" />
+              <Icon icon={ArrowUp02Icon} size="sm" />
             </button>
             <button className="icon-btn" onClick={() => move(i, 1)} disabled={i === tasks.length - 1} aria-label="Move down">
-              <Icon icon={ArrowDown} size="sm" />
+              <Icon icon={ArrowDown02Icon} size="sm" />
             </button>
             <button className="icon-btn" onClick={() => remove(t.key)} aria-label="Remove task">
-              <Icon icon={Trash2} size="sm" />
+              <Icon icon={Delete02Icon} size="sm" />
             </button>
           </div>
           <textarea className="input input--area" rows={2} value={t.objective} onChange={(e) => update(t.key, { objective: e.target.value })} placeholder="Objective" aria-label="Objective" />
@@ -115,7 +115,7 @@ export function PlanEditor({ build, onSaved, onCancel }: { build: Build; onSaved
           </div>
         </div>
       ))}
-      <Button icon={Plus} onClick={add}>
+      <Button icon={PlusSignIcon} onClick={add}>
         Add task
       </Button>
       {error ? <p className="form-error selectable">{error}</p> : null}

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { TerminalSquare } from 'lucide-react';
+import { ComputerTerminal01Icon } from '@hugeicons/core-free-icons';
 import { TerminalTabs } from '@/components/terminal/TerminalTabs';
 import { PaneLayout } from '@/components/terminal/PaneLayout';
 import { TerminalSearch } from '@/components/terminal/TerminalSearch';
@@ -45,7 +45,7 @@ export function TerminalScreen() {
           <PaneLayout key={tab.id} tab={tab} />
         ) : (
           <div className="term-screen__empty">
-            <EmptyState icon={TerminalSquare} title="No terminal open" body="Open a shell in your home directory, or start one in a project from an agent's page." action={<Button variant="primary" onClick={() => void newTab()}>New terminal</Button>} />
+            <EmptyState icon={ComputerTerminal01Icon} title="No terminal open" body="Open a shell in your home directory, or start one in a project from an agent's page." action={<Button variant="primary" onClick={() => void newTab()}>New terminal</Button>} />
           </div>
         )}
       </div>

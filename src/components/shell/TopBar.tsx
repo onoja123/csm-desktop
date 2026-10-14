@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Search } from 'lucide-react';
+import { ArrowLeft01Icon, Search01Icon } from '@hugeicons/core-free-icons';
 import { Icon, Kbd } from '@/components/ui';
 import { usePalette } from '@/store/palette';
 
@@ -13,13 +13,13 @@ export function TopBar({ title }: { title?: string }) {
       <div className="topbar__left">
         {canGoBack ? (
           <button className="topbar__back" onClick={() => nav(-1)} aria-label="Back">
-            <Icon icon={ChevronLeft} size="md" />
+            <Icon icon={ArrowLeft01Icon} size="md" />
           </button>
         ) : null}
         {title ? <span className="topbar__title">{title}</span> : null}
       </div>
       <button className="topbar__search" onClick={() => open()}>
-        <Icon icon={Search} size="sm" />
+        <Icon icon={Search01Icon} size="sm" />
         <span>Search or run a command</span>
         <Kbd>⌘K</Kbd>
       </button>

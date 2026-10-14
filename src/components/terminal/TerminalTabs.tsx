@@ -1,4 +1,4 @@
-import { Plus, X } from 'lucide-react';
+import { Cancel01Icon, PlusSignIcon } from '@hugeicons/core-free-icons';
 import { Icon } from '@/components/ui';
 import { paneIds } from '@/terminal/layout';
 import { useTerminal } from '@/terminal/store';
@@ -27,13 +27,13 @@ export function TerminalTabs() {
                   void closeTab(t.id);
                 }}
               >
-                <Icon icon={X} size="sm" />
+                <Icon icon={Cancel01Icon} size="sm" />
               </button>
             </div>
           );
         })}
         <button className="term-tabs__new" aria-label="New terminal" onClick={() => void newTab()}>
-          <Icon icon={Plus} size="sm" />
+          <Icon icon={PlusSignIcon} size="sm" />
         </button>
       </div>
     </div>
