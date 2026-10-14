@@ -84,8 +84,8 @@ The PTY is reachable only through Tauri IPC from the app window. Nothing about l
 ## Requirements
 
 - macOS 12 or newer (Linux should work but is untested)
-- `csm` built from the `desktop-api` branch, on your `PATH` or at `~/.local/bin/csm`, `~/go/bin/csm`, `/usr/local/bin/csm` or `/opt/homebrew/bin/csm` (or set `CSM_PATH`)
-- Node 20+, Rust 1.77+, Xcode command line tools
+- `csm` (`go install github.com/onoja123/csm/cmd/csm@latest`), on your `PATH` or at `~/.local/bin/csm`, `~/go/bin/csm`, `/usr/local/bin/csm` or `/opt/homebrew/bin/csm` (or set `CSM_PATH`)
+- Node 22 (see `.nvmrc`), Rust 1.92 (pinned in `rust-toolchain.toml`), Xcode command line tools
 
 ## Development
 
@@ -95,7 +95,8 @@ npm run app:dev      # starts Vite and the Tauri window
 npm test             # vitest: API client, stores, formatting, components
 npm run typecheck
 npm run lint
-(cd src-tauri && cargo test)
+npm run format       # Prettier; format:check is what CI runs
+(cd src-tauri && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test)
 ```
 
 The app starts the service itself if `~/.csm/csm.sock` is not answering, by running `csm serve --detach`. You can also run it by hand:
@@ -119,17 +120,24 @@ produces `src-tauri/target/release/bundle/macos/CSM.app`. For a disk image, run 
 
 ```
 src/
+  types/       shared TypeScript types: interfaces/, enums/ (string-literal unions), aliases/
+  components/  one component per file, grouped by area: ui (primitives, Icon), shell, agents,
+               mission, accounts, autofix, build, handoffs, terminal, palette, mcp, approvals,
+               activity, tasks, sessions
+  screens/     one file per route: Home, MissionControl, BuildRoom, BuildRun, AutoFix, Accounts,
+               AgentDetail, Handoffs, Sessions, Tasks, Activity, MCP, Settings, Terminal and details
+  hooks/       useBuild, useNow, useSessions, useTerminalShortcuts, useTimeline
+  store/       zustand stores: connection (bootstrap, reconnect), data (sections, event routing),
+               palette and dialog state
+  lib/         api.ts (typed client), browser-shim.ts, format, mission (session status model),
+               build, receipt, timeline, hub, mcp, provider-icons, navigation
+  terminal/    terminal store, pane layout, PTY bridge, OSC parsing
   design/      tokens.css, tokens.ts (shared with the future mobile app), base.css, app.css
-  lib/         api.ts (typed client), types.ts, format.ts, output-bus.ts, mission.ts (session status model)
-  store/       connection.ts (bootstrap, reconnect), data.ts (sections + event routing)
-  components/  shell, ui primitives, agents, mission, accounts, tasks, sessions, terminal,
-               mcp, handoffs, approvals, activity, palette
-  screens/     Home, MissionControl, AgentDetail, Accounts, AccountDetail, MCP, Sessions,
-               Handoffs (+ detail), Tasks, Activity, Settings
   test/        vitest suites
 src-tauri/
-  src/csm.rs   socket client, SSE reader, service launcher, csm discovery
-  src/lib.rs   Tauri setup and command registration
+  src/csm.rs        socket client, SSE reader, service launcher, csm discovery
+  src/terminal/     PTY sessions, shell discovery, git helpers
+  src/lib.rs        Tauri setup and command registration
 ```
 
 ## Security notes
@@ -138,3 +146,17 @@ src-tauri/
 - Approvals default to on. Turn them off in Settings if you prefer Claude Code's own prompts.
 - Commands that look destructive (`rm -rf`, `git push --force`, `DROP TABLE`, …) need a second click to approve.
 - The service is local only. Remote access for the mobile app is a separate design and is not part of this version.
+
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
+
+## Privacy
+
+CSM Desktop collects no analytics or telemetry. It talks only to the csm service on your own machine, over a unix socket.
+
+## Contributing
+
+Contributions are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) covers setup, the checks CI runs and the code conventions, and everyone taking part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+[MIT](LICENSE)

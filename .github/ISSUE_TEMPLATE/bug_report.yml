@@ -1,0 +1,70 @@
+name: Bug report
+description: Something in CSM Desktop is broken or behaves unexpectedly
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting this. Please search existing issues first, and never paste tokens, API keys or other secrets.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you see, and what did you expect instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open …
+        2. Click …
+        3. See …
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: CSM Desktop version
+      placeholder: e.g. 0.1.0
+    validations:
+      required: true
+
+  - type: input
+    id: csm-version
+    attributes:
+      label: csm version
+      description: Shown in CSM Desktop under Settings.
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: e.g. macOS 15.4 on Apple silicon
+    validations:
+      required: true
+
+  - type: dropdown
+    id: agents
+    attributes:
+      label: Agents involved
+      multiple: true
+      options:
+        - Claude Code
+        - Codex
+        - Gemini CLI
+        - GitHub Copilot CLI
+        - Cursor CLI
+        - Not agent-specific
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Relevant lines from `~/.csm/serve.log` or the developer console. Remove anything sensitive.
+      render: text

@@ -3,6 +3,16 @@
   "private": true,
   "version": "0.1.0",
   "description": "CSM Desktop: the graphical client for the Code Session Manager",
+  "license": "MIT",
+  "author": "Okpe Onoja Godwin <okpeonoja18@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onoja123/csm-desktop.git"
+  },
+  "homepage": "https://github.com/onoja123/csm-desktop#readme",
+  "bugs": {
+    "url": "https://github.com/onoja123/csm-desktop/issues"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

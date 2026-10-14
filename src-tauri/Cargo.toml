@@ -2,6 +2,9 @@
 name = "csm-desktop"
 version = "0.1.0"
 description = "CSM Desktop: the graphical client for the Code Session Manager"
+authors = ["Okpe Onoja Godwin <okpeonoja18@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/onoja123/csm-desktop"
 edition = "2021"
 
 [lib]
