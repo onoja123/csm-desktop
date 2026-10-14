@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Command } from 'cmdk';
-import { ArrowLeftRight, Check, Columns2, Eraser, Play, RotateCcw, Rows2, Search, Square, Terminal, TerminalSquare, UserRound, X, type LucideIcon } from 'lucide-react';
+import { ArrowLeftRight, Bookmark, Check, Columns2, Eraser, Play, RotateCcw, Rows2, Search, Square, Terminal, TerminalSquare, UserRound, X, type LucideIcon } from 'lucide-react';
 import { useTerminal } from '@/terminal/store';
 import { create } from 'zustand';
 import { Icon } from '@/components/ui';
@@ -9,6 +9,7 @@ import { NAV } from '@/components/shell/Sidebar';
 import { providerIcon } from '@/components/agents/AgentIcon';
 import { useStartAgent } from '@/components/agents/StartAgentDialog';
 import { useHandoffDialog } from '@/components/handoffs/HandoffDialog';
+import { useCheckpointDialog } from '@/components/handoffs/CheckpointDialog';
 import { api } from '@/lib/api';
 import { handles } from '@/components/terminal/ShellTerminal';
 import { PROVIDER_LONG_NAMES, PROVIDER_NAMES, baseName } from '@/lib/format';
@@ -44,6 +45,7 @@ export function CommandPalette() {
   const { runs, accounts, approvals } = useData();
   const openStart = useStartAgent((s) => s.open);
   const openHandoff = useHandoffDialog((s) => s.open);
+  const openCheckpoint = useCheckpointDialog((s) => s.open);
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -79,6 +81,7 @@ export function CommandPalette() {
     list.push({ id: 'nav:/settings', group: 'Go to', label: 'Settings', icon: NAV[0].icon, run: () => nav('/settings') });
 
     list.push({ id: 'act:start', group: 'Actions', label: 'Start agent', hint: '⌘N', icon: Play, run: () => openStart() });
+    list.push({ id: 'act:checkpoint', group: 'Actions', label: 'Save checkpoint', icon: Bookmark, keywords: 'context handoff', run: () => openCheckpoint() });
 
     const term = useTerminal.getState();
     const go = (fn: () => unknown) => () => {
@@ -120,7 +123,7 @@ export function CommandPalette() {
     }
 
     return list;
-  }, [runs, accounts, approvals, nav, openStart, openHandoff]);
+  }, [runs, accounts, approvals, nav, openStart, openHandoff, openCheckpoint]);
 
   if (!isOpen) return null;
 

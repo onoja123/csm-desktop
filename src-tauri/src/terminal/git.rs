@@ -1,7 +1,6 @@
 use std::path::Path;
 use std::process::Command;
 
-/// The current branch of the repository containing `cwd`, or an empty string when there is none to report.
 #[tauri::command]
 pub fn git_branch(cwd: String) -> String {
     if !Path::new(&cwd).is_dir() {

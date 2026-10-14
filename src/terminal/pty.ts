@@ -29,6 +29,7 @@ export const pty = {
   spawn: (opts: { shell?: string; cwd?: string; cols?: number; rows?: number }) => invoke<SessionInfo>('pty_spawn', opts),
   writeText: (id: string, text: string) => invoke<void>('pty_write', { id, data: encodeBase64(encoder.encode(text)) }),
   writeBytes: (id: string, bytes: Uint8Array) => invoke<void>('pty_write', { id, data: encodeBase64(bytes) }),
+  attach: async (id: string) => decodeBase64(await invoke<string>('pty_attach', { id })),
   resize: (id: string, cols: number, rows: number) => invoke<void>('pty_resize', { id, cols, rows }),
   kill: (id: string) => invoke<void>('pty_kill', { id }),
   list: () => invoke<SessionInfo[]>('pty_list'),

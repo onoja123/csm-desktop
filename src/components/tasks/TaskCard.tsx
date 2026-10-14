@@ -12,7 +12,7 @@ export function TaskCard({ run }: { run: Run | ExternalRun }) {
   const now = useNow();
   const seconds = liveSeconds(run.started_at, 'ended_at' in run ? run.ended_at : undefined, now);
   const last = 'last_output_at' in run ? run.last_output_at : undefined;
-  const to = run.kind === 'external' ? '/agents' : `/agents/${run.id}`;
+  const to = run.kind === 'external' ? '/mission' : `/agents/${run.id}`;
   return (
     <Link to={to} className="task-card">
       <AgentIcon provider={run.provider} size="md" />

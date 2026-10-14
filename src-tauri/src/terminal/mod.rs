@@ -6,7 +6,8 @@ use serde::Serialize;
 use std::collections::HashMap;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-use std::sync::Mutex;
+use std::sync::mpsc::{self, RecvTimeoutError};
+use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter};
 
@@ -49,6 +50,13 @@ struct Session {
     writer: Box<dyn Write + Send>,
     child: Box<dyn Child + Send + Sync>,
     shell_pid: u32,
+    output: Arc<Mutex<Pending>>,
+}
+
+#[derive(Default)]
+struct Pending {
+    attached: bool,
+    held: Vec<u8>,
 }
 
 #[derive(Default)]
@@ -95,45 +103,72 @@ impl PtyManager {
         let id = uuid::Uuid::new_v4().to_string();
         let info = SessionInfo { id: id.clone(), pid, shell: shell_path.clone(), cwd: cwd.display().to_string(), cols: size.cols, rows: size.rows };
 
-        self.sessions.lock().unwrap().insert(id.clone(), Session { info: info.clone(), master: pair.master, writer, child, shell_pid: pid });
+        let output = Arc::new(Mutex::new(Pending::default()));
+        self.sessions.lock().unwrap().insert(id.clone(), Session { info: info.clone(), master: pair.master, writer, child, shell_pid: pid, output: output.clone() });
 
-        // Output is batched for a few milliseconds so a build log does not become one IPC message per byte.
         // Without an app handle (tests), the caller reads the master itself.
-        let reader_id = id.clone();
-        if app.is_none() {
+        let Some(app) = app else {
             return Ok(info);
-        }
+        };
+        let (tx, rx) = mpsc::channel::<Vec<u8>>();
         std::thread::spawn(move || {
             let mut buf = [0u8; 16384];
+            while let Ok(n) = reader.read(&mut buf) {
+                if n == 0 || tx.send(buf[..n].to_vec()).is_err() {
+                    break;
+                }
+            }
+        });
+        // Output is batched for a few milliseconds so a build log does not become one IPC message per byte, and the
+        // batch is flushed on a timer so the last chunk (usually the prompt) is not held until more output arrives.
+        let reader_id = id.clone();
+        std::thread::spawn(move || {
             let mut pending: Vec<u8> = Vec::new();
-            let mut last_flush = Instant::now();
+            let mut deadline: Option<Instant> = None;
+            let flush = |pending: &mut Vec<u8>| {
+                if pending.is_empty() {
+                    return;
+                }
+                let mut out = output.lock().unwrap();
+                if out.attached {
+                    let _ = app.emit(&format!("pty://out/{reader_id}"), OutputEvent { id: reader_id.clone(), data: B64.encode(&*pending) });
+                } else {
+                    out.held.extend_from_slice(pending);
+                }
+                pending.clear();
+            };
             loop {
-                match reader.read(&mut buf) {
-                    Ok(0) => break,
-                    Ok(n) => {
-                        pending.extend_from_slice(&buf[..n]);
-                        if pending.len() >= 65536 || last_flush.elapsed() >= Duration::from_millis(8) {
-                            if let Some(app) = &app {
-                                let _ = app.emit(&format!("pty://out/{reader_id}"), OutputEvent { id: reader_id.clone(), data: B64.encode(&pending) });
-                            }
-                            pending.clear();
-                            last_flush = Instant::now();
+                let wait = deadline.map(|d| d.saturating_duration_since(Instant::now())).unwrap_or(Duration::from_secs(3600));
+                match rx.recv_timeout(wait) {
+                    Ok(chunk) => {
+                        pending.extend_from_slice(&chunk);
+                        deadline.get_or_insert_with(|| Instant::now() + Duration::from_millis(8));
+                        if pending.len() >= 65536 {
+                            flush(&mut pending);
+                            deadline = None;
                         }
                     }
-                    Err(_) => break,
+                    Err(RecvTimeoutError::Timeout) => {
+                        flush(&mut pending);
+                        deadline = None;
+                    }
+                    Err(RecvTimeoutError::Disconnected) => break,
                 }
             }
-            if !pending.is_empty() {
-                if let Some(app) = &app {
-                    let _ = app.emit(&format!("pty://out/{reader_id}"), OutputEvent { id: reader_id.clone(), data: B64.encode(&pending) });
-                }
-            }
-            if let Some(app) = &app {
-                let _ = app.emit("pty://exit", ExitEvent { id: reader_id.clone(), code: None });
-            }
+            flush(&mut pending);
+            let _ = app.emit("pty://exit", ExitEvent { id: reader_id.clone(), code: None });
         });
 
         Ok(info)
+    }
+
+    /// Marks the window as listening and hands back whatever the shell printed before it was.
+    pub fn attach(&self, id: &str) -> Result<Vec<u8>, String> {
+        let sessions = self.sessions.lock().unwrap();
+        let s = sessions.get(id).ok_or("no such terminal")?;
+        let mut out = s.output.lock().unwrap();
+        out.attached = true;
+        Ok(std::mem::take(&mut out.held))
     }
 
     pub fn write(&self, id: &str, bytes: &[u8]) -> Result<(), String> {

@@ -32,3 +32,25 @@ export const outputBus = {
     return listeners.get(runId)?.size ?? 0;
   },
 };
+
+// Chunks that arrived while the full output was being fetched may already be at its end; returns how many to skip.
+export function replayedChunks(replayed: Uint8Array, buffered: Uint8Array[]): number {
+  for (let k = buffered.length; k > 0; k--) {
+    const size = buffered.slice(0, k).reduce((n, b) => n + b.length, 0);
+    if (size > replayed.length) continue;
+    let offset = replayed.length - size;
+    let match = true;
+    for (let i = 0; i < k && match; i++) {
+      const b = buffered[i];
+      for (let j = 0; j < b.length; j++) {
+        if (replayed[offset + j] !== b[j]) {
+          match = false;
+          break;
+        }
+      }
+      offset += b.length;
+    }
+    if (match) return k;
+  }
+  return 0;
+}

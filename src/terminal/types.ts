@@ -43,7 +43,7 @@ export interface TerminalSettings {
 }
 
 export const DEFAULT_SETTINGS: TerminalSettings = {
-  fontFamily: "'JetBrains Mono Variable', 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, monospace",
+  fontFamily: "'Geist Mono Variable', 'Geist Mono', 'SF Mono', ui-monospace, Menlo, monospace",
   fontSize: 13,
   lineHeight: 1.3,
   cursorStyle: 'bar',

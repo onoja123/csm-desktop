@@ -18,7 +18,7 @@ export function TerminalSearch() {
   }, [searchOpen, handle]);
 
   if (!searchOpen) return null;
-  const opts = { caseSensitive, decorations: { matchBackground: '#3a3a3a', activeMatchBackground: '#737373', matchOverviewRuler: '#737373', activeMatchColorOverviewRuler: '#f5f5f5' } };
+  const opts = { caseSensitive, decorations: { matchBackground: '#3a3a3a', activeMatchBackground: '#7a7a76', matchOverviewRuler: '#7a7a76', activeMatchColorOverviewRuler: '#ededea' } };
   const next = () => handle?.search.findNext(query, opts);
   const prev = () => handle?.search.findPrevious(query, opts);
 

@@ -27,6 +27,43 @@ csm (Go)                              CSM Desktop (Tauri + React + TypeScript)
 - **Approvals**: under the service, CSM registers a `PreToolUse` hook for Claude Code's shell commands. The hook asks the service; the service asks you; the answer goes back as Claude Code's own hook decision. No answer within ten minutes, or no desktop connected, and Claude Code falls back to its normal prompt. Other agents keep their terminal prompts, which you can answer in the Output tab.
 - **Truthful data**: every figure comes from CSM or the agent's own session record. Usage shows `Unknown` until the agent reports it. Task names are the last request the user made in that session, not a guess. There is no progress percentage because nothing provides one.
 
+## Mission Control
+
+Mission Control is one list of every agent session CSM knows about: the ones started from the desktop app, the ones started with `csm claude` (or codex, gemini, copilot) in a terminal, across every project and provider. Each row shows the provider, the account in use (and the account it switched from), the project and branch, the last request the user made in that session, the terminal tab that shows it, elapsed time and a status. Rows can be searched, filtered by status and grouped by status, project or provider; selecting one opens a panel with the session's details and the actions CSM supports for it: go to its terminal tab, open it in the Terminal, open a shell in its project, reveal the project in Finder, switch its account, hand it off, stop it, resume it (where the agent supports resume) or clear it.
+
+Statuses come only from what CSM can observe:
+
+| Status | What it means |
+|---|---|
+| Needs attention | The run exited with an error, hit a usage limit with no switch recorded since, failed a handoff, or its account needs a login. |
+| Waiting | A command is waiting for your approval (Claude Code under the service). |
+| Running | The agent process is alive and produced output in the last minute. A session started in a terminal is shown as running in that terminal; its output is not visible here. |
+| Idle | The agent process is alive but has produced no output for a minute or more. CSM cannot tell an agent waiting at its prompt from one that is thinking quietly, so the row says how long it has been quiet. |
+| Completed | The run exited cleanly, or was stopped. |
+| Disconnected | The CSM service is not reachable; rows show the last known state. |
+
+Account failover is reflected as it happens: the row's account updates when the runner writes the new live session, and the switch (from, to, reason) comes from the activity CSM logged for that project. There is no progress figure and no guessed task name, for the same reason as elsewhere in the app.
+
+## Build Room
+
+Build Room takes one request and a repository and runs it through a plan, isolated implementation, integration, checks, review and a pull request description, using the agents you have signed in to. **New build run** asks for the request, the repository and base branch, which agents to use, how many may run at once, and whether to approve the plan first, review, check the base commit and offer to push. A run's page shows the stage it is in, the plan, the tasks as a dependency graph with the agent and account working on each, and a panel for the selected task: its worktree and branch, attempts and any account or agent switch, what CSM measured in git next to what the agent reported, its diff, and retry, reassign and accept actions. The Checks, Review, Integration and History tabs show the commands CSM ran with their results, the review rounds and findings (marked as the reviewing agent's claims), the integration branch, conflicts and integrated diff, and every event. Plans can be edited before approval; runs can be paused, resumed and cancelled; pushing and opening a pull request always waits for your approval. Build Room tasks also appear in Mission Control and Activity. See the csm README for the rules the service follows.
+
+
+## AutoFix
+
+AutoFix lists production incidents: Sentry errors received by the local service or claimed from CSM Hub, deduplicated
+by fingerprint, with their occurrence count, severity, environment and the run started for them. An AutoFix run opens in
+the same run page as Build Room, with the incident's redacted evidence (exception and in-app frames), the investigation
+(marked as the agent's analysis), and a reproduction and verification panel showing what CSM measured in the sandbox:
+whether the failure reproduced before the fix, whether it is gone after it, whether the regression test was left
+unchanged, the repository checks, and the commands with their output. Settings → Connect Sentry walks through the
+whole setup: sign in to CSM Hub, choose the workspace, Sentry project and repository, copy the webhook URL into a Sentry
+internal integration, paste its client secret back, and send a test. The panel then shows whether Sentry's deliveries
+are arriving and whether their signatures match.
+## Context Handoff
+
+The Handoffs screen keeps **checkpoints** and **handoffs** for every project. **Save checkpoint** (also in the command palette and on a Mission Control session) asks the service to capture the task in a project without stopping its agent: the task and progress from the agent's session record, the repository state from git, and the MCP servers by name and status. The checkpoint page separates what CSM verified in the repository from what the agent's record reports, re-checks the repository each time it opens and lists anything that changed since, and lets you edit the task, next steps and notes. **Continue with another agent** opens the handoff dialog with the checkpoint attached; the service then runs the same handoff the CLI does (`csm handoff --checkpoint`). With agents chosen under **Accounts → Failover → Then hand off to**, CSM does all of this on its own when every account of the running agent hits its usage limit; those handoffs are marked automatic on the Handoffs screen and in Mission Control. A handoff's page shows its outcome as CSM observed it: how the brief was delivered, whether the agent started and where, and whether the repository still matched. See the csm README for the format and the rules.
+
 ## CSM Terminal
 
 The Terminal screen is a real terminal: every pane is a pseudo-terminal running your login shell, created by the Rust side with `portable-pty` (the PTY layer from WezTerm) and rendered by xterm.js with the WebGL renderer. Interactive programs, the alternate screen, colours, Unicode, resizing and signals all go through the PTY. Tabs, splits, search, scrollback, shell choice and persistence of open tabs and directories are handled in `src/terminal/`; the shell integration files under the app's data directory report the working directory and prompt boundaries (OSC 7 and OSC 133) so tab titles and the status bar stay truthful. An agent's session can be opened as a terminal tab; that tab is the service's PTY for the run, not a copy.
@@ -83,11 +120,11 @@ produces `src-tauri/target/release/bundle/macos/CSM.app`. For a disk image, run 
 ```
 src/
   design/      tokens.css, tokens.ts (shared with the future mobile app), base.css, app.css
-  lib/         api.ts (typed client), types.ts, format.ts, output-bus.ts
+  lib/         api.ts (typed client), types.ts, format.ts, output-bus.ts, mission.ts (session status model)
   store/       connection.ts (bootstrap, reconnect), data.ts (sections + event routing)
-  components/  shell, ui primitives, agents, accounts, tasks, sessions, terminal,
+  components/  shell, ui primitives, agents, mission, accounts, tasks, sessions, terminal,
                mcp, handoffs, approvals, activity, palette
-  screens/     Home, Agents, AgentDetail, Accounts, AccountDetail, MCP, Sessions,
+  screens/     Home, MissionControl, AgentDetail, Accounts, AccountDetail, MCP, Sessions,
                Handoffs (+ detail), Tasks, Activity, Settings
   test/        vitest suites
 src-tauri/

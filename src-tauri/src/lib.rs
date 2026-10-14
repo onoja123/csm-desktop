@@ -14,6 +14,7 @@ pub fn run() {
             csm::csm_stop_service,
             csm::csm_subscribe,
             terminal::commands::pty_spawn,
+            terminal::commands::pty_attach,
             terminal::commands::pty_write,
             terminal::commands::pty_resize,
             terminal::commands::pty_kill,

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowDown, Check, Minus } from 'lucide-react';
+import { AlertTriangle, ArrowDown, Check, Minus } from 'lucide-react';
 import { create } from 'zustand';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Button, Dialog, Field, Icon } from '@/components/ui';
@@ -14,18 +14,19 @@ interface HandoffDialogState {
   projectDir?: string;
   fromProvider?: ProviderID;
   fromAccount?: string;
-  open: (opts: { projectDir: string; fromProvider?: ProviderID; fromAccount?: string }) => void;
+  checkpointId?: string;
+  open: (opts: { projectDir: string; fromProvider?: ProviderID; fromAccount?: string; checkpointId?: string }) => void;
   close: () => void;
 }
 
 export const useHandoffDialog = create<HandoffDialogState>((set) => ({
   isOpen: false,
-  open: (opts) => set({ isOpen: true, ...opts }),
+  open: (opts) => set({ isOpen: true, fromProvider: undefined, fromAccount: undefined, checkpointId: undefined, ...opts }),
   close: () => set({ isOpen: false }),
 }));
 
 export function HandoffDialog() {
-  const { isOpen, close, projectDir, fromProvider, fromAccount } = useHandoffDialog();
+  const { isOpen, close, projectDir, fromProvider, fromAccount, checkpointId } = useHandoffDialog();
   const nav = useNavigate();
   const accounts = useData((s) => s.accounts);
   const [target, setTarget] = useState('');
@@ -47,20 +48,20 @@ export function HandoffDialog() {
     if (!isOpen || !target || !projectDir) return;
     let cancelled = false;
     api
-      .previewHandoff(projectDir, target)
+      .previewHandoff(projectDir, target, checkpointId)
       .then((p) => !cancelled && setPreview(p))
       .catch((e) => !cancelled && setError((e as Error).message));
     return () => {
       cancelled = true;
     };
-  }, [isOpen, target, projectDir]);
+  }, [isOpen, target, projectDir, checkpointId]);
 
   const go = async () => {
     if (!projectDir) return;
     setBusy(true);
     setError(undefined);
     try {
-      const res = await api.createHandoff(projectDir, target);
+      const res = await api.createHandoff(projectDir, target, checkpointId);
       close();
       if (res.run_id) nav(`/agents/${res.run_id}`);
       else nav('/handoffs');
@@ -78,11 +79,12 @@ export function HandoffDialog() {
         { label: 'Git state', ok: preview.git_state !== 'not a git repository', text: preview.git_state },
         { label: 'Files', ok: preview.mode !== 'fresh', text: preview.mode === 'fresh' ? 'nothing recorded' : 'captured with the context' },
         { label: 'MCP', ok: true, text: 'configuration carried where the target supports it' },
+        { label: 'Repository', ok: !preview.changes?.length, text: preview.changes?.length ? 'changed since the checkpoint' : checkpointId ? 'matches the checkpoint' : 'checked again at the switch' },
       ]
     : [];
 
   return (
-    <Dialog open={isOpen} onClose={close} title="Handoff">
+    <Dialog open={isOpen} onClose={close} title={checkpointId ? 'Continue with another agent' : 'Handoff'}>
       <div className="handoff-dialog__pair">
         <div className="handoff-dialog__agent">
           <AgentIcon provider={preview?.source ?? fromProvider} size="xl" />
@@ -118,6 +120,17 @@ export function HandoffDialog() {
               <span className="checklist__text">{c.text}</span>
             </div>
           ))}
+          {preview.changes?.length ? (
+            <div className="handoff-drift" role="status">
+              <Icon icon={AlertTriangle} size="sm" className="tone-warn" />
+              <div>
+                {preview.changes.map((c) => (
+                  <p key={c}>{c}</p>
+                ))}
+                <p className="muted">The brief tells the agent about these changes. Nothing in your working tree is reset or restored.</p>
+              </div>
+            </div>
+          ) : null}
           <p className="dialog__note">{preview.message}</p>
         </div>
       ) : null}

@@ -58,3 +58,14 @@ describe('data store events', () => {
     expect(useData.getState().errors.accounts).toContain('socket gone');
   });
 });
+
+describe('terminal replay', () => {
+  it('skips live chunks that the replayed output already contains', async () => {
+    const { replayedChunks } = await import('@/lib/output-bus');
+    const enc = (s: string) => new TextEncoder().encode(s);
+    expect(replayedChunks(enc('banner\nwaiting\n'), [enc('waiting\n')])).toBe(1);
+    expect(replayedChunks(enc('banner\nwaiting\n'), [enc('wait'), enc('ing\n'), enc('limit\n')])).toBe(2);
+    expect(replayedChunks(enc('banner\n'), [enc('limit\n')])).toBe(0);
+    expect(replayedChunks(enc(''), [enc('x')])).toBe(0);
+  });
+});

@@ -1,12 +1,16 @@
 import { useEffect } from 'react';
-import { HashRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { AppShell } from '@/components/shell/AppShell';
 import { ConnectionGate } from '@/components/shell/ConnectionGate';
 import { CommandPalette } from '@/components/palette/CommandPalette';
 import { StartAgentDialog } from '@/components/agents/StartAgentDialog';
 import { HandoffDialog } from '@/components/handoffs/HandoffDialog';
+import { CheckpointDialog } from '@/components/handoffs/CheckpointDialog';
 import { Home } from '@/screens/Home';
-import { Agents } from '@/screens/Agents';
+import { MissionControl } from '@/screens/MissionControl';
+import { BuildRoom, NewBuildRun } from '@/screens/BuildRoom';
+import { BuildRun } from '@/screens/BuildRun';
+import { AutoFix } from '@/screens/AutoFix';
 import { AgentDetail } from '@/screens/AgentDetail';
 import { Accounts } from '@/screens/Accounts';
 import { AccountDetail } from '@/screens/AccountDetail';
@@ -45,7 +49,12 @@ export function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/terminal" element={<TerminalScreen />} />
-            <Route path="/agents" element={<Agents />} />
+            <Route path="/mission" element={<MissionControl />} />
+            <Route path="/build" element={<BuildRoom />} />
+            <Route path="/build/new" element={<NewBuildRun />} />
+            <Route path="/build/:id" element={<BuildRun />} />
+            <Route path="/autofix" element={<AutoFix />} />
+            <Route path="/agents" element={<Navigate to="/mission" replace />} />
             <Route path="/agents/:id" element={<AgentDetail />} />
             <Route path="/accounts" element={<Accounts />} />
             <Route path="/accounts/:name" element={<AccountDetail />} />
@@ -59,6 +68,7 @@ export function App() {
           </Routes>
           <StartAgentDialog />
           <HandoffDialog />
+          <CheckpointDialog />
         </ConnectionGate>
         <CommandPalette />
       </AppShell>

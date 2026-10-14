@@ -13,15 +13,15 @@ import type { ShellPane, TerminalSettings } from '@/terminal/types';
 import { Button } from '@/components/ui';
 
 const THEME = {
-  background: '#050505',
-  foreground: '#d4d4d4',
-  cursor: '#f5f5f5',
-  cursorAccent: '#050505',
+  background: '#0a0a0a',
+  foreground: '#d4d4d0',
+  cursor: '#ededea',
+  cursorAccent: '#0a0a0a',
   selectionBackground: 'rgba(255,255,255,0.2)',
   selectionInactiveBackground: 'rgba(255,255,255,0.12)',
   black: '#101010',
-  brightBlack: '#525252',
-  white: '#d4d4d4',
+  brightBlack: '#565653',
+  white: '#d4d4d0',
   brightWhite: '#ffffff',
   red: '#f87171',
   brightRed: '#fca5a5',
@@ -132,9 +132,15 @@ export const ShellTerminal = memo(function ShellTerminal({ pane, active, setting
     term.textarea?.addEventListener('focus', onFocus);
 
     let unlisten: (() => void) | undefined;
-    void pty.onOutput(sessionId, (bytes) => term.write(bytes)).then((fn) => {
-      unlisten = fn;
-    });
+    let disposed = false;
+    void pty
+      .onOutput(sessionId, (bytes) => term.write(bytes))
+      .then(async (fn) => {
+        unlisten = fn;
+        if (disposed) return fn();
+        const held = await pty.attach(sessionId).catch(() => new Uint8Array());
+        if (!disposed && held.length) term.write(held);
+      });
 
     // Development only: type a command into the first shell so a dev session can be screenshotted without a keyboard.
     const autorun = import.meta.env.DEV ? (import.meta.env.VITE_TERMINAL_AUTORUN as string | undefined) : undefined;
@@ -144,6 +150,7 @@ export const ShellTerminal = memo(function ShellTerminal({ pane, active, setting
     }
 
     return () => {
+      disposed = true;
       unlisten?.();
       disposables.forEach((d) => d.dispose());
       term.textarea?.removeEventListener('focus', onFocus);

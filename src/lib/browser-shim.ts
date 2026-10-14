@@ -7,7 +7,7 @@ interface TauriEvent {
   payload: unknown;
 }
 
-const STREAM_TYPES = ['hello', 'status', 'accounts', 'runs', 'sessions', 'handoffs', 'projects', 'run.output', 'run.exit', 'approval.requested', 'approval.resolved', 'activity'];
+const STREAM_TYPES = ['hello', 'status', 'accounts', 'runs', 'sessions', 'handoffs', 'projects', 'run.output', 'run.exit', 'approval.requested', 'approval.resolved', 'activity', 'build', 'signals'];
 
 export function installBrowserShim() {
   const w = window as unknown as { __TAURI_INTERNALS__?: unknown };

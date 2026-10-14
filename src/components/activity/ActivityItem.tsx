@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Check, CircleDot, Play, Power, ShieldAlert, Square, UserRound, Zap, type LucideIcon, Bookmark, Settings2, X } from 'lucide-react';
+import { ArrowLeftRight, Check, CircleDot, Play, Power, ShieldAlert, Square, UserRound, Workflow, Zap, type LucideIcon, Bookmark, Settings2, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { IconTile } from '@/components/ui';
 import { providerIcon } from '@/components/agents/AgentIcon';
@@ -36,6 +36,7 @@ function iconFor(a: Activity): { icon: LucideIcon; tone?: Tone } {
     case 'session.resumed':
       return { icon: Play };
     default:
+      if (a.kind.startsWith('build.')) return { icon: a.kind === 'build.fallback.handoff' || a.kind === 'build.fallback.account' ? ArrowLeftRight : Workflow, tone: a.kind.endsWith('failed') || a.kind.endsWith('attention') || a.kind.endsWith('conflict') ? 'err' : a.kind.endsWith('completed') ? 'ok' : undefined };
       if (a.kind.startsWith('handoff.')) return { icon: ArrowLeftRight, tone: a.kind.endsWith('failed') ? 'err' : a.kind.endsWith('target_started') ? 'ok' : undefined };
       return a.provider ? { icon: providerIcon(a.provider) } : { icon: CircleDot };
   }
@@ -55,6 +56,14 @@ export function ActivityItem({ activity, dense = false }: { activity: Activity; 
       </time>
     </>
   );
+  const build = activity.refs?.build;
+  if (build) {
+    return (
+      <Link to={`/build/${build}`} className={`activity ${dense ? 'activity--dense' : ''}`}>
+        {body}
+      </Link>
+    );
+  }
   if (activity.run_id) {
     return (
       <Link to={`/agents/${activity.run_id}`} className={`activity ${dense ? 'activity--dense' : ''}`}>

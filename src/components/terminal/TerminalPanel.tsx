@@ -3,17 +3,17 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { api } from '@/lib/api';
-import { decodeBase64, encodeBase64, outputBus } from '@/lib/output-bus';
+import { decodeBase64, encodeBase64, outputBus, replayedChunks } from '@/lib/output-bus';
 
 const THEME = {
-  background: '#050505',
-  foreground: '#d4d4d4',
-  cursor: '#f5f5f5',
-  cursorAccent: '#050505',
+  background: '#0a0a0a',
+  foreground: '#d4d4d0',
+  cursor: '#ededea',
+  cursorAccent: '#0a0a0a',
   selectionBackground: 'rgba(255,255,255,0.18)',
   black: '#101010',
-  brightBlack: '#525252',
-  white: '#d4d4d4',
+  brightBlack: '#565653',
+  white: '#d4d4d0',
   brightWhite: '#ffffff',
   red: '#f87171',
   brightRed: '#f87171',
@@ -21,12 +21,12 @@ const THEME = {
   brightGreen: '#4ade80',
   yellow: '#fbbf24',
   brightYellow: '#fbbf24',
-  blue: '#a3a3a3',
-  brightBlue: '#d4d4d4',
-  magenta: '#a3a3a3',
-  brightMagenta: '#d4d4d4',
-  cyan: '#a3a3a3',
-  brightCyan: '#d4d4d4',
+  blue: '#a3a3a0',
+  brightBlue: '#d4d4d0',
+  magenta: '#a3a3a0',
+  brightMagenta: '#d4d4d0',
+  cyan: '#a3a3a0',
+  brightCyan: '#d4d4d0',
 };
 
 // The panel is a plain terminal over the run's pseudo-terminal: bytes in, bytes out, nothing interpreted in between.
@@ -40,7 +40,7 @@ export function TerminalPanel({ runId, live, onResize }: { runId: string; live: 
 
     const term = new Terminal({
       theme: THEME,
-      fontFamily: "'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, Menlo, monospace",
+      fontFamily: "'Geist Mono Variable', 'Geist Mono', ui-monospace, Menlo, monospace",
       fontSize: 12.5,
       lineHeight: 1.35,
       letterSpacing: 0,
@@ -79,17 +79,21 @@ export function TerminalPanel({ runId, live, onResize }: { runId: string; live: 
       else buffered.push(bytes);
     });
 
+    let skip = 0;
     void api
       .runOutput(runId)
       .then((res) => {
         if (disposed) return;
-        if (res.data) term.write(decodeBase64(res.data));
+        if (!res.data) return;
+        const bytes = decodeBase64(res.data);
+        term.write(bytes);
+        skip = replayedChunks(bytes, buffered);
       })
       .catch(() => undefined)
       .finally(() => {
         if (disposed) return;
         replayed = true;
-        for (const b of buffered) term.write(b);
+        for (const b of buffered.slice(skip)) term.write(b);
         buffered.length = 0;
         term.scrollToBottom();
         if (live) term.focus();

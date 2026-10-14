@@ -4,7 +4,7 @@ import { AccountCard } from '@/components/accounts/AccountCard';
 import { EmptyState, PageHeader, Panel, Row, Section } from '@/components/ui';
 import { api } from '@/lib/api';
 import { PROVIDERS, PROVIDER_LONG_NAMES } from '@/lib/format';
-import type { FailoverPolicy } from '@/lib/types';
+import type { FailoverPolicy, ProviderID } from '@/lib/types';
 import { useData } from '@/store/data';
 
 const POLICIES: { id: FailoverPolicy; label: string; text: string }[] = [
@@ -26,6 +26,7 @@ export function FailoverPanel() {
         ))}
       </div>
       <p className="muted">{POLICIES.find((p) => p.id === failover.policy)?.text}</p>
+      <HandoffOrder order={failover.handoff_to ?? []} description={failover.handoff_description} automatic={failover.policy === 'automatic'} />
       {failover.providers.map((p) => (
         <div key={p.provider} className="failover-panel__provider">
           <Row label={`${p.provider_name} priority`}>
@@ -37,6 +38,33 @@ export function FailoverPanel() {
         </div>
       ))}
     </Panel>
+  );
+}
+
+// Clicking adds an agent to the end of the order or takes it out; the service validates and stores the list.
+function HandoffOrder({ order, description, automatic }: { order: ProviderID[]; description?: string; automatic: boolean }) {
+  const toggle = (p: ProviderID) => void api.setHandoffTo(order.includes(p) ? order.filter((x) => x !== p) : [...order, p]);
+  return (
+    <div className="failover-panel__provider handoff-order">
+      <Row label="Then hand off to">
+        <span className="handoff-order__chips" role="group" aria-label="Agents to hand off to">
+          {PROVIDERS.map((p) => {
+            const at = order.indexOf(p);
+            return (
+              <button key={p} className={`chip ${at >= 0 ? 'chip--active' : ''}`} aria-pressed={at >= 0} onClick={() => toggle(p)}>
+                {at >= 0 ? `${at + 1} · ` : ''}
+                {PROVIDER_LONG_NAMES[p]}
+              </button>
+            );
+          })}
+        </span>
+      </Row>
+      <p className="muted">
+        {order.length
+          ? `When every account of the running agent is limited, CSM saves the task and continues with ${description?.split(' when ')[0] ?? 'the next agent'}.${automatic ? '' : ' Only used when failover is Automatic.'}`
+          : 'Off. Failover stays with the same agent; add agents here to continue the task with another one when every account is limited.'}
+      </p>
+    </div>
   );
 }
 

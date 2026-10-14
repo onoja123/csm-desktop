@@ -5,7 +5,9 @@ import type {
   Account,
   Activity,
   ApprovalsView,
+  BuildSummary,
   Failover,
+  Incident,
   Handoff,
   MCPAccount,
   Project,
@@ -16,7 +18,7 @@ import type {
   StreamEvent,
 } from '@/lib/types';
 
-export type Section = 'status' | 'accounts' | 'runs' | 'sessions' | 'handoffs' | 'mcp' | 'approvals' | 'activity' | 'projects' | 'failover' | 'settings';
+export type Section = 'status' | 'accounts' | 'runs' | 'sessions' | 'handoffs' | 'mcp' | 'approvals' | 'activity' | 'projects' | 'failover' | 'settings' | 'builds' | 'signals';
 
 interface DataState {
   status?: Status;
@@ -31,6 +33,9 @@ interface DataState {
   activity: Activity[];
   projects: Project[];
   failover?: Failover;
+  builds: BuildSummary[];
+  signals: Incident[];
+  buildStamps: Record<string, number>;
   loaded: Partial<Record<Section, boolean>>;
   errors: Partial<Record<Section, string>>;
   refresh: (section: Section, arg?: string) => Promise<void>;
@@ -65,6 +70,9 @@ export const useData = create<DataState>((set, get) => ({
   approvals: EMPTY_APPROVALS,
   activity: [],
   projects: [],
+  builds: [],
+  signals: [],
+  buildStamps: {},
   loaded: {},
   errors: {},
 
@@ -109,6 +117,12 @@ export const useData = create<DataState>((set, get) => ({
         case 'failover':
           done({ failover: await api.failover() });
           break;
+        case 'builds':
+          done({ builds: await api.builds() });
+          break;
+        case 'signals':
+          done({ signals: await api.signals() });
+          break;
       }
     } catch (e) {
       set((s) => ({ errors: { ...s.errors, [section]: (e as Error).message } }));
@@ -116,7 +130,7 @@ export const useData = create<DataState>((set, get) => ({
   },
 
   async refreshAll() {
-    const sections: Section[] = ['status', 'settings', 'accounts', 'runs', 'approvals', 'activity', 'sessions', 'handoffs', 'projects', 'failover'];
+    const sections: Section[] = ['status', 'settings', 'accounts', 'runs', 'approvals', 'activity', 'sessions', 'handoffs', 'projects', 'failover', 'builds', 'signals'];
     await Promise.all(sections.map((s) => get().refresh(s)));
   },
 
@@ -156,6 +170,11 @@ export const useData = create<DataState>((set, get) => ({
         return ['projects'];
       case 'status':
         return ['status', 'settings', 'failover'];
+      case 'build':
+        set((s) => ({ buildStamps: { ...s.buildStamps, [ev.data.id]: (s.buildStamps[ev.data.id] ?? 0) + 1 } }));
+        return ['builds'];
+      case 'signals':
+        return ['signals'];
       default:
         return [];
     }

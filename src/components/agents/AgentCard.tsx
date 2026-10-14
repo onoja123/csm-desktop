@@ -12,7 +12,7 @@ export function AgentCard({ run, compact = false }: { run: Run | ExternalRun; co
   const now = useNow();
   const seconds = liveSeconds(run.started_at, 'ended_at' in run ? run.ended_at : undefined, now);
   const files = task?.files_modified?.length ?? 0;
-  const to = run.kind === 'external' ? `/agents` : `/agents/${run.id}`;
+  const to = run.kind === 'external' ? '/mission' : `/agents/${run.id}`;
 
   return (
     <Link to={to} className={`agent-card ${compact ? 'agent-card--compact' : ''}`}>

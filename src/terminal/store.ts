@@ -123,7 +123,7 @@ export const useTerminal = create<TerminalState>((set, get) => ({
     if (get().hydrated || hydrating) return;
     hydrating = true;
     const [shells, homeDir] = await Promise.all([pty.shells().catch(() => []), pty.defaultCwd().catch(() => '')]);
-    set({ shells, homeDir, hydrated: true });
+    set({ shells, homeDir });
     const saved = loadState();
     if (saved && saved.tabs.length > 0) {
       for (const t of saved.tabs) {
@@ -147,9 +147,11 @@ export const useTerminal = create<TerminalState>((set, get) => ({
       }
       const tabs = get().tabs;
       set({ activeTabId: tabs[Math.min(saved.activeTab, tabs.length - 1)]?.id });
-    } else {
+    } else if (get().tabs.length === 0) {
       await get().newTab();
     }
+    // Marked last so a tab opened on arrival (an agent from "Open terminal") is not replaced by the default shell.
+    set({ hydrated: true });
   },
 
   async newTab(opts) {

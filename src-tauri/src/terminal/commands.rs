@@ -19,6 +19,11 @@ pub fn pty_write(state: State<'_, PtyManager>, id: String, data: String) -> Resu
 }
 
 #[tauri::command]
+pub fn pty_attach(state: State<'_, PtyManager>, id: String) -> Result<String, String> {
+    state.attach(&id).map(|b| B64.encode(b))
+}
+
+#[tauri::command]
 pub fn pty_resize(state: State<'_, PtyManager>, id: String, cols: u16, rows: u16) -> Result<(), String> {
     state.resize(&id, cols, rows)
 }

@@ -52,3 +52,23 @@ describe('shell integration parsing', () => {
     expect(titleFromCwd('/', '')).toBe('/');
   });
 });
+
+describe('terminal hydration', () => {
+  it('keeps an agent tab opened before the terminal first loads', async () => {
+    const { invoke } = await import('@tauri-apps/api/core');
+    const { useTerminal } = await import('@/terminal/store');
+    vi.mocked(invoke).mockImplementation(async (cmd) => {
+      if (cmd === 'pty_shells') return [];
+      if (cmd === 'pty_default_cwd') return '/Users/me';
+      if (cmd === 'pty_spawn') return { id: 's1', pid: 1, shell: '/bin/zsh', cwd: '/Users/me', cols: 80, rows: 24 };
+      return undefined;
+    });
+    localStorage.removeItem('csm.terminal.state');
+    const tab = useTerminal.getState().openAgentTab('run-1', 'Invitation store');
+    await useTerminal.getState().hydrate();
+    const s = useTerminal.getState();
+    expect(s.hydrated).toBe(true);
+    expect(s.activeTabId).toBe(tab);
+    expect(s.tabs).toHaveLength(1);
+  });
+});

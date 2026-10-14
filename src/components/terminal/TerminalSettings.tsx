@@ -3,7 +3,8 @@ import { useTerminal } from '@/terminal/store';
 import { DEFAULT_SETTINGS } from '@/terminal/types';
 
 const FONTS = [
-  { label: 'JetBrains Mono', value: DEFAULT_SETTINGS.fontFamily },
+  { label: 'Geist Mono', value: DEFAULT_SETTINGS.fontFamily },
+  { label: 'JetBrains Mono', value: "'JetBrains Mono Variable', 'JetBrains Mono', 'SF Mono', ui-monospace, Menlo, monospace" },
   { label: 'SF Mono', value: "'SF Mono', ui-monospace, Menlo, monospace" },
   { label: 'Menlo', value: 'Menlo, monospace' },
   { label: 'IBM Plex Mono', value: "'IBM Plex Mono', ui-monospace, monospace" },
