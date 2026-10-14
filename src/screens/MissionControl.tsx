@@ -131,7 +131,7 @@ export function MissionControl() {
         <EmptyState
           icon={Robot01Icon}
           title="No agent sessions"
-          body="Start Claude, Codex, Gemini or Copilot from here, or run csm in a terminal; every session shows up in this list as soon as CSM sees it."
+          body="Start Claude, Codex, Gemini, Copilot or Cursor from here, or run csm in a terminal; every session shows up in this list as soon as CSM sees it."
           action={
             <>
               <Button variant="primary" onClick={() => openStart()}>

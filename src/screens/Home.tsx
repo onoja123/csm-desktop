@@ -118,7 +118,7 @@ export function Home() {
             <EmptyState
               icon={Robot01Icon}
               title="No agents running"
-              body="Start Claude, Codex, Gemini or Copilot to see active tasks here."
+              body="Start Claude, Codex, Gemini, Copilot or Cursor to see active tasks here."
               action={
                 <Button variant="primary" onClick={() => openStart()}>
                   Start agent
