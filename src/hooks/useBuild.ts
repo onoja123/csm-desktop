@@ -30,7 +30,9 @@ export function useBuild(id: string) {
 
   useEffect(() => {
     if (!live) return;
+
     const t = setInterval(load, 4000);
+
     return () => clearInterval(t);
   }, [live, load]);
 

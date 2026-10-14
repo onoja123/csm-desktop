@@ -6,6 +6,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
   return (
     <div className="shell">
       <Sidebar />
+
       <div className="shell__main">
         <TopBar title={title} />
         <main className="shell__content">{children}</main>

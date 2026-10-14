@@ -1,4 +1,16 @@
-import { ArrowDataTransferHorizontalIcon, CheckListIcon, ComputerTerminal01Icon, DashboardSquare02Icon, Home03Icon, Plug01Icon, Pulse01Icon, SirenIcon, TimeQuarter02Icon, UserIcon, WorkflowSquare03Icon } from '@hugeicons/core-free-icons';
+import {
+  ArrowDataTransferHorizontalIcon,
+  CheckListIcon,
+  ComputerTerminal01Icon,
+  DashboardSquare02Icon,
+  Home03Icon,
+  Plug01Icon,
+  Pulse01Icon,
+  SirenIcon,
+  TimeQuarter02Icon,
+  UserIcon,
+  WorkflowSquare03Icon,
+} from '@hugeicons/core-free-icons';
 import type { NavItem } from '@/types';
 
 export const NAV: NavItem[] = [

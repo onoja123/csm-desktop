@@ -15,6 +15,7 @@ export function SentryConnect({ connected, hubURL, onSaved }: SentryConnectProps
 
   const load = useCallback(async () => {
     if (!connected) return setStatus(undefined);
+
     try {
       setStatus(await api.hubStatus());
       setLoadError(undefined);
@@ -25,7 +26,9 @@ export function SentryConnect({ connected, hubURL, onSaved }: SentryConnectProps
 
   useEffect(() => {
     void load();
+
     const t = setInterval(() => void load(), 10000);
+
     return () => clearInterval(t);
   }, [load]);
 
@@ -37,14 +40,33 @@ export function SentryConnect({ connected, hubURL, onSaved }: SentryConnectProps
     onSaved();
   };
 
-  if (status && !adding) return <HubConnectionStatus status={status} onChange={setStatus} onAddProject={() => setAdding(true)} onDisconnect={() => void disconnect()} />;
-  if (connected && !status && !adding) return loadError ? <p className="form-error selectable">{loadError}</p> : <p className="muted">Checking CSM Hub…</p>;
+  if (status && !adding)
+    return (
+      <HubConnectionStatus
+        status={status}
+        onChange={setStatus}
+        onAddProject={() => setAdding(true)}
+        onDisconnect={() => void disconnect()}
+      />
+    );
+
+  if (connected && !status && !adding)
+    return loadError ? (
+      <p className="form-error selectable">{loadError}</p>
+    ) : (
+      <p className="muted">Checking CSM Hub…</p>
+    );
 
   return (
     <ol className="sc-steps">
       <SetupStep n={1} title="Sign in to CSM Hub" done={!!signin}>
-        {signin ? <p className="muted">Signed in as {signin.email}.</p> : <HubSignInForm initialURL={hubURL} onSignedIn={setSignin} />}
+        {signin ? (
+          <p className="muted">Signed in as {signin.email}.</p>
+        ) : (
+          <HubSignInForm initialURL={hubURL} onSignedIn={setSignin} />
+        )}
       </SetupStep>
+
       <SetupStep n={2} title="Choose the project and repository">
         {signin ? (
           <HubProjectSetupForm
@@ -56,15 +78,22 @@ export function SentryConnect({ connected, hubURL, onSaved }: SentryConnectProps
             }}
           />
         ) : (
-          <p className="muted">Pick the workspace, the Sentry project and the repository its errors belong to.</p>
+          <p className="muted">
+            Pick the workspace, the Sentry project and the repository its errors belong to.
+          </p>
         )}
       </SetupStep>
+
       <SetupStep n={3} title="Add the webhook in Sentry">
-        <p className="muted">CSM shows the webhook URL to paste into Sentry and checks the connection.</p>
+        <p className="muted">
+          CSM shows the webhook URL to paste into Sentry and checks the connection.
+        </p>
       </SetupStep>
+
       {adding ? (
         <li className="sc-actions">
           <span />
+
           <Button variant="ghost" onClick={() => setAdding(false)}>
             Cancel
           </Button>

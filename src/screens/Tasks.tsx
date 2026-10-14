@@ -12,12 +12,24 @@ export function Tasks() {
   const [tab, setTab] = useState<RunBucket>('running');
   const waiting = new Set(approvals.pending.map((a) => a.run_id).filter(Boolean) as string[]);
   const all: AnyRun[] = [...runs.runs, ...runs.external];
-  const buckets: Record<RunBucket, AnyRun[]> = { running: [], waiting: [], completed: [], failed: [], stopped: [] };
+
+  const buckets: Record<RunBucket, AnyRun[]> = {
+    running: [],
+    waiting: [],
+    completed: [],
+    failed: [],
+    stopped: [],
+  };
+
   for (const r of all) buckets[bucketOf(r, waiting)].push(r);
 
   return (
     <Page>
-      <PageHeader title="Tasks" subtitle="What each agent is working on, according to its own session record." />
+      <PageHeader
+        title="Tasks"
+        subtitle="What each agent is working on, according to its own session record."
+      />
+
       <Tabs<RunBucket>
         tabs={[
           { id: 'running', label: 'Running', count: buckets.running.length },
@@ -29,7 +41,21 @@ export function Tasks() {
         value={tab}
         onChange={setTab}
       />
-      <TaskList runs={buckets[tab]} empty={<EmptyState icon={CheckListIcon} title={`Nothing ${tab}`} body={tab === 'waiting' ? 'Agents waiting for an approval show up here.' : 'Tasks are the sessions CSM runs; start one from Agents.'} />} />
+
+      <TaskList
+        runs={buckets[tab]}
+        empty={
+          <EmptyState
+            icon={CheckListIcon}
+            title={`Nothing ${tab}`}
+            body={
+              tab === 'waiting'
+                ? 'Agents waiting for an approval show up here.'
+                : 'Tasks are the sessions CSM runs; start one from Agents.'
+            }
+          />
+        }
+      />
     </Page>
   );
 }

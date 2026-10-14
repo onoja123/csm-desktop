@@ -5,17 +5,28 @@ import { DiffFileBlock } from './DiffFileBlock';
 import { api } from '@/lib/api';
 import type { BuildDiff } from '@/types';
 
-export function DiffView({ buildId, target, stamp }: { buildId: string; target: string; stamp?: string }) {
+export function DiffView({
+  buildId,
+  target,
+  stamp,
+}: {
+  buildId: string;
+  target: string;
+  stamp?: string;
+}) {
   const [diff, setDiff] = useState<BuildDiff>();
   const [error, setError] = useState<string>();
 
   useEffect(() => {
     let live = true;
+
     setError(undefined);
+
     api
       .buildDiff(buildId, target)
       .then((d) => live && setDiff(d))
       .catch((e) => live && setError((e as Error).message));
+
     return () => {
       live = false;
     };
@@ -30,12 +41,20 @@ export function DiffView({ buildId, target, stamp }: { buildId: string; target: 
   return (
     <div className="diff">
       <p className="diff__summary muted">
-        {files.length} file{files.length === 1 ? '' : 's'} changed from <span className="mono">{diff.base.slice(0, 8)}</span> to <span className="mono">{diff.head.slice(0, 8)}</span>, read from git by CSM
+        {files.length} file{files.length === 1 ? '' : 's'} changed from{' '}
+        <span className="mono">{diff.base.slice(0, 8)}</span> to{' '}
+        <span className="mono">{diff.head.slice(0, 8)}</span>, read from git by CSM
       </p>
+
       {files.map((f, i) => (
         <DiffFileBlock key={f.path} file={f} startOpen={files.length <= 6 || i < 2} />
       ))}
-      {diff.truncated ? <p className="muted">The diff is larger than 400 KB and was cut off; open the worktree to see all of it.</p> : null}
+
+      {diff.truncated ? (
+        <p className="muted">
+          The diff is larger than 400 KB and was cut off; open the worktree to see all of it.
+        </p>
+      ) : null}
     </div>
   );
 }

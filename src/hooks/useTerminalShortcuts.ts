@@ -13,16 +13,20 @@ export function useTerminalShortcuts() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const mod = e.metaKey || e.ctrlKey;
+
       if (!mod) return;
+
       const t = useTerminal.getState();
       const key = e.key.toLowerCase();
 
       if (key === 't' && !e.shiftKey && !e.altKey) {
         e.preventDefault();
         if (!onTerminal) nav('/terminal');
+
         void t.newTab();
         return;
       }
+
       if (!onTerminal) return;
 
       if (key === 't' && e.shiftKey) {
@@ -30,11 +34,15 @@ export function useTerminalShortcuts() {
         void t.reopenTab();
       } else if (key === 'w' && !e.shiftKey) {
         e.preventDefault();
+
         const tab = t.activeTab();
+
         if (tab) void t.closePane(tab.activePaneId);
       } else if (key === 'w' && e.shiftKey) {
         e.preventDefault();
+
         const tab = t.activeTab();
+
         if (tab) void t.closeTab(tab.id);
       } else if (key === 'd' && !e.shiftKey) {
         e.preventDefault();
@@ -62,16 +70,20 @@ export function useTerminalShortcuts() {
         t.cycleFocus(-1);
       } else if (/^[1-9]$/.test(e.key) && !e.shiftKey && !e.altKey) {
         const tab = t.tabs[Number(e.key) - 1];
+
         if (tab) {
           e.preventDefault();
           t.activateTab(tab.id);
         }
       } else if (key === 'k' && e.shiftKey) {
         e.preventDefault();
+
         const tab = t.activeTab();
+
         if (tab) handles.get(tab.activePaneId)?.term.clear();
       }
     };
+
     window.addEventListener('keydown', onKey, true);
     return () => window.removeEventListener('keydown', onKey, true);
   }, [nav, onTerminal]);

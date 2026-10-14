@@ -1,5 +1,11 @@
 import type { IconSvgElement } from '@hugeicons/react';
-import { Asterisk02Icon, BracesIcon, Cursor02Icon, Diamond02Icon, GithubIcon } from '@hugeicons/core-free-icons';
+import {
+  Asterisk02Icon,
+  BracesIcon,
+  Cursor02Icon,
+  Diamond02Icon,
+  GithubIcon,
+} from '@hugeicons/core-free-icons';
 import type { ProviderID } from '@/types';
 
 export const PROVIDER_ICON: Record<ProviderID, IconSvgElement> = {

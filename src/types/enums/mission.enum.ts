@@ -1,4 +1,5 @@
-export type SessionStatus = 'attention' | 'waiting' | 'running' | 'idle' | 'completed' | 'disconnected';
+export type SessionStatus =
+  'attention' | 'waiting' | 'running' | 'idle' | 'completed' | 'disconnected';
 
 export type AttentionKind = 'exit' | 'usage_limit' | 'login' | 'handoff';
 

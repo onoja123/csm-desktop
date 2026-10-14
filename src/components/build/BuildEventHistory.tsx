@@ -3,6 +3,7 @@ import type { Build } from '@/types';
 
 export function BuildEventHistory({ build }: { build: Build }) {
   const events = [...build.events].reverse();
+
   return (
     <ol className="build-history">
       {events.map((e, i) => (
@@ -14,6 +15,7 @@ export function BuildEventHistory({ build }: { build: Build }) {
               second: '2-digit',
             })}
           </span>
+
           <span className="build-history__msg selectable">{e.message}</span>
           {e.task_id ? <span className="build-history__task mono">{e.task_id}</span> : null}
         </li>

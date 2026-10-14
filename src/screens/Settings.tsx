@@ -19,10 +19,14 @@ export function Settings() {
   const restart = async () => {
     setBusy(true);
     setNote(undefined);
+
     try {
       await service.stop().catch(() => undefined);
       await service.start();
-      setNote('Service restarted. Agents started before the restart keep running in their own terminals; this app no longer shows their output.');
+
+      setNote(
+        'Service restarted. Agents started before the restart keep running in their own terminals; this app no longer shows their output.',
+      );
     } catch (e) {
       setNote(String(e));
     } finally {
@@ -33,33 +37,49 @@ export function Settings() {
   return (
     <Page>
       <PageHeader title="Settings" />
+
       <Section title="Approvals">
         <Panel>
           <div className="setting-row">
             <div>
               <h4 className="panel__h4">Route shell commands through CSM Desktop</h4>
-              <p className="muted">When Claude Code wants to run a shell command, ask here first. Without an answer in ten minutes, or when this app is closed, Claude Code falls back to its own prompt. Other agents keep their terminal prompts.</p>
+
+              <p className="muted">
+                When Claude Code wants to run a shell command, ask here first. Without an answer in
+                ten minutes, or when this app is closed, Claude Code falls back to its own prompt.
+                Other agents keep their terminal prompts.
+              </p>
             </div>
-            <Toggle checked={settings?.approvals_enabled ?? true} onChange={(v) => void api.updateSettings({ approvals_enabled: v })} label="Route approvals" />
+
+            <Toggle
+              checked={settings?.approvals_enabled ?? true}
+              onChange={(v) => void api.updateSettings({ approvals_enabled: v })}
+              label="Route approvals"
+            />
           </div>
         </Panel>
       </Section>
+
       <Section title="Terminal">
         <TerminalSettingsPanel />
       </Section>
+
       <Section title="Failover">
         <FailoverPanel />
       </Section>
+
       <Section title="Service">
         <Panel>
           <Row label="csm">
             <span className="mono">{info?.csm_path ?? 'not found'}</span>
             {info?.csm_version ? <span className="muted"> · {info.csm_version}</span> : null}
           </Row>
+
           <Row label="Service">
             {status ? (
               <>
                 <span className="mono">{status.service.version}</span>
+
                 <span className="muted">
                   {' '}
                   · pid {status.service.pid} · up since {ago(status.service.started_at)}
@@ -69,30 +89,45 @@ export function Settings() {
               'not connected'
             )}
           </Row>
+
           <Row label="Socket" mono>
             {info?.socket}
           </Row>
+
           <Row label="State directory" mono>
             {info?.home}
           </Row>
+
           <div className="panel__actions">
             <Button onClick={() => info && void openPath(info.home)}>Reveal state directory</Button>
+
             <Button onClick={() => void restart()} loading={busy}>
               Restart service
             </Button>
           </div>
+
           {note ? <p className="muted">{note}</p> : null}
         </Panel>
       </Section>
+
       <Section title="Agents">
         <Panel>
           {status?.providers.map((p) => {
             const limits = limitations(p);
+
             return (
               <Row key={p.id} label={PROVIDER_LONG_NAMES[p.id] ?? p.name}>
-                {p.installed && !p.error ? <span className="mono">{p.version ?? 'installed'}</span> : <span className="muted">{p.error ?? 'not installed'}</span>}
+                {p.installed && !p.error ? (
+                  <span className="mono">{p.version ?? 'installed'}</span>
+                ) : (
+                  <span className="muted">{p.error ?? 'not installed'}</span>
+                )}
+
                 {limits.length ? (
-                  <ul className="agent-limits muted" aria-label={`What CSM cannot do with ${p.name}`}>
+                  <ul
+                    className="agent-limits muted"
+                    aria-label={`What CSM cannot do with ${p.name}`}
+                  >
                     {limits.map((l) => (
                       <li key={l}>{l}</li>
                     ))}
@@ -103,6 +138,7 @@ export function Settings() {
           })}
         </Panel>
       </Section>
+
       <Section title="Shortcuts">
         <Panel>
           <Row label="Command palette">⌘K</Row>

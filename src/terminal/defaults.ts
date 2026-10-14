@@ -12,4 +12,3 @@ export const DEFAULT_SETTINGS: TerminalSettings = {
   copyOnSelect: false,
   confirmCloseRunning: true,
 };
-

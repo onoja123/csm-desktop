@@ -9,6 +9,7 @@ export function OutcomeCheckCircle({ state }: { state: OutcomeFactState }) {
         <Icon icon={MinusSignIcon} size="sm" />
       </span>
     );
+
   return (
     <span className={`cc cc--${state}`}>
       <Icon icon={state === 'failed' ? Cancel01Icon : Tick02Icon} size="sm" />

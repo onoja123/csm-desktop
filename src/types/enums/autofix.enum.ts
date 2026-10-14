@@ -18,9 +18,15 @@ export type RunState =
   | 'failed'
   | 'cancelled';
 
-export type Reproduction = 'not_attempted' | 'reproduced' | 'not_reproduced' | 'inconclusive' | 'blocked';
+export type Reproduction =
+  'not_attempted' | 'reproduced' | 'not_reproduced' | 'inconclusive' | 'blocked';
 
-export type Verdict = 'not_run' | 'fixed_and_verified' | 'tests_passed_reproduction_unconfirmed' | 'verification_failed' | 'verification_blocked';
+export type Verdict =
+  | 'not_run'
+  | 'fixed_and_verified'
+  | 'tests_passed_reproduction_unconfirmed'
+  | 'verification_failed'
+  | 'verification_blocked';
 
 export type AutofixTab = 'incidents' | 'settings';
 

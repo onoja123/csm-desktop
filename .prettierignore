@@ -1,0 +1,7 @@
+dist
+src-tauri
+brand
+package-lock.json
+tsconfig.tsbuildinfo
+*.css
+*.md

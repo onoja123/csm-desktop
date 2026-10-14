@@ -1,7 +1,11 @@
 import type { Activity } from '../interfaces/activity.interface';
 import type { Approval } from '../interfaces/approval.interface';
 import type { RunOutput } from '../interfaces/agent.interface';
-import type { BuildChangedPayload, HelloPayload, RunExitPayload } from '../interfaces/event.interface';
+import type {
+  BuildChangedPayload,
+  HelloPayload,
+  RunExitPayload,
+} from '../interfaces/event.interface';
 
 export type TauriCallback = (payload: unknown) => void;
 

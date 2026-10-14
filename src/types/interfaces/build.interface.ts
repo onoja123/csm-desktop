@@ -1,6 +1,13 @@
 import type { ProviderID } from '../enums/agent.enum';
 import type { RunState, Verdict } from '../enums/autofix.enum';
-import type { BuildAttemptRole, BuildAttemptStatus, BuildRecovery, BuildStatus, BuildTaskKind, BuildTaskStatus } from '../enums/build.enum';
+import type {
+  BuildAttemptRole,
+  BuildAttemptStatus,
+  BuildRecovery,
+  BuildStatus,
+  BuildTaskKind,
+  BuildTaskStatus,
+} from '../enums/build.enum';
 import type { Investigation, RunVerification } from './autofix.interface';
 import type { CheckDef, CheckResult } from './build-check.interface';
 import type { Finding, ReviewRound } from './build-review.interface';

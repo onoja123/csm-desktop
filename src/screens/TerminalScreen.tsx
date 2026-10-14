@@ -24,9 +24,12 @@ export function TerminalScreen() {
     const params = new URLSearchParams(loc.search);
     const cwd = params.get('cwd');
     const runId = params.get('run');
+
     if (!hydrated) return;
+
     if (runId) {
       const run = runs.find((r) => r.id === runId);
+
       openAgentTab(runId, run ? `${run.provider} · ${run.account}` : 'agent');
       nav('/terminal', { replace: true });
     } else if (cwd) {
@@ -40,15 +43,26 @@ export function TerminalScreen() {
     <div className="term-screen">
       <TerminalTabs />
       <TerminalSearch />
+
       <div className="term-screen__body">
         {tab ? (
           <PaneLayout key={tab.id} tab={tab} />
         ) : (
           <div className="term-screen__empty">
-            <EmptyState icon={ComputerTerminal01Icon} title="No terminal open" body="Open a shell in your home directory, or start one in a project from an agent's page." action={<Button variant="primary" onClick={() => void newTab()}>New terminal</Button>} />
+            <EmptyState
+              icon={ComputerTerminal01Icon}
+              title="No terminal open"
+              body="Open a shell in your home directory, or start one in a project from an agent's page."
+              action={
+                <Button variant="primary" onClick={() => void newTab()}>
+                  New terminal
+                </Button>
+              }
+            />
           </div>
         )}
       </div>
+
       <TerminalStatus />
     </div>
   );

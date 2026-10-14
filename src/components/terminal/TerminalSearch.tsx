@@ -18,7 +18,17 @@ export function TerminalSearch() {
   }, [searchOpen, handle]);
 
   if (!searchOpen) return null;
-  const opts = { caseSensitive, decorations: { matchBackground: '#3a3a3a', activeMatchBackground: '#7a7a76', matchOverviewRuler: '#7a7a76', activeMatchColorOverviewRuler: '#ededea' } };
+
+  const opts = {
+    caseSensitive,
+    decorations: {
+      matchBackground: '#3a3a3a',
+      activeMatchBackground: '#7a7a76',
+      matchOverviewRuler: '#7a7a76',
+      activeMatchColorOverviewRuler: '#ededea',
+    },
+  };
+
   const next = () => handle?.search.findNext(query, opts);
   const prev = () => handle?.search.findPrevious(query, opts);
 
@@ -38,15 +48,23 @@ export function TerminalSearch() {
           if (e.key === 'Escape') setSearchOpen(false);
         }}
       />
-      <button className={`term-search__btn ${caseSensitive ? 'term-search__btn--on' : ''}`} onClick={() => setCaseSensitive((v) => !v)} title="Match case">
+
+      <button
+        className={`term-search__btn ${caseSensitive ? 'term-search__btn--on' : ''}`}
+        onClick={() => setCaseSensitive((v) => !v)}
+        title="Match case"
+      >
         Aa
       </button>
+
       <button className="term-search__btn" onClick={prev} title="Previous (Shift+Enter)">
         <Icon icon={ArrowUp01Icon} size="sm" />
       </button>
+
       <button className="term-search__btn" onClick={next} title="Next (Enter)">
         <Icon icon={ArrowDown01Icon} size="sm" />
       </button>
+
       <button className="term-search__btn" onClick={() => setSearchOpen(false)} title="Close (Esc)">
         <Icon icon={Cancel01Icon} size="sm" />
       </button>

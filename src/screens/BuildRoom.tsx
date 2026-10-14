@@ -19,7 +19,13 @@ export function BuildRoom() {
     void refresh('builds');
   }, [refresh]);
 
-  const groups = useMemo(() => GROUP_ORDER.map((g) => ({ key: g, runs: builds.filter((b) => groupOf(b) === g) })).filter((g) => g.runs.length), [builds]);
+  const groups = useMemo(
+    () =>
+      GROUP_ORDER.map((g) => ({ key: g, runs: builds.filter((b) => groupOf(b) === g) })).filter(
+        (g) => g.runs.length,
+      ),
+    [builds],
+  );
 
   const header = (
     <PageHeader
@@ -45,16 +51,19 @@ export function BuildRoom() {
   return (
     <Page>
       {header}
+
       {error ? (
         <div className="mc-notice" role="alert">
           <span>
             Build runs could not be loaded: <span className="selectable">{error}</span>
           </span>
+
           <Button size="sm" onClick={() => void refresh('builds')}>
             Retry
           </Button>
         </div>
       ) : null}
+
       {builds.length === 0 && !error ? (
         <EmptyState
           icon={WorkflowSquare03Icon}
@@ -73,6 +82,7 @@ export function BuildRoom() {
               <span>{GROUP_TITLE[g.key]}</span>
               <span className="build-group__count">{g.runs.length}</span>
             </header>
+
             <div className="list list--tight">
               {g.runs.map((b) => (
                 <BuildRow key={b.id} build={b} />

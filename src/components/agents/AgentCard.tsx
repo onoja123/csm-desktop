@@ -17,29 +17,45 @@ export function AgentCard({ run, compact = false }: { run: AnyRun; compact?: boo
   return (
     <Link to={to} className={`agent-card ${compact ? 'agent-card--compact' : ''}`}>
       <AgentIcon provider={run.provider} size={compact ? 'lg' : 'xl'} />
+
       <div className="agent-card__body">
         <div className="agent-card__top">
-          <span className="agent-card__name">{PROVIDER_LONG_NAMES[run.provider] ?? run.provider}</span>
+          <span className="agent-card__name">
+            {PROVIDER_LONG_NAMES[run.provider] ?? run.provider}
+          </span>
+
           <AgentStatus run={run} />
         </div>
-        <p className="agent-card__task">{task?.summary || task?.note || (run.status === 'running' ? 'Waiting for the first request' : 'No task recorded')}</p>
+
+        <p className="agent-card__task">
+          {task?.summary ||
+            task?.note ||
+            (run.status === 'running' ? 'Waiting for the first request' : 'No task recorded')}
+        </p>
+
         <div className="agent-card__meta">
           <span className="mono">{run.account}</span>
           <span className="agent-card__sep" />
+
           <span>
             <Icon icon={Folder02Icon} size="sm" /> {baseName(run.project_dir)}
           </span>
+
           {'branch' in run && run.branch ? (
             <span>
               <Icon icon={GitBranchIcon} size="sm" /> {run.branch}
             </span>
           ) : null}
+
           <span className="agent-card__sep" />
           <span>{duration(seconds)}</span>
           {files > 0 ? <span>{plural(files, 'file')} touched</span> : null}
         </div>
       </div>
-      {run.kind !== 'external' ? <Icon icon={ArrowRight01Icon} size="md" className="agent-card__chevron" /> : null}
+
+      {run.kind !== 'external' ? (
+        <Icon icon={ArrowRight01Icon} size="md" className="agent-card__chevron" />
+      ) : null}
     </Link>
   );
 }

@@ -45,6 +45,7 @@ describe('components', () => {
         <AgentCard run={run} />
       </MemoryRouter>,
     );
+
     expect(screen.getByText('Implement payment retry logic')).toBeInTheDocument();
     expect(screen.getByText('work')).toBeInTheDocument();
     expect(screen.getByText('feature/payment-retry')).toBeInTheDocument();
@@ -58,13 +59,24 @@ describe('components', () => {
         <AccountCard account={account} />
       </MemoryRouter>,
     );
+
     expect(screen.getByText('Usage unknown')).toBeInTheDocument();
     expect(screen.getByText(/Rate limited/)).toBeInTheDocument();
   });
 
   it('requires a second step before approving a destructive command', () => {
-    const approval: Approval = { id: 'a', provider: 'claude', account: 'work', tool_name: 'Bash', command: 'rm -rf dist', destructive: true, requested_at: new Date().toISOString() };
+    const approval: Approval = {
+      id: 'a',
+      provider: 'claude',
+      account: 'work',
+      tool_name: 'Bash',
+      command: 'rm -rf dist',
+      destructive: true,
+      requested_at: new Date().toISOString(),
+    };
+
     const onDecide = vi.fn();
+
     render(<ApprovalCard approval={approval} onDecide={onDecide} />);
     fireEvent.click(screen.getByText('Approve anyway…'));
     expect(onDecide).not.toHaveBeenCalled();
@@ -75,8 +87,18 @@ describe('components', () => {
   });
 
   it('approves a plain command in one step', () => {
-    const approval: Approval = { id: 'a', provider: 'claude', account: 'work', tool_name: 'Bash', command: 'npm test', destructive: false, requested_at: new Date().toISOString() };
+    const approval: Approval = {
+      id: 'a',
+      provider: 'claude',
+      account: 'work',
+      tool_name: 'Bash',
+      command: 'npm test',
+      destructive: false,
+      requested_at: new Date().toISOString(),
+    };
+
     const onDecide = vi.fn();
+
     render(<ApprovalCard approval={approval} onDecide={onDecide} />);
     fireEvent.click(screen.getByText('Approve'));
     expect(onDecide).toHaveBeenCalledWith('allow');
@@ -84,6 +106,7 @@ describe('components', () => {
 
   it('buckets tasks by state without inventing progress', () => {
     const waiting = new Set(['r1']);
+
     expect(bucketOf(run, waiting)).toBe('waiting');
     expect(bucketOf(run, new Set())).toBe('running');
     expect(bucketOf({ ...run, status: 'exited', exit_code: 0 }, new Set())).toBe('completed');

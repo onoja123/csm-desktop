@@ -23,7 +23,10 @@ export function Home() {
   return (
     <Page>
       {pending.length > 0 ? (
-        <Section title="Approval required" meta={pending.length > 1 ? `${pending.length} waiting` : undefined}>
+        <Section
+          title="Approval required"
+          meta={pending.length > 1 ? `${pending.length} waiting` : undefined}
+        >
           <div className="list">
             {pending.map((p) => (
               <ApprovalCard key={p.id} approval={p} onDecide={(d) => void api.decide(p.id, d)} />
@@ -34,15 +37,27 @@ export function Home() {
 
       <FailoverNote />
 
-      <Section title="Agents" action={<Button variant="primary" onClick={() => openStart()}>Start agent</Button>}>
+      <Section
+        title="Agents"
+        action={
+          <Button variant="primary" onClick={() => openStart()}>
+            Start agent
+          </Button>
+        }
+      >
         <div className="agent-grid">
           {PROVIDERS.map((p) => {
             const info = status?.providers.find((i) => i.id === p);
             const run = live.find((r) => r.provider === p);
             const hasAccounts = accounts.some((a) => a.provider === p);
-            const worst = accounts.filter((a) => a.provider === p && a.enabled).map((a) => a.health);
+
+            const worst = accounts
+              .filter((a) => a.provider === p && a.enabled)
+              .map((a) => a.health);
+
             let tone: StatusTone = 'idle';
             let label = 'Idle';
+
             if (run) {
               tone = 'ok';
               label = 'Running';
@@ -60,19 +75,29 @@ export function Home() {
               tone = 'warn';
               label = 'Warning';
             }
+
             const inner = (
               <>
                 <AgentIcon provider={p} size="xl" />
+
                 <div className="agent-tile__body">
                   <span className="agent-tile__name">{PROVIDER_LONG_NAMES[p]}</span>
+
                   <StatusText tone={tone} pulse={!!run}>
                     {label}
                   </StatusText>
-                  {run ? <span className="agent-tile__task">{'task' in run && run.task.summary ? run.task.summary : 'Session open'}</span> : null}
+
+                  {run ? (
+                    <span className="agent-tile__task">
+                      {'task' in run && run.task.summary ? run.task.summary : 'Session open'}
+                    </span>
+                  ) : null}
+
                   {run ? <span className="agent-tile__account mono">{run.account}</span> : null}
                 </div>
               </>
             );
+
             return run && run.kind !== 'external' ? (
               <Link key={p} to={`/agents/${run.id}`} className="agent-tile agent-tile--link">
                 {inner}
@@ -94,16 +119,29 @@ export function Home() {
               icon={Robot01Icon}
               title="No agents running"
               body="Start Claude, Codex, Gemini or Copilot to see active tasks here."
-              action={<Button variant="primary" onClick={() => openStart()}>Start agent</Button>}
+              action={
+                <Button variant="primary" onClick={() => openStart()}>
+                  Start agent
+                </Button>
+              }
             />
           }
         />
       </Section>
 
       <div className="home__columns">
-        <Section title="Accounts" action={<Link to="/accounts" className="link">All accounts</Link>}>
+        <Section
+          title="Accounts"
+          action={
+            <Link to="/accounts" className="link">
+              All accounts
+            </Link>
+          }
+        >
           {accounts.length === 0 ? (
-            <p className="muted">No accounts yet. Add one with <code>csm account add &lt;name&gt;</code>.</p>
+            <p className="muted">
+              No accounts yet. Add one with <code>csm account add &lt;name&gt;</code>.
+            </p>
           ) : (
             <div className="list">
               {accounts.map((a) => (
@@ -112,7 +150,15 @@ export function Home() {
             </div>
           )}
         </Section>
-        <Section title="Recent activity" action={<Link to="/activity" className="link">All activity</Link>}>
+
+        <Section
+          title="Recent activity"
+          action={
+            <Link to="/activity" className="link">
+              All activity
+            </Link>
+          }
+        >
           {activity.length === 0 ? (
             <p className="muted">Nothing has happened yet.</p>
           ) : (

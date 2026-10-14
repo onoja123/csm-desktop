@@ -14,7 +14,12 @@ export interface HandoffDialogState {
   fromProvider?: ProviderID;
   fromAccount?: string;
   checkpointId?: string;
-  open: (opts: { projectDir: string; fromProvider?: ProviderID; fromAccount?: string; checkpointId?: string }) => void;
+  open: (opts: {
+    projectDir: string;
+    fromProvider?: ProviderID;
+    fromAccount?: string;
+    checkpointId?: string;
+  }) => void;
   close: () => void;
 }
 

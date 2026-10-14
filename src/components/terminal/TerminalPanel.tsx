@@ -30,12 +30,21 @@ const THEME = {
 };
 
 // The panel is a plain terminal over the run's pseudo-terminal: bytes in, bytes out, nothing interpreted in between.
-export function TerminalPanel({ runId, live, onResize }: { runId: string; live: boolean; onResize?: (cols: number, rows: number) => void }) {
+export function TerminalPanel({
+  runId,
+  live,
+  onResize,
+}: {
+  runId: string;
+  live: boolean;
+  onResize?: (cols: number, rows: number) => void;
+}) {
   const host = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal>(null);
 
   useEffect(() => {
     const el = host.current;
+
     if (!el) return;
 
     const term = new Terminal({
@@ -51,49 +60,61 @@ export function TerminalPanel({ runId, live, onResize }: { runId: string; live: 
       macOptionIsMeta: true,
       disableStdin: !live,
     });
+
     const fit = new FitAddon();
+
     term.loadAddon(fit);
     term.open(el);
     termRef.current = term;
 
     let disposed = false;
+
     const doFit = () => {
       if (disposed) return;
+
       fit.fit();
       onResize?.(term.cols, term.rows);
     };
 
     const ro = new ResizeObserver(() => doFit());
+
     ro.observe(el);
     doFit();
 
     const inputDisposable = term.onData((data) => {
       if (!live) return;
+
       void api.sendBytes(runId, encodeBase64(new TextEncoder().encode(data)));
     });
 
     let replayed = false;
     const buffered: Uint8Array[] = [];
+
     const unsubscribe = outputBus.subscribe(runId, (bytes) => {
       if (replayed) term.write(bytes);
       else buffered.push(bytes);
     });
 
     let skip = 0;
+
     void api
       .runOutput(runId)
       .then((res) => {
         if (disposed) return;
         if (!res.data) return;
+
         const bytes = decodeBase64(res.data);
+
         term.write(bytes);
         skip = replayedChunks(bytes, buffered);
       })
       .catch(() => undefined)
       .finally(() => {
         if (disposed) return;
+
         replayed = true;
         for (const b of buffered.slice(skip)) term.write(b);
+
         buffered.length = 0;
         term.scrollToBottom();
         if (live) term.focus();

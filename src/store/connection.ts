@@ -9,24 +9,33 @@ let ticking = false;
 
 function startTicker() {
   if (ticking) return;
+
   ticking = true;
+
   setInterval(() => {
     const data = useData.getState();
+
     if (useConnection.getState().phase !== 'connected') return;
-    if (data.runs.runs.some((r) => r.status === 'running') || data.runs.external.length > 0) void data.refresh('runs');
+
+    if (data.runs.runs.some((r) => r.status === 'running') || data.runs.external.length > 0)
+      void data.refresh('runs');
   }, 10000);
 }
 
 async function attachListeners() {
   if (listening) return;
+
   listening = true;
+
   await listen<ConnectionEventPayload>('csm:connection', (ev) => {
     useConnection.getState().setConnected(ev.payload.connected, ev.payload.error);
   });
+
   await listen<StreamEvent>('csm:event', (ev) => {
     useConnection.setState({ lastEventAt: Date.now() });
     useData.getState().handleEvent(ev.payload);
   });
+
   await service.subscribe();
   startTicker();
 }
@@ -48,6 +57,7 @@ export const useConnection = create<ConnectionState>((set, get) => ({
 
   async bootstrap() {
     set({ phase: 'connecting', error: undefined });
+
     let info: ServiceInfo | undefined;
 
     try {

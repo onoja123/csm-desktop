@@ -15,7 +15,16 @@ export function IncidentList({ onSetup }: { onSetup: () => void }) {
   const [startError, setStartError] = useState<string>();
 
   if (!loaded && !error) return <LoadingState label="Reading incidents" />;
-  if (error) return <ErrorState title="Incidents could not be loaded" body={error} action={<Button onClick={() => void refresh('signals')}>Retry</Button>} />;
+
+  if (error)
+    return (
+      <ErrorState
+        title="Incidents could not be loaded"
+        body={error}
+        action={<Button onClick={() => void refresh('signals')}>Retry</Button>}
+      />
+    );
+
   if (!incidents.length)
     return (
       <EmptyState
@@ -33,6 +42,7 @@ export function IncidentList({ onSetup }: { onSetup: () => void }) {
   const start = async (id: string) => {
     setBusy(id);
     setStartError(undefined);
+
     try {
       await api.startIncidentRun(id);
       await refresh('signals');
@@ -46,8 +56,15 @@ export function IncidentList({ onSetup }: { onSetup: () => void }) {
   return (
     <div className="list list--tight af-incidents">
       {startError ? <p className="form-error">{startError}</p> : null}
+
       {incidents.map((i) => (
-        <IncidentRow key={i.id} incident={i} runs={builds.filter((b) => (i.runs ?? []).includes(b.id))} busy={busy === i.id} onStart={() => void start(i.id)} />
+        <IncidentRow
+          key={i.id}
+          incident={i}
+          runs={builds.filter((b) => (i.runs ?? []).includes(b.id))}
+          busy={busy === i.id}
+          onStart={() => void start(i.id)}
+        />
       ))}
     </div>
   );

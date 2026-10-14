@@ -5,8 +5,16 @@ import { titleFromCwd } from '@/terminal/store';
 describe('terminal layout', () => {
   it('splits a leaf and joins splits in the same direction', () => {
     let node = leaf('a');
+
     node = splitPane(node, 'a', 'b', 'row');
-    expect(node).toEqual({ type: 'split', direction: 'row', children: [leaf('a'), leaf('b')], sizes: [0.5, 0.5] });
+
+    expect(node).toEqual({
+      type: 'split',
+      direction: 'row',
+      children: [leaf('a'), leaf('b')],
+      sizes: [0.5, 0.5],
+    });
+
     node = splitPane(node, 'b', 'c', 'row');
     expect(paneIds(node)).toEqual(['a', 'b', 'c']);
     expect(node.type === 'split' && node.sizes).toEqual([0.5, 0.25, 0.25]);
@@ -17,8 +25,16 @@ describe('terminal layout', () => {
 
   it('removes panes and collapses single-child splits', () => {
     let node = splitPane(splitPane(leaf('a'), 'a', 'b', 'row'), 'b', 'c', 'column');
+
     node = removePane(node, 'c')!;
-    expect(node).toEqual({ type: 'split', direction: 'row', children: [leaf('a'), leaf('b')], sizes: [0.5, 0.5] });
+
+    expect(node).toEqual({
+      type: 'split',
+      direction: 'row',
+      children: [leaf('a'), leaf('b')],
+      sizes: [0.5, 0.5],
+    });
+
     node = removePane(node, 'a')!;
     expect(node).toEqual(leaf('b'));
     expect(removePane(node, 'b')).toBeNull();
@@ -27,13 +43,21 @@ describe('terminal layout', () => {
   it('resizes with a minimum pane share', () => {
     const node = splitPane(leaf('a'), 'a', 'b', 'row');
     const bigger = resizeSplit(node, [], 0, 0.2);
-    expect(bigger.type === 'split' && bigger.sizes.map((s) => Math.round(s * 100))).toEqual([70, 30]);
+
+    expect(bigger.type === 'split' && bigger.sizes.map((s) => Math.round(s * 100))).toEqual([
+      70, 30,
+    ]);
+
     const clamped = resizeSplit(node, [], 0, 0.9);
-    expect(clamped.type === 'split' && clamped.sizes.map((s) => Math.round(s * 100))).toEqual([90, 10]);
+
+    expect(clamped.type === 'split' && clamped.sizes.map((s) => Math.round(s * 100))).toEqual([
+      90, 10,
+    ]);
   });
 
   it('cycles focus through panes', () => {
     const node = splitPane(splitPane(leaf('a'), 'a', 'b', 'row'), 'b', 'c', 'row');
+
     expect(neighbour(node, 'c', 1)).toBe('a');
     expect(neighbour(node, 'a', -1)).toBe('c');
   });
@@ -57,16 +81,25 @@ describe('terminal hydration', () => {
   it('keeps an agent tab opened before the terminal first loads', async () => {
     const { invoke } = await import('@tauri-apps/api/core');
     const { useTerminal } = await import('@/terminal/store');
+
     vi.mocked(invoke).mockImplementation(async (cmd) => {
       if (cmd === 'pty_shells') return [];
       if (cmd === 'pty_default_cwd') return '/Users/me';
-      if (cmd === 'pty_spawn') return { id: 's1', pid: 1, shell: '/bin/zsh', cwd: '/Users/me', cols: 80, rows: 24 };
+
+      if (cmd === 'pty_spawn')
+        return { id: 's1', pid: 1, shell: '/bin/zsh', cwd: '/Users/me', cols: 80, rows: 24 };
+
       return undefined;
     });
+
     localStorage.removeItem('csm.terminal.state');
+
     const tab = useTerminal.getState().openAgentTab('run-1', 'Invitation store');
+
     await useTerminal.getState().hydrate();
+
     const s = useTerminal.getState();
+
     expect(s.hydrated).toBe(true);
     expect(s.activeTabId).toBe(tab);
     expect(s.tabs).toHaveLength(1);

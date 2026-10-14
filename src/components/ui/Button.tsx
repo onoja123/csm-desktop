@@ -10,10 +10,34 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
 };
 
-export function Button({ variant = 'default', size = 'md', icon, loading, children, className = '', disabled, ...rest }: ButtonProps) {
+export function Button({
+  variant = 'default',
+  size = 'md',
+  icon,
+  loading,
+  children,
+  className = '',
+  disabled,
+  ...rest
+}: ButtonProps) {
   return (
-    <button className={`btn btn--${variant} btn--${size} ${className}`} disabled={disabled || loading} {...rest}>
-      {loading ? <HugeiconsIcon icon={Loading03Icon} strokeWidth={2} size={14} className="spin" aria-hidden="true" /> : icon ? <Icon icon={icon} size="sm" /> : null}
+    <button
+      className={`btn btn--${variant} btn--${size} ${className}`}
+      disabled={disabled || loading}
+      {...rest}
+    >
+      {loading ? (
+        <HugeiconsIcon
+          icon={Loading03Icon}
+          strokeWidth={2}
+          size={14}
+          className="spin"
+          aria-hidden="true"
+        />
+      ) : icon ? (
+        <Icon icon={icon} size="sm" />
+      ) : null}
+
       {children}
     </button>
   );

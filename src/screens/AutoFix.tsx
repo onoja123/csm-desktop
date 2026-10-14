@@ -21,6 +21,7 @@ export function AutoFix() {
         title="AutoFix"
         subtitle="Production errors become engineering runs: CSM investigates, reproduces the failure in a sandbox, fixes it with your agents, verifies the fix and prepares a pull request for you to review."
       />
+
       <Tabs<AutofixTab>
         tabs={[
           { id: 'incidents', label: 'Incidents' },
@@ -29,7 +30,12 @@ export function AutoFix() {
         value={tab}
         onChange={setTab}
       />
-      {tab === 'incidents' ? <IncidentList onSetup={() => setTab('settings')} /> : <AutofixSettings />}
+
+      {tab === 'incidents' ? (
+        <IncidentList onSetup={() => setTab('settings')} />
+      ) : (
+        <AutofixSettings />
+      )}
     </Page>
   );
 }

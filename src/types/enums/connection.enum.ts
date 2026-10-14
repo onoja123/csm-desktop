@@ -1,1 +1,2 @@
-export type ConnectionPhase = 'booting' | 'connecting' | 'starting' | 'connected' | 'disconnected' | 'missing';
+export type ConnectionPhase =
+  'booting' | 'connecting' | 'starting' | 'connected' | 'disconnected' | 'missing';

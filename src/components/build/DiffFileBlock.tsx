@@ -9,7 +9,15 @@ function lineClass(line: string): string {
   if (line.startsWith('@@')) return 'diff__line diff__line--hunk';
   if (line.startsWith('+')) return 'diff__line diff__line--add';
   if (line.startsWith('-')) return 'diff__line diff__line--del';
-  if (line.startsWith('new file') || line.startsWith('deleted file') || line.startsWith('similarity') || line.startsWith('rename')) return 'diff__line diff__line--meta';
+
+  if (
+    line.startsWith('new file') ||
+    line.startsWith('deleted file') ||
+    line.startsWith('similarity') ||
+    line.startsWith('rename')
+  )
+    return 'diff__line diff__line--meta';
+
   return 'diff__line';
 }
 
@@ -17,6 +25,7 @@ export function DiffFileBlock({ file, startOpen }: { file: FileDiff; startOpen: 
   const [open, setOpen] = useState(startOpen);
   const [all, setAll] = useState(false);
   const shown = all ? file.lines : file.lines.slice(0, MAX_LINES_OPEN);
+
   return (
     <div className="diff__file">
       <button className="diff__file-head" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
@@ -25,6 +34,7 @@ export function DiffFileBlock({ file, startOpen }: { file: FileDiff; startOpen: 
         <span className="diff__count diff__count--add">+{file.added}</span>
         <span className="diff__count diff__count--del">−{file.removed}</span>
       </button>
+
       {open ? (
         <pre className="diff__body selectable">
           {shown.map((l, i) => (
@@ -32,6 +42,7 @@ export function DiffFileBlock({ file, startOpen }: { file: FileDiff; startOpen: 
               {l || ' '}
             </div>
           ))}
+
           {!all && file.lines.length > MAX_LINES_OPEN ? (
             <button className="link diff__more" onClick={() => setAll(true)}>
               Show {file.lines.length - MAX_LINES_OPEN} more lines

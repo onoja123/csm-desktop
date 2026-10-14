@@ -16,17 +16,22 @@ export function TerminalStatus() {
       setBranch('');
       return;
     }
+
     let cancelled = false;
+
     invoke<string>('git_branch', { cwd })
       .then((b) => !cancelled && setBranch(b))
       .catch(() => !cancelled && setBranch(''));
+
     return () => {
       cancelled = true;
     };
   }, [cwd]);
 
   if (!pane) return null;
+
   const shown = homeDir && cwd.startsWith(homeDir) ? '~' + cwd.slice(homeDir.length) : cwd;
+
   return (
     <div className="term-status">
       {pane.kind === 'shell' ? (
@@ -34,14 +39,17 @@ export function TerminalStatus() {
           <span className="mono selectable">{shown}</span>
           <span className="term-status__sep" />
           <span>{pane.shell?.split('/').pop() ?? 'shell'}</span>
+
           {branch ? (
             <>
               <span className="term-status__sep" />
+
               <span className="term-status__branch">
                 <Icon icon={GitBranchIcon} size="sm" /> {branch}
               </span>
             </>
           ) : null}
+
           {pane.exited ? (
             <>
               <span className="term-status__sep" />
@@ -52,6 +60,7 @@ export function TerminalStatus() {
       ) : (
         <span>Attached to an agent session</span>
       )}
+
       <span className="term-status__hint">
         <Kbd>⌘T</Kbd> new <Kbd>⌘D</Kbd> split <Kbd>⌘F</Kbd> search <Kbd>⌘K</Kbd> actions
       </span>

@@ -8,20 +8,40 @@ describe('api client', () => {
 
   it('parses JSON bodies and passes method, path and body through', async () => {
     mocked.mockResolvedValueOnce({ status: 200, body: '{"accounts":2}' });
+
     const res = await api.status();
+
     expect(res).toEqual({ accounts: 2 });
-    expect(mocked).toHaveBeenCalledWith('csm_request', { method: 'GET', path: '/v1/status', body: null });
+
+    expect(mocked).toHaveBeenCalledWith('csm_request', {
+      method: 'GET',
+      path: '/v1/status',
+      body: null,
+    });
   });
 
   it('serialises request bodies', async () => {
     mocked.mockResolvedValueOnce({ status: 200, body: '{"ok":true}' });
     await api.setPriority('work', 2);
-    expect(mocked).toHaveBeenCalledWith('csm_request', { method: 'POST', path: '/v1/accounts/work/priority', body: '{"position":2}' });
+
+    expect(mocked).toHaveBeenCalledWith('csm_request', {
+      method: 'POST',
+      path: '/v1/accounts/work/priority',
+      body: '{"position":2}',
+    });
   });
 
   it('turns service errors into ApiError with the message', async () => {
-    mocked.mockResolvedValueOnce({ status: 409, body: '{"error":"work is disabled; enable it first"}' });
-    await expect(api.switchAccount('work')).rejects.toMatchObject({ name: 'ApiError', status: 409, message: 'work is disabled; enable it first' });
+    mocked.mockResolvedValueOnce({
+      status: 409,
+      body: '{"error":"work is disabled; enable it first"}',
+    });
+
+    await expect(api.switchAccount('work')).rejects.toMatchObject({
+      name: 'ApiError',
+      status: 409,
+      message: 'work is disabled; enable it first',
+    });
   });
 
   it('keeps a non-JSON error body as the message', async () => {
@@ -37,6 +57,10 @@ describe('api client', () => {
   it('builds query strings for MCP project lookups', async () => {
     mocked.mockResolvedValueOnce({ status: 200, body: '[]' });
     await api.mcp('/tmp/a b');
-    expect(mocked).toHaveBeenCalledWith('csm_request', expect.objectContaining({ path: '/v1/mcp?project_dir=%2Ftmp%2Fa+b' }));
+
+    expect(mocked).toHaveBeenCalledWith(
+      'csm_request',
+      expect.objectContaining({ path: '/v1/mcp?project_dir=%2Ftmp%2Fa+b' }),
+    );
   });
 });

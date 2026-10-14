@@ -1,7 +1,13 @@
 import type { PaneMap } from '../aliases/terminal-pane.alias';
 import type { Health } from '../enums/account.enum';
 import type { ProviderID } from '../enums/agent.enum';
-import type { AgentSessionKind, AttentionKind, SessionGroupBy, SessionStatus, SessionStatusFilter } from '../enums/mission.enum';
+import type {
+  AgentSessionKind,
+  AttentionKind,
+  SessionGroupBy,
+  SessionStatus,
+  SessionStatusFilter,
+} from '../enums/mission.enum';
 import type { PaneKind } from '../enums/terminal.enum';
 import type { Account } from './account.interface';
 import type { Activity } from './activity.interface';

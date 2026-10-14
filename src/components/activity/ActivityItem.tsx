@@ -1,5 +1,19 @@
 import type { IconSvgElement } from '@hugeicons/react';
-import { ArrowDataTransferHorizontalIcon, Bookmark02Icon, Cancel01Icon, FilterHorizontalIcon, FlashIcon, PlayIcon, PowerIcon, RadioButtonIcon, SecurityWarningIcon, StopIcon, Tick02Icon, UserIcon, WorkflowSquare03Icon } from '@hugeicons/core-free-icons';
+import {
+  ArrowDataTransferHorizontalIcon,
+  Bookmark02Icon,
+  Cancel01Icon,
+  FilterHorizontalIcon,
+  FlashIcon,
+  PlayIcon,
+  PowerIcon,
+  RadioButtonIcon,
+  SecurityWarningIcon,
+  StopIcon,
+  Tick02Icon,
+  UserIcon,
+  WorkflowSquare03Icon,
+} from '@hugeicons/core-free-icons';
 import { Link } from 'react-router-dom';
 import { IconTile } from '@/components/ui';
 import { providerIcon } from '@/lib/provider-icons';
@@ -36,27 +50,54 @@ function iconFor(a: Activity): { icon: IconSvgElement; tone?: StatusTone } {
     case 'session.resumed':
       return { icon: PlayIcon };
     default:
-      if (a.kind.startsWith('build.')) return { icon: a.kind === 'build.fallback.handoff' || a.kind === 'build.fallback.account' ? ArrowDataTransferHorizontalIcon : WorkflowSquare03Icon, tone: a.kind.endsWith('failed') || a.kind.endsWith('attention') || a.kind.endsWith('conflict') ? 'err' : a.kind.endsWith('completed') ? 'ok' : undefined };
-      if (a.kind.startsWith('handoff.')) return { icon: ArrowDataTransferHorizontalIcon, tone: a.kind.endsWith('failed') ? 'err' : a.kind.endsWith('target_started') ? 'ok' : undefined };
+      if (a.kind.startsWith('build.'))
+        return {
+          icon:
+            a.kind === 'build.fallback.handoff' || a.kind === 'build.fallback.account'
+              ? ArrowDataTransferHorizontalIcon
+              : WorkflowSquare03Icon,
+          tone:
+            a.kind.endsWith('failed') || a.kind.endsWith('attention') || a.kind.endsWith('conflict')
+              ? 'err'
+              : a.kind.endsWith('completed')
+                ? 'ok'
+                : undefined,
+        };
+
+      if (a.kind.startsWith('handoff.'))
+        return {
+          icon: ArrowDataTransferHorizontalIcon,
+          tone: a.kind.endsWith('failed')
+            ? 'err'
+            : a.kind.endsWith('target_started')
+              ? 'ok'
+              : undefined,
+        };
+
       return a.provider ? { icon: providerIcon(a.provider) } : { icon: RadioButtonIcon };
   }
 }
 
 export function ActivityItem({ activity, dense = false }: { activity: Activity; dense?: boolean }) {
   const { icon, tone } = iconFor(activity);
+
   const body = (
     <>
       <IconTile icon={icon} size={dense ? 'md' : 'lg'} tone={tone} />
+
       <div className="activity__main">
         <span className="activity__title">{activity.title}</span>
         {activity.detail ? <span className="activity__detail">{activity.detail}</span> : null}
       </div>
+
       <time className="activity__time" dateTime={activity.at}>
         {ago(activity.at)}
       </time>
     </>
   );
+
   const build = activity.refs?.build;
+
   if (build) {
     return (
       <Link to={`/build/${build}`} className={`activity ${dense ? 'activity--dense' : ''}`}>
@@ -64,12 +105,17 @@ export function ActivityItem({ activity, dense = false }: { activity: Activity; 
       </Link>
     );
   }
+
   if (activity.run_id) {
     return (
-      <Link to={`/agents/${activity.run_id}`} className={`activity ${dense ? 'activity--dense' : ''}`}>
+      <Link
+        to={`/agents/${activity.run_id}`}
+        className={`activity ${dense ? 'activity--dense' : ''}`}
+      >
         {body}
       </Link>
     );
   }
+
   return <div className={`activity ${dense ? 'activity--dense' : ''}`}>{body}</div>;
 }

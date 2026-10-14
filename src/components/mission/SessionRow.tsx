@@ -6,9 +6,20 @@ import { statusTone } from '@/lib/mission';
 import { duration, liveSeconds } from '@/lib/format';
 import type { AgentSession } from '@/types';
 
-export const SessionRow = memo(function SessionRow({ session: s, selected, now, onSelect }: { session: AgentSession; selected: boolean; now: number; onSelect: (id: string) => void }) {
+export const SessionRow = memo(function SessionRow({
+  session: s,
+  selected,
+  now,
+  onSelect,
+}: {
+  session: AgentSession;
+  selected: boolean;
+  now: number;
+  onSelect: (id: string) => void;
+}) {
   const elapsed = duration(liveSeconds(s.startedAt, s.endedAt, now));
   const tone = statusTone(s.status);
+
   return (
     <div
       role="row"
@@ -24,16 +35,28 @@ export const SessionRow = memo(function SessionRow({ session: s, selected, now, 
       }}
     >
       <AgentIcon provider={s.provider} size="md" />
+
       <div className="mc-row__main">
         <div className="mc-row__head">
           <span className="mc-row__name">{s.providerName}</span>
           <span className="mc-row__account mono">{s.account}</span>
           {s.switched ? <span className="mc-row__switched">from {s.switched.from}</span> : null}
         </div>
-        <span className={`mc-row__title ${s.title ? '' : 'mc-row__title--none'}`}>{s.title ?? s.note ?? (s.observable ? (s.live ? 'No request recorded yet' : 'No request recorded') : 'Request not visible from here')}</span>
+
+        <span className={`mc-row__title ${s.title ? '' : 'mc-row__title--none'}`}>
+          {s.title ??
+            s.note ??
+            (s.observable
+              ? s.live
+                ? 'No request recorded yet'
+                : 'No request recorded'
+              : 'Request not visible from here')}
+        </span>
       </div>
+
       <div className="mc-row__where">
         <span className="mc-row__project">{s.project}</span>
+
         <span className="mc-row__sub">
           {s.branch ? (
             <span className="mc-row__chip">
@@ -41,6 +64,7 @@ export const SessionRow = memo(function SessionRow({ session: s, selected, now, 
               {s.branch}
             </span>
           ) : null}
+
           {s.terminal ? (
             <span className="mc-row__chip">
               <Icon icon={ComputerTerminal01Icon} size="sm" />
@@ -49,11 +73,14 @@ export const SessionRow = memo(function SessionRow({ session: s, selected, now, 
           ) : null}
         </span>
       </div>
+
       <span className="mc-row__time mono">{elapsed}</span>
+
       <div className="mc-row__status">
         <StatusText tone={tone} pulse={s.status === 'running'}>
           {s.label}
         </StatusText>
+
         {s.detail ? <span className="mc-row__detail">{s.detail}</span> : null}
       </div>
     </div>

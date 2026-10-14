@@ -11,7 +11,14 @@ function matches(kind: string, f: ActivityFilter): boolean {
     case 'agents':
       return kind.startsWith('run.') || kind === 'session.resumed';
     case 'accounts':
-      return kind === 'switch' || kind === 'switch.requested' || kind === 'account.activated' || kind === 'usage_limit' || kind === 'checkpoint' || kind === 'failover.policy';
+      return (
+        kind === 'switch' ||
+        kind === 'switch.requested' ||
+        kind === 'account.activated' ||
+        kind === 'usage_limit' ||
+        kind === 'checkpoint' ||
+        kind === 'failover.policy'
+      );
     case 'approvals':
       return kind.startsWith('approval.');
     case 'handoffs':
@@ -25,9 +32,11 @@ export function ActivityScreen() {
   const activity = useData((s) => s.activity);
   const [filter, setFilter] = useState<ActivityFilter>('all');
   const shown = activity.filter((a) => matches(a.kind, filter));
+
   return (
     <Page>
       <PageHeader title="Activity" subtitle="What CSM did and why, newest first." />
+
       <Tabs<ActivityFilter>
         tabs={[
           { id: 'all', label: 'All' },
@@ -39,8 +48,13 @@ export function ActivityScreen() {
         value={filter}
         onChange={setFilter}
       />
+
       {shown.length === 0 ? (
-        <EmptyState icon={Pulse01Icon} title="Nothing here yet" body="Agent starts, switches, approvals and handoffs appear as they happen." />
+        <EmptyState
+          icon={Pulse01Icon}
+          title="Nothing here yet"
+          body="Agent starts, switches, approvals and handoffs appear as they happen."
+        />
       ) : (
         <div className="list list--tight">
           {shown.map((a) => (

@@ -16,7 +16,16 @@ export type BuildStatus =
   | 'investigating'
   | 'reproducing';
 
-export type BuildTaskStatus = 'blocked' | 'ready' | 'assigned' | 'running' | 'needs_review' | 'completed' | 'failed' | 'needs_attention' | 'cancelled';
+export type BuildTaskStatus =
+  | 'blocked'
+  | 'ready'
+  | 'assigned'
+  | 'running'
+  | 'needs_review'
+  | 'completed'
+  | 'failed'
+  | 'needs_attention'
+  | 'cancelled';
 
 export type BuildRecovery =
   | 'retry'
@@ -61,7 +70,8 @@ export type BuildTaskKind = 'implement' | 'fix';
 
 export type BuildAttemptRole = 'plan' | 'implement' | 'fix' | 'resolve' | 'review';
 
-export type BuildAttemptStatus = 'running' | 'reported' | 'completed' | 'failed' | 'stopped' | 'interrupted';
+export type BuildAttemptStatus =
+  'running' | 'reported' | 'completed' | 'failed' | 'stopped' | 'interrupted';
 
 export type PrimaryBuildAction = 'approve-plan' | 'approve-pr' | 'finish';
 

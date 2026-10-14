@@ -11,22 +11,32 @@ export function ReceiptView({ build }: { build: Build }) {
 
   useEffect(() => {
     let live = true;
+
     api
       .buildReceipt(build.id)
       .then((r) => {
         if (!live) return;
+
         setReceipt(r);
         setError(undefined);
       })
       .catch((e) => live && setError((e as Error).message));
+
     return () => {
       live = false;
     };
   }, [build.id, build.updated_at]);
 
   if (error && !receipt) {
-    return <ErrorState title="The receipt could not be read" body="The run record may be damaged, or the CSM service is not running." detail={error} />;
+    return (
+      <ErrorState
+        title="The receipt could not be read"
+        body="The run record may be damaged, or the CSM service is not running."
+        detail={error}
+      />
+    );
   }
+
   if (!receipt) return <LoadingState label="Reading the receipt" />;
 
   const r = receipt;
@@ -38,23 +48,39 @@ export function ReceiptView({ build }: { build: Build }) {
       <div className="receipt__head">
         <StatusText tone={outcomeTone(r.outcome)}>{OUTCOME_LABEL[r.outcome]}</StatusText>
         <span className="receipt__headline">{r.headline}</span>
-        <span className="muted">{r.final ? (r.partial ? 'Final, partial evidence' : 'Final') : r.status === 'awaiting_final_approval' ? 'Awaiting your approval' : 'In progress'}</span>
+
+        <span className="muted">
+          {r.final
+            ? r.partial
+              ? 'Final, partial evidence'
+              : 'Final'
+            : r.status === 'awaiting_final_approval'
+              ? 'Awaiting your approval'
+              : 'In progress'}
+        </span>
       </div>
 
       <div className="receipt__facts">
         <Row label="Verified revision" mono>
-          {r.revision.commit ? r.revision.commit : r.revision.mixed ? 'checks ran on different revisions' : 'none yet'}
+          {r.revision.commit
+            ? r.revision.commit
+            : r.revision.mixed
+              ? 'checks ran on different revisions'
+              : 'none yet'}
         </Row>
+
         {drift ? (
           <Row label="Current branch">
             <StatusText tone={drift.same_as_verified ? 'ok' : 'warn'}>{drift.note}</StatusText>
           </Row>
         ) : null}
+
         {r.revision.branch ? (
           <Row label="Changes" mono>
             {r.revision.branch} · {r.revision.files?.length ?? 0} file(s)
           </Row>
         ) : null}
+
         <Row label="Review">
           {!r.review.enabled
             ? 'Turned off for this run'
@@ -62,15 +88,29 @@ export function ReceiptView({ build }: { build: Build }) {
               ? `${r.review.rounds[r.review.rounds.length - 1].agent}${r.review.independent ? ', a different agent' : ', not independent'}: ${r.review.rounds[r.review.rounds.length - 1].verdict || r.review.rounds[r.review.rounds.length - 1].status} · ${r.review.open_blocking} blocking open`
               : 'Not run yet'}
         </Row>
+
         <Row label="Acceptance">
-          <StatusText tone={r.acceptance.passed ? 'ok' : 'warn'}>{r.acceptance.passed ? 'Met' : 'Not met'}</StatusText> <span className="muted">{r.acceptance.reasons.join('; ')}</span>
+          <StatusText tone={r.acceptance.passed ? 'ok' : 'warn'}>
+            {r.acceptance.passed ? 'Met' : 'Not met'}
+          </StatusText>{' '}
+          <span className="muted">{r.acceptance.reasons.join('; ')}</span>
         </Row>
-        <Row label="Pull request">{r.pull_request.url ? r.pull_request.url : r.pull_request.pushed ? 'Branch pushed' : r.pull_request.state === 'not_prepared' ? 'Not prepared' : `${r.pull_request.state.replace(/_/g, ' ')}, not pushed`}</Row>
+
+        <Row label="Pull request">
+          {r.pull_request.url
+            ? r.pull_request.url
+            : r.pull_request.pushed
+              ? 'Branch pushed'
+              : r.pull_request.state === 'not_prepared'
+                ? 'Not prepared'
+                : `${r.pull_request.state.replace(/_/g, ' ')}, not pushed`}
+        </Row>
       </div>
 
       {r.partial_reasons?.length ? (
         <div className="receipt__section">
           <h4 className="panel__h4">Missing evidence</h4>
+
           <ul className="receipt__list">
             {r.partial_reasons.map((p) => (
               <li key={p}>{p}</li>
@@ -81,10 +121,19 @@ export function ReceiptView({ build }: { build: Build }) {
 
       <div className="receipt__section build-checks">
         <h4 className="panel__h4">Checks CSM ran on the integrated branch</h4>
-        {r.checks.length ? r.checks.map((c, i) => <ReceiptCheckRow key={`c-${i}`} c={c} />) : <p className="muted">No checks have run on the integrated branch yet.</p>}
+
+        {r.checks.length ? (
+          r.checks.map((c, i) => <ReceiptCheckRow key={`c-${i}`} c={c} />)
+        ) : (
+          <p className="muted">No checks have run on the integrated branch yet.</p>
+        )}
+
         {r.baseline?.length ? (
           <>
-            <h4 className="panel__h4 build-checks__sub">Base commit {r.base_commit?.slice(0, 8)}</h4>
+            <h4 className="panel__h4 build-checks__sub">
+              Base commit {r.base_commit?.slice(0, 8)}
+            </h4>
+
             {r.baseline.map((c, i) => (
               <ReceiptCheckRow key={`b-${i}`} c={c} />
             ))}
@@ -94,17 +143,23 @@ export function ReceiptView({ build }: { build: Build }) {
 
       <div className="receipt__section">
         <h4 className="panel__h4">
-          Agent claims {contradicted ? <span className="muted">· {contradicted} contradicted by what CSM measured</span> : null}
+          Agent claims{' '}
+          {contradicted ? (
+            <span className="muted">· {contradicted} contradicted by what CSM measured</span>
+          ) : null}
         </h4>
+
         {r.claims.length ? (
           <ul className="receipt__claims">
             {r.claims.map((c, i) => (
               <li key={i}>
                 <StatusText tone={claimTone(c.status)}>{CLAIM_LABEL[c.status]}</StatusText>
+
                 <span className="receipt__claim selectable">
                   {c.task_id ? <span className="mono">{c.task_id} </span> : null}
                   {c.claim}
                 </span>
+
                 <span className="muted receipt__evidence">{c.evidence}</span>
               </li>
             ))}
@@ -116,11 +171,13 @@ export function ReceiptView({ build }: { build: Build }) {
 
       <div className="receipt__section">
         <h4 className="panel__h4">Limitations</h4>
+
         <ul className="receipt__list muted">
           {r.limitations.map((l) => (
             <li key={l}>{l}</li>
           ))}
         </ul>
+
         <p className="muted">
           Terminal: <code className="selectable">csm build receipt {r.build_id}</code>
         </p>

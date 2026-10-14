@@ -13,7 +13,13 @@ import { originLabel, stepsOf, taskOf } from '@/lib/checkpoint';
 import { useTerminal } from '@/terminal/store';
 import type { Handoff, ProviderID } from '@/types';
 
-export function CheckpointDetail({ handoff, onChange }: { handoff: Handoff; onChange: (h: Handoff) => void }) {
+export function CheckpointDetail({
+  handoff,
+  onChange,
+}: {
+  handoff: Handoff;
+  onChange: (h: Handoff) => void;
+}) {
   const openHandoff = useHandoffDialog((s) => s.open);
   const home = useTerminal((s) => s.homeDir);
   const [editing, setEditing] = useState(false);
@@ -29,12 +35,24 @@ export function CheckpointDetail({ handoff, onChange }: { handoff: Handoff; onCh
         subtitle={`${handoff.git.root ? handoff.git.root.split('/').pop() + ' · ' : ''}saved ${ago(handoff.created_at)}${handoff.edits?.edited_at ? ` · edited ${ago(handoff.edits.edited_at)}` : ''}`}
         action={
           projectDir ? (
-            <Button variant="primary" icon={ArrowDataTransferHorizontalIcon} onClick={() => openHandoff({ projectDir, fromProvider: (handoff.source.provider || undefined) as ProviderID | undefined, fromAccount: handoff.source.account, checkpointId: handoff.id })}>
+            <Button
+              variant="primary"
+              icon={ArrowDataTransferHorizontalIcon}
+              onClick={() =>
+                openHandoff({
+                  projectDir,
+                  fromProvider: (handoff.source.provider || undefined) as ProviderID | undefined,
+                  fromAccount: handoff.source.account,
+                  checkpointId: handoff.id,
+                })
+              }
+            >
               Continue with another agent
             </Button>
           ) : null
         }
       />
+
       <div className="checkpoint-layout">
         <div className="checkpoint-layout__main">
           <Panel>
@@ -43,12 +61,19 @@ export function CheckpointDetail({ handoff, onChange }: { handoff: Handoff; onCh
                 <h3>Task</h3>
                 <span className="panel__meta">{originLabel(handoff)}</span>
               </div>
+
               {!editing ? (
-                <Button size="sm" variant="ghost" icon={PencilEdit01Icon} onClick={() => setEditing(true)}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  icon={PencilEdit01Icon}
+                  onClick={() => setEditing(true)}
+                >
                   Edit
                 </Button>
               ) : null}
             </div>
+
             {editing ? (
               <CheckpointEditForm
                 handoff={handoff}
@@ -60,9 +85,13 @@ export function CheckpointDetail({ handoff, onChange }: { handoff: Handoff; onCh
               />
             ) : (
               <>
-                <p className={`checkpoint-task selectable ${origin === 'none' ? 'muted' : ''}`}>{text ?? 'Not recorded'}</p>
+                <p className={`checkpoint-task selectable ${origin === 'none' ? 'muted' : ''}`}>
+                  {text ?? 'Not recorded'}
+                </p>
+
                 <h4 className="panel__h4 checkpoint-subhead">Next steps</h4>
                 <NextSteps steps={steps} />
+
                 {handoff.edits?.notes ? (
                   <>
                     <h4 className="panel__h4 checkpoint-subhead">Notes</h4>
@@ -72,6 +101,7 @@ export function CheckpointDetail({ handoff, onChange }: { handoff: Handoff; onCh
               </>
             )}
           </Panel>
+
           <Section title="Progress" meta="reported by the agent's session record">
             <Panel>
               {ctx.last_assistant ? (
@@ -80,33 +110,65 @@ export function CheckpointDetail({ handoff, onChange }: { handoff: Handoff; onCh
                   <p className="selectable">{ctx.last_assistant}</p>
                 </div>
               ) : null}
+
               <TitledList title="Files modified" items={ctx.files_modified} />
               <TitledList title="Files created" items={ctx.files_created} />
               <TitledList title="Files deleted" items={ctx.files_deleted} />
               <TitledList title="Decisions" items={ctx.decisions} />
-              <TitledList title="Commands run" items={ctx.commands} note="a record; never run again by CSM" />
+
+              <TitledList
+                title="Commands run"
+                items={ctx.commands}
+                note="a record; never run again by CSM"
+              />
+
               <TitledList title="Earlier requests" items={ctx.user_requests?.slice(0, -1)} />
-              {!ctx.last_assistant && !ctx.files_modified?.length && !ctx.commands?.length ? <p className="muted">{ctx.note || 'Nothing was recorded by the agent.'}</p> : null}
+
+              {!ctx.last_assistant && !ctx.files_modified?.length && !ctx.commands?.length ? (
+                <p className="muted">{ctx.note || 'Nothing was recorded by the agent.'}</p>
+              ) : null}
             </Panel>
           </Section>
         </div>
+
         <aside className="checkpoint-layout__side">
           <Panel>
             <div className="checkpoint-source">
               <AgentIcon provider={handoff.source.provider || undefined} size="lg" />
+
               <div>
-                <strong>{handoff.source.provider ? PROVIDER_LONG_NAMES[handoff.source.provider as ProviderID] ?? handoff.source.provider : 'No agent recorded'}</strong>
-                {handoff.source.account ? <span className="mono muted"> {handoff.source.account}</span> : null}
-                <p className="muted mono">{handoff.source.session_id ? `session ${shortSession(handoff.source.session_id)}` : 'no session'}</p>
+                <strong>
+                  {handoff.source.provider
+                    ? (PROVIDER_LONG_NAMES[handoff.source.provider as ProviderID] ??
+                      handoff.source.provider)
+                    : 'No agent recorded'}
+                </strong>
+
+                {handoff.source.account ? (
+                  <span className="mono muted"> {handoff.source.account}</span>
+                ) : null}
+
+                <p className="muted mono">
+                  {handoff.source.session_id
+                    ? `session ${shortSession(handoff.source.session_id)}`
+                    : 'no session'}
+                </p>
               </div>
             </div>
+
             <Row label="Saved">{clock(handoff.created_at)}</Row>
-            <Row label="Completeness">{handoff.completeness === 'complete' ? 'Complete' : 'Partial'}</Row>
+
+            <Row label="Completeness">
+              {handoff.completeness === 'complete' ? 'Complete' : 'Partial'}
+            </Row>
+
             <Row label="ID" mono>
               {handoff.id}
             </Row>
           </Panel>
+
           <RepoPanel handoff={handoff} home={home} />
+
           {handoff.mcp?.length ? (
             <Panel>
               <div className="panel__header">
@@ -115,15 +177,19 @@ export function CheckpointDetail({ handoff, onChange }: { handoff: Handoff; onCh
                   <span className="panel__meta">names and status only</span>
                 </div>
               </div>
+
               {handoff.mcp.map((m) => (
                 <Row key={m.server} label={m.server}>
-                  <StatusText tone={mcpTone(m.status, !!m.requires_auth)}>{mcpLabel(m.status, !!m.requires_auth)}</StatusText>
+                  <StatusText tone={mcpTone(m.status, !!m.requires_auth)}>
+                    {mcpLabel(m.status, !!m.requires_auth)}
+                  </StatusText>
                 </Row>
               ))}
             </Panel>
           ) : null}
         </aside>
       </div>
+
       {handoff.markdown ? (
         <details className="checkpoint-brief">
           <summary>Brief the next agent reads (handoff.md)</summary>

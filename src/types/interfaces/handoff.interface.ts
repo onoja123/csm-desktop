@@ -1,5 +1,11 @@
 import type { ProviderID } from '../enums/agent.enum';
-import type { HandoffCompleteness, HandoffDelivery, HandoffOutcomeStatus, HandoffPreviewMode, TaskOrigin } from '../enums/handoff.enum';
+import type {
+  HandoffCompleteness,
+  HandoffDelivery,
+  HandoffOutcomeStatus,
+  HandoffPreviewMode,
+  TaskOrigin,
+} from '../enums/handoff.enum';
 import type { MCPStatus } from '../enums/mcp.enum';
 
 export interface HandoffAgent {

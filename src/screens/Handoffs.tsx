@@ -24,16 +24,21 @@ export function Handoffs() {
         action={
           <div className="page__actions">
             {lastProject ? (
-              <Button icon={ArrowDataTransferHorizontalIcon} onClick={() => openHandoff({ projectDir: lastProject })}>
+              <Button
+                icon={ArrowDataTransferHorizontalIcon}
+                onClick={() => openHandoff({ projectDir: lastProject })}
+              >
                 New handoff
               </Button>
             ) : null}
+
             <Button variant="primary" icon={Bookmark02Icon} onClick={() => openCheckpoint()}>
               Save checkpoint
             </Button>
           </div>
         }
       />
+
       {handoffs.length === 0 ? (
         <EmptyState
           icon={Bookmark02Icon}
@@ -47,7 +52,10 @@ export function Handoffs() {
         />
       ) : (
         <>
-          <Section title="Checkpoints" meta={checkpoints.length ? String(checkpoints.length) : undefined}>
+          <Section
+            title="Checkpoints"
+            meta={checkpoints.length ? String(checkpoints.length) : undefined}
+          >
             {checkpoints.length ? (
               <div className="list">
                 {checkpoints.map((h) => (
@@ -55,9 +63,12 @@ export function Handoffs() {
                 ))}
               </div>
             ) : (
-              <p className="muted">No saved checkpoints. Handoffs below were captured at the moment of the switch.</p>
+              <p className="muted">
+                No saved checkpoints. Handoffs below were captured at the moment of the switch.
+              </p>
             )}
           </Section>
+
           {history.length ? (
             <Section title="Handoffs" meta={String(history.length)}>
               <div className="list">

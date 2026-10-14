@@ -4,9 +4,17 @@ import { Button } from './Button';
 
 export function CopyField({ value, label }: { value: string; label: string }) {
   const [copied, setCopied] = useState(false);
+
   return (
     <div className="input-row">
-      <input className="input mono" value={value} readOnly aria-label={label} onFocus={(e) => e.currentTarget.select()} />
+      <input
+        className="input mono"
+        value={value}
+        readOnly
+        aria-label={label}
+        onFocus={(e) => e.currentTarget.select()}
+      />
+
       <Button
         icon={copied ? Tick02Icon : Copy01Icon}
         onClick={() => {

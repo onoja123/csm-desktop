@@ -44,10 +44,17 @@ export function claimTone(s: ClaimStatus): StatusTone {
 }
 
 export function outcomeTone(o: ReceiptOutcome): StatusTone {
-  return o === 'verified' ? 'ok' : o === 'failed' ? 'err' : o === 'partially_verified' ? 'warn' : 'idle';
+  return o === 'verified'
+    ? 'ok'
+    : o === 'failed'
+      ? 'err'
+      : o === 'partially_verified'
+        ? 'warn'
+        : 'idle';
 }
 
 export function testsLine(t?: Pick<TestCounts, 'passed' | 'total' | 'unit' | 'failed'>): string {
   if (!t) return '';
+
   return `${t.passed}/${t.total} ${t.unit} passed`;
 }

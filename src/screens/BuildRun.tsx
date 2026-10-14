@@ -9,7 +9,15 @@ import { PlanEditor } from '@/components/build/PlanEditor';
 import { ReceiptView } from '@/components/build/ReceiptView';
 import { TaskDetail } from '@/components/build/TaskDetail';
 import { RunBar } from '@/components/build/RunBar';
-import { Button, ErrorState, LoadingState, PageHeader, Panel, StatusText, Tabs } from '@/components/ui';
+import {
+  Button,
+  ErrorState,
+  LoadingState,
+  PageHeader,
+  Panel,
+  StatusText,
+  Tabs,
+} from '@/components/ui';
 import { useBuild } from '@/hooks/useBuild';
 import { TaskNode } from '@/components/build/TaskNode';
 import { BuildPlanTab } from '@/components/build/BuildPlanTab';
@@ -18,7 +26,14 @@ import { BuildIntegrationTab } from '@/components/build/BuildIntegrationTab';
 import { BuildTimelineTab } from '@/components/build/BuildTimelineTab';
 import { RunFacts } from '@/components/build/RunFacts';
 import { api } from '@/lib/api';
-import { BUILD_STATUS_LABEL, buildTone, graphColumns, isTerminal, primaryAction, stageSteps } from '@/lib/build';
+import {
+  BUILD_STATUS_LABEL,
+  buildTone,
+  graphColumns,
+  isTerminal,
+  primaryAction,
+  stageSteps,
+} from '@/lib/build';
 import { ago, plural } from '@/lib/format';
 import type { BuildAction, BuildActionRequest, BuildRecovery, BuildRunTab } from '@/types';
 
@@ -57,6 +72,7 @@ export function BuildRun() {
   const act = async (action: BuildAction, req: BuildActionRequest = {}) => {
     setBusy(action);
     setActionError(undefined);
+
     try {
       setBuild(await api.buildAction(id, action, req));
     } catch (e) {
@@ -68,11 +84,19 @@ export function BuildRun() {
   };
 
   const columns = useMemo(() => (build ? graphColumns(build.tasks) : []), [build]);
+
   const focus = useMemo(() => {
     if (!build) return undefined;
+
     const pick = build.tasks.find((t) => t.id === selected);
+
     if (pick) return pick;
-    return build.tasks.find((t) => t.status === 'needs_attention') ?? build.tasks.find((t) => t.status === 'running') ?? undefined;
+
+    return (
+      build.tasks.find((t) => t.status === 'needs_attention') ??
+      build.tasks.find((t) => t.status === 'running') ??
+      undefined
+    );
   }, [build, selected]);
 
   useEffect(() => {
@@ -104,7 +128,10 @@ export function BuildRun() {
   const primary = primaryAction(build);
   const terminal = isTerminal(build.status);
   const finalChecks = (build.checks ?? []).filter((c) => c.stage === 'integration');
-  const blockingOpen = (build.findings ?? []).filter((f) => f.blocking && f.status === 'open').length;
+
+  const blockingOpen = (build.findings ?? []).filter(
+    (f) => f.blocking && f.status === 'open',
+  ).length;
 
   return (
     <Page wide>
@@ -112,40 +139,70 @@ export function BuildRun() {
         title={build.title}
         subtitle={
           <>
-            {build.repo_name} · {build.base_branch} at <span className="mono">{build.base_commit.slice(0, 8)}</span> · created {ago(build.created_at)}
+            {build.repo_name} · {build.base_branch} at{' '}
+            <span className="mono">{build.base_commit.slice(0, 8)}</span> · created{' '}
+            {ago(build.created_at)}
           </>
         }
         action={
           <div className="page__actions">
-            {!terminal && !build.cancel_requested && build.status !== 'awaiting_plan_approval' && build.status !== 'awaiting_final_approval' ? (
+            {!terminal &&
+            !build.cancel_requested &&
+            build.status !== 'awaiting_plan_approval' &&
+            build.status !== 'awaiting_final_approval' ? (
               build.paused ? (
-                <Button icon={PlayIcon} onClick={() => void act('resume')} loading={busy === 'resume'}>
+                <Button
+                  icon={PlayIcon}
+                  onClick={() => void act('resume')}
+                  loading={busy === 'resume'}
+                >
                   Resume
                 </Button>
               ) : (
-                <Button icon={PauseIcon} onClick={() => void act('pause')} loading={busy === 'pause'}>
+                <Button
+                  icon={PauseIcon}
+                  onClick={() => void act('pause')}
+                  loading={busy === 'pause'}
+                >
                   Pause
                 </Button>
               )
             ) : null}
+
             {!terminal && !build.cancel_requested ? (
               confirmCancel ? (
                 <>
-                  <Button variant="danger" onClick={() => void act('cancel').then(() => setConfirmCancel(false))} loading={busy === 'cancel'}>
+                  <Button
+                    variant="danger"
+                    onClick={() => void act('cancel').then(() => setConfirmCancel(false))}
+                    loading={busy === 'cancel'}
+                  >
                     Stop agents and cancel
                   </Button>
+
                   <Button variant="ghost" onClick={() => setConfirmCancel(false)}>
                     Keep running
                   </Button>
                 </>
               ) : (
-                <Button variant="ghost" icon={UnavailableIcon} onClick={() => setConfirmCancel(true)}>
+                <Button
+                  variant="ghost"
+                  icon={UnavailableIcon}
+                  onClick={() => setConfirmCancel(true)}
+                >
                   Cancel run
                 </Button>
               )
             ) : null}
+
             {primary ? (
-              <Button variant="primary" icon={Tick02Icon} onClick={() => void act(primary.action)} loading={busy === primary.action} disabled={build.ops.includes('push')}>
+              <Button
+                variant="primary"
+                icon={Tick02Icon}
+                onClick={() => void act(primary.action)}
+                loading={busy === primary.action}
+                disabled={build.ops.includes('push')}
+              >
                 {primary.label}
               </Button>
             ) : null}
@@ -158,12 +215,25 @@ export function BuildRun() {
           <span className="build-progress__status">
             <StatusText
               tone={buildTone(build.status)}
-              pulse={!terminal && build.status !== 'awaiting_plan_approval' && build.status !== 'awaiting_final_approval' && build.status !== 'needs_attention'}
+              pulse={
+                !terminal &&
+                build.status !== 'awaiting_plan_approval' &&
+                build.status !== 'awaiting_final_approval' &&
+                build.status !== 'needs_attention'
+              }
             >
-              {build.cancel_requested && !terminal ? 'Cancelling' : build.paused ? 'Paused' : BUILD_STATUS_LABEL[build.status]}
+              {build.cancel_requested && !terminal
+                ? 'Cancelling'
+                : build.paused
+                  ? 'Paused'
+                  : BUILD_STATUS_LABEL[build.status]}
             </StatusText>
-            <span className="muted">{stageSteps(build).find((x) => x.state === 'current')?.label}</span>
+
+            <span className="muted">
+              {stageSteps(build).find((x) => x.state === 'current')?.label}
+            </span>
           </span>
+
           <RunBar build={build} />
         </div>
 
@@ -171,10 +241,12 @@ export function BuildRun() {
           <div className="mc-attention build-attention" role="alert">
             <strong>Needs your attention</strong>
             <span className="selectable">{build.attention}</span>
+
             {build.recovery?.length ? (
               <div className="build-attention__actions">
                 {build.recovery.map((r) => {
                   const rec = RECOVERY[r];
+
                   if (r === 'write_plan')
                     return (
                       <Button
@@ -188,9 +260,16 @@ export function BuildRun() {
                         {rec.label}
                       </Button>
                     );
+
                   if (!rec.action) return null;
+
                   return (
-                    <Button key={r} size="sm" onClick={() => void act(rec.action!)} loading={busy === rec.action}>
+                    <Button
+                      key={r}
+                      size="sm"
+                      onClick={() => void act(rec.action!)}
+                      loading={busy === rec.action}
+                    >
                       {rec.label}
                     </Button>
                   );
@@ -199,7 +278,13 @@ export function BuildRun() {
             ) : null}
           </div>
         ) : null}
-        {build.paused && !terminal ? <div className="build-note">Paused. Agents already running continue; no new agent starts until you resume.</div> : null}
+
+        {build.paused && !terminal ? (
+          <div className="build-note">
+            Paused. Agents already running continue; no new agent starts until you resume.
+          </div>
+        ) : null}
+
         {actionError ? <p className="form-error selectable">{actionError}</p> : null}
       </div>
 
@@ -215,13 +300,20 @@ export function BuildRun() {
             <Panel className="build-request">
               <h4 className="panel__h4">Request</h4>
               <p className="selectable build-request__text">{build.instruction}</p>
-              {build.source_dirty ? <p className="muted">Uncommitted changes in your working tree are not part of this run and were left untouched.</p> : null}
+
+              {build.source_dirty ? (
+                <p className="muted">
+                  Uncommitted changes in your working tree are not part of this run and were left
+                  untouched.
+                </p>
+              ) : null}
             </Panel>
           )}
 
           <section className="build-graph" aria-label="Tasks and dependencies">
             <header className="build-section-head">
               <h3>Tasks</h3>
+
               <span className="muted">
                 {build.tasks.length
                   ? `${build.summary.tasks_completed} of ${plural(build.tasks.length, 'task')} completed`
@@ -230,19 +322,37 @@ export function BuildRun() {
                     : 'No plan yet'}
               </span>
             </header>
+
             {build.tasks.length ? (
               <div className="build-graph__cols">
                 {columns.map((col, i) => (
                   <div key={i} className="build-graph__col">
-                    <span className="build-graph__label">{i === 0 ? 'Starts first' : col[0]?.kind === 'fix' ? 'Review fixes' : `After step ${i}`}</span>
+                    <span className="build-graph__label">
+                      {i === 0
+                        ? 'Starts first'
+                        : col[0]?.kind === 'fix'
+                          ? 'Review fixes'
+                          : `After step ${i}`}
+                    </span>
+
                     {col.map((t) => (
-                      <TaskNode key={t.id} build={build} task={t} selected={focus?.id === t.id} onSelect={() => setSelected(t.id)} />
+                      <TaskNode
+                        key={t.id}
+                        build={build}
+                        task={t}
+                        selected={focus?.id === t.id}
+                        onSelect={() => setSelected(t.id)}
+                      />
                     ))}
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="muted build-graph__empty">{build.status === 'planning' ? 'Tasks appear here once the planner reports.' : 'Write a plan or ask an agent to plan again.'}</p>
+              <p className="muted build-graph__empty">
+                {build.status === 'planning'
+                  ? 'Tasks appear here once the planner reports.'
+                  : 'Write a plan or ask an agent to plan again.'}
+              </p>
             )}
           </section>
 
@@ -265,6 +375,7 @@ export function BuildRun() {
             value={tab}
             onChange={setTab}
           />
+
           <div className="build-tab">
             {tab === 'plan' ? (
               editing ? (
@@ -280,6 +391,7 @@ export function BuildRun() {
                 <BuildPlanTab build={build} onEdit={() => setEditing(true)} />
               )
             ) : null}
+
             {tab === 'checks' ? <ReceiptView build={build} /> : null}
             {tab === 'review' ? <BuildReviewTab build={build} /> : null}
             {tab === 'integration' ? <BuildIntegrationTab build={build} /> : null}
@@ -287,7 +399,13 @@ export function BuildRun() {
           </div>
         </div>
 
-        <aside className="build-ws__side">{focus ? <TaskDetail key={focus.id} build={build} task={focus} busy={busy} onAct={act} /> : <RunFacts build={build} blockingOpen={blockingOpen} />}</aside>
+        <aside className="build-ws__side">
+          {focus ? (
+            <TaskDetail key={focus.id} build={build} task={focus} busy={busy} onAct={act} />
+          ) : (
+            <RunFacts build={build} blockingOpen={blockingOpen} />
+          )}
+        </aside>
       </div>
     </Page>
   );

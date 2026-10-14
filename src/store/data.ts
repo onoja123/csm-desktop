@@ -11,6 +11,7 @@ const pending = new Map<DataSection, ReturnType<typeof setTimeout>>();
 
 function schedule(section: DataSection, fn: () => void) {
   if (pending.has(section)) return;
+
   pending.set(
     section,
     setTimeout(() => {
@@ -37,7 +38,11 @@ export const useData = create<DataState>((set, get) => ({
 
   async refresh(section, arg) {
     const done = (patch: Partial<DataState>) =>
-      set((s) => ({ ...patch, loaded: { ...s.loaded, [section]: true }, errors: { ...s.errors, [section]: undefined } }));
+      set((s) => ({
+        ...patch,
+        loaded: { ...s.loaded, [section]: true },
+        errors: { ...s.errors, [section]: undefined },
+      }));
 
     try {
       switch (section) {
@@ -59,11 +64,14 @@ export const useData = create<DataState>((set, get) => ({
         case 'handoffs':
           done({ handoffs: await api.handoffs() });
           break;
+
         case 'mcp': {
           const project = arg ?? get().mcpProject;
+
           done({ mcp: await api.mcp(project), mcpProject: project });
           break;
         }
+
         case 'approvals':
           done({ approvals: await api.approvals() });
           break;
@@ -89,7 +97,21 @@ export const useData = create<DataState>((set, get) => ({
   },
 
   async refreshAll() {
-    const sections: DataSection[] = ['status', 'settings', 'accounts', 'runs', 'approvals', 'activity', 'sessions', 'handoffs', 'projects', 'failover', 'builds', 'signals'];
+    const sections: DataSection[] = [
+      'status',
+      'settings',
+      'accounts',
+      'runs',
+      'approvals',
+      'activity',
+      'sessions',
+      'handoffs',
+      'projects',
+      'failover',
+      'builds',
+      'signals',
+    ];
+
     await Promise.all(sections.map((s) => get().refresh(s)));
   },
 
@@ -97,14 +119,31 @@ export const useData = create<DataState>((set, get) => ({
     switch (ev.type) {
       case 'run.output': {
         outputBus.emit(ev.data.run_id, decodeBase64(ev.data.data));
+
         const at = new Date().toISOString();
-        set((s) => ({ runs: { ...s.runs, runs: s.runs.runs.map((r) => (r.id === ev.data.run_id ? { ...r, last_output_at: at } : r)) } }));
+
+        set((s) => ({
+          runs: {
+            ...s.runs,
+            runs: s.runs.runs.map((r) =>
+              r.id === ev.data.run_id ? { ...r, last_output_at: at } : r,
+            ),
+          },
+        }));
+
         return [];
       }
+
       case 'run.exit':
         return ['runs', 'status'];
       case 'approval.requested':
-        set((s) => ({ approvals: { ...s.approvals, pending: [...s.approvals.pending.filter((a) => a.id !== ev.data.id), ev.data] } }));
+        set((s) => ({
+          approvals: {
+            ...s.approvals,
+            pending: [...s.approvals.pending.filter((a) => a.id !== ev.data.id), ev.data],
+          },
+        }));
+
         return ['status'];
       case 'approval.resolved':
         set((s) => ({
@@ -113,9 +152,13 @@ export const useData = create<DataState>((set, get) => ({
             recent: [ev.data, ...s.approvals.recent].slice(0, 20),
           },
         }));
+
         return ['status'];
       case 'activity':
-        set((s) => ({ activity: [ev.data, ...s.activity.filter((a) => a.id !== ev.data.id)].slice(0, 500) }));
+        set((s) => ({
+          activity: [ev.data, ...s.activity.filter((a) => a.id !== ev.data.id)].slice(0, 500),
+        }));
+
         return [];
       case 'accounts':
         return ['accounts', 'failover'];
@@ -130,7 +173,10 @@ export const useData = create<DataState>((set, get) => ({
       case 'status':
         return ['status', 'settings', 'failover'];
       case 'build':
-        set((s) => ({ buildStamps: { ...s.buildStamps, [ev.data.id]: (s.buildStamps[ev.data.id] ?? 0) + 1 } }));
+        set((s) => ({
+          buildStamps: { ...s.buildStamps, [ev.data.id]: (s.buildStamps[ev.data.id] ?? 0) + 1 },
+        }));
+
         return ['builds'];
       case 'signals':
         return ['signals'];

@@ -30,6 +30,7 @@ export function App() {
     <HashRouter>
       <GlobalShortcuts />
       <DevStartRedirect />
+
       <AppShell>
         <ConnectionGate>
           <Routes>
@@ -52,10 +53,12 @@ export function App() {
             <Route path="/activity" element={<ActivityScreen />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
+
           <StartAgentDialog />
           <HandoffDialog />
           <CheckpointDialog />
         </ConnectionGate>
+
         <CommandPalette />
       </AppShell>
     </HashRouter>

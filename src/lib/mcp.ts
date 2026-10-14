@@ -2,6 +2,7 @@ import type { MCPStatus, StatusTone } from '@/types';
 
 export function mcpTone(status: MCPStatus, requiresAuth: boolean): StatusTone {
   if (requiresAuth || status === 'requires_auth') return 'warn';
+
   switch (status) {
     case 'available':
     case 'migrated':
@@ -17,6 +18,7 @@ export function mcpTone(status: MCPStatus, requiresAuth: boolean): StatusTone {
 
 export function mcpLabel(status: MCPStatus, requiresAuth: boolean): string {
   if (requiresAuth || status === 'requires_auth') return 'Authentication required';
+
   switch (status) {
     case 'available':
       return 'Configured';

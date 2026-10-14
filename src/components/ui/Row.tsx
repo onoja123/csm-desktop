@@ -1,6 +1,14 @@
 import type { ReactNode } from 'react';
 
-export function Row({ label, children, mono = false }: { label: ReactNode; children: ReactNode; mono?: boolean }) {
+export function Row({
+  label,
+  children,
+  mono = false,
+}: {
+  label: ReactNode;
+  children: ReactNode;
+  mono?: boolean;
+}) {
   return (
     <div className="row">
       <span className="row__label">{label}</span>

@@ -34,11 +34,16 @@ export function ConnectionGate({ children }: { children: ReactNode }) {
           title="csm isn't installed"
           body={
             <>
-              CSM Desktop controls the csm command-line tool, which was not found on this machine. Install it with{' '}
-              <code>go install github.com/onoja123/csm/cmd/csm@latest</code>, or set <code>CSM_PATH</code> to its location, then retry.
+              CSM Desktop controls the csm command-line tool, which was not found on this machine.
+              Install it with <code>go install github.com/onoja123/csm/cmd/csm@latest</code>, or set{' '}
+              <code>CSM_PATH</code> to its location, then retry.
             </>
           }
-          action={<Button variant="primary" onClick={() => void retry()}>Retry</Button>}
+          action={
+            <Button variant="primary" onClick={() => void retry()}>
+              Retry
+            </Button>
+          }
         />
       </div>
     );
@@ -50,12 +55,21 @@ export function ConnectionGate({ children }: { children: ReactNode }) {
         <ErrorState
           title="CSM isn't connected"
           body="Make sure the CSM service is running. CSM Desktop can start it for you."
-          detail={[error, info ? `socket: ${info.socket}` : '', info?.csm_path ? `csm: ${info.csm_path} (${info.csm_version ?? 'version unknown'})` : 'csm: not found'].filter(Boolean).join('\n')}
+          detail={[
+            error,
+            info ? `socket: ${info.socket}` : '',
+            info?.csm_path
+              ? `csm: ${info.csm_path} (${info.csm_version ?? 'version unknown'})`
+              : 'csm: not found',
+          ]
+            .filter(Boolean)
+            .join('\n')}
           action={
             <>
               <Button variant="primary" onClick={() => void startService()}>
                 Start CSM
               </Button>
+
               <Button onClick={() => void retry()}>Retry</Button>
             </>
           }

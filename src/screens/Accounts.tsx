@@ -9,15 +9,37 @@ import { useData } from '@/store/data';
 
 export function Accounts() {
   const accounts = useData((s) => s.accounts);
+
   return (
     <Page>
-      <PageHeader title="Accounts" subtitle="Every profile CSM manages, with the health it uses to pick where a switch goes." />
+      <PageHeader
+        title="Accounts"
+        subtitle="Every profile CSM manages, with the health it uses to pick where a switch goes."
+      />
+
       {accounts.length === 0 ? (
-        <EmptyState icon={UserIcon} title="No accounts yet" body={<>Add one in a terminal with <code>csm account add &lt;name&gt; --provider claude|codex|gemini|copilot|cursor</code>. Logging in needs a browser, so it stays in the terminal.</>} />
+        <EmptyState
+          icon={UserIcon}
+          title="No accounts yet"
+          body={
+            <>
+              Add one in a terminal with{' '}
+              <code>
+                csm account add &lt;name&gt; --provider claude|codex|gemini|copilot|cursor
+              </code>
+              . Logging in needs a browser, so it stays in the terminal.
+            </>
+          }
+        />
       ) : (
         PROVIDERS.filter((p) => accounts.some((a) => a.provider === p)).map((p) => (
-          <Section key={p} title={PROVIDER_LONG_NAMES[p]} meta={String(accounts.filter((a) => a.provider === p).length)}>
+          <Section
+            key={p}
+            title={PROVIDER_LONG_NAMES[p]}
+            meta={String(accounts.filter((a) => a.provider === p).length)}
+          >
             <SharedLoginNote provider={p} />
+
             <div className="list">
               {accounts
                 .filter((a) => a.provider === p)
@@ -28,6 +50,7 @@ export function Accounts() {
           </Section>
         ))
       )}
+
       <Section title="Failover">
         <FailoverPanel />
       </Section>

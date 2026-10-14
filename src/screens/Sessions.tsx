@@ -18,8 +18,14 @@ export function Sessions() {
   const resume = async (id: string, provider: string, projectDir: string, sessionId: string) => {
     setBusy(id);
     setError(undefined);
+
     try {
-      const run = await api.resumeSession({ provider, project_dir: projectDir, session_id: sessionId });
+      const run = await api.resumeSession({
+        provider,
+        project_dir: projectDir,
+        session_id: sessionId,
+      });
+
       nav(`/agents/${run.id}`);
     } catch (e) {
       setError((e as Error).message);
@@ -33,21 +39,41 @@ export function Sessions() {
 
   return (
     <Page>
-      <PageHeader title="Sessions" subtitle="Live sessions and every checkpoint CSM saved before a switch." />
+      <PageHeader
+        title="Sessions"
+        subtitle="Live sessions and every checkpoint CSM saved before a switch."
+      />
+
       {error ? <p className="form-error selectable">{error}</p> : null}
+
       {sessions.length === 0 ? (
-        <EmptyState icon={TimeQuarter02Icon} title="No sessions recorded" body="Checkpoints appear here when CSM switches or hands off a running agent." />
+        <EmptyState
+          icon={TimeQuarter02Icon}
+          title="No sessions recorded"
+          body="Checkpoints appear here when CSM switches or hands off a running agent."
+        />
       ) : (
         <>
           {live.length > 0 ? (
             <Section title="Live" meta={String(live.length)}>
               <div className="list">
                 {live.map((s) => (
-                  <SessionCard key={s.id} session={s} onHandoff={() => openHandoff({ projectDir: s.project_dir, fromProvider: s.provider, fromAccount: s.account })} />
+                  <SessionCard
+                    key={s.id}
+                    session={s}
+                    onHandoff={() =>
+                      openHandoff({
+                        projectDir: s.project_dir,
+                        fromProvider: s.provider,
+                        fromAccount: s.account,
+                      })
+                    }
+                  />
                 ))}
               </div>
             </Section>
           ) : null}
+
           {past.length > 0 ? (
             <Section title="Checkpoints" meta={String(past.length)}>
               <div className="list">
@@ -56,8 +82,18 @@ export function Sessions() {
                     key={s.id}
                     session={s}
                     busy={busy === s.id}
-                    onResume={s.can_resume ? () => void resume(s.id, s.provider, s.project_dir, s.session_id!) : undefined}
-                    onHandoff={() => openHandoff({ projectDir: s.project_dir, fromProvider: s.provider, fromAccount: s.account })}
+                    onResume={
+                      s.can_resume
+                        ? () => void resume(s.id, s.provider, s.project_dir, s.session_id!)
+                        : undefined
+                    }
+                    onHandoff={() =>
+                      openHandoff({
+                        projectDir: s.project_dir,
+                        fromProvider: s.provider,
+                        fromAccount: s.account,
+                      })
+                    }
                   />
                 ))}
               </div>

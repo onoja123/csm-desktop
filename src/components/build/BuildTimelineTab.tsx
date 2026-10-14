@@ -6,6 +6,7 @@ export function BuildTimelineTab({ build }: { build: Build }) {
   return (
     <div className="build-timeline">
       <RunTimeline build={build} />
+
       <details className="build-timeline__raw">
         <summary>All events ({build.events.length})</summary>
         <BuildEventHistory build={build} />
