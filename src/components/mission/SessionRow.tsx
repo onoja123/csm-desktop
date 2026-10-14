@@ -30,7 +30,7 @@ export const SessionRow = memo(function SessionRow({ session: s, selected, now, 
           <span className="mc-row__account mono">{s.account}</span>
           {s.switched ? <span className="mc-row__switched">from {s.switched.from}</span> : null}
         </div>
-        <span className={`mc-row__title ${s.title ? '' : 'mc-row__title--none'}`}>{s.title ?? (s.observable ? (s.live ? 'No request recorded yet' : 'No request recorded') : 'Request not visible from here')}</span>
+        <span className={`mc-row__title ${s.title ? '' : 'mc-row__title--none'}`}>{s.title ?? s.note ?? (s.observable ? (s.live ? 'No request recorded yet' : 'No request recorded') : 'Request not visible from here')}</span>
       </div>
       <div className="mc-row__where">
         <span className="mc-row__project">{s.project}</span>

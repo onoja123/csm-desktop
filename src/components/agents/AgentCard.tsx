@@ -22,7 +22,7 @@ export function AgentCard({ run, compact = false }: { run: AnyRun; compact?: boo
           <span className="agent-card__name">{PROVIDER_LONG_NAMES[run.provider] ?? run.provider}</span>
           <AgentStatus run={run} />
         </div>
-        <p className="agent-card__task">{task?.summary || (run.status === 'running' ? 'Waiting for the first request' : 'No task recorded')}</p>
+        <p className="agent-card__task">{task?.summary || task?.note || (run.status === 'running' ? 'Waiting for the first request' : 'No task recorded')}</p>
         <div className="agent-card__meta">
           <span className="mono">{run.account}</span>
           <span className="agent-card__sep" />

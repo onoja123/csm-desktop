@@ -4,10 +4,12 @@ import { Cursor02Icon } from '@hugeicons/core-free-icons';
 import { providerIcon } from '@/lib/provider-icons';
 import { canReceiveHandoff, limitations } from '@/lib/capabilities';
 import { PROVIDERS, PROVIDER_LONG_NAMES, providerName } from '@/lib/format';
-import type { Account, ProviderCapabilities, ProviderInfo, ServiceStatus } from '@/types';
+import type { Account, ProviderCapabilities, ProviderInfo, Run, ServiceStatus } from '@/types';
 import { Accounts } from '@/screens/Accounts';
 import { AccountDetail } from '@/screens/AccountDetail';
 import { Settings } from '@/screens/Settings';
+import { AgentCard } from '@/components/agents/AgentCard';
+import { normalizeSessions } from '@/lib/mission';
 import { useData } from '@/store/data';
 
 const all: ProviderCapabilities = {
@@ -155,5 +157,50 @@ describe('Cursor in the screens', () => {
     );
     expect(screen.getByRole('button', { name: /Check usage/ })).toBeDisabled();
     expect(screen.getByText('Cursor CLI does not report plan usage, so CSM shows none and cannot see a limit coming.')).toBeInTheDocument();
+  });
+});
+
+const cursorRun: Run = {
+  id: 'r1',
+  kind: 'agent',
+  provider: 'cursor',
+  account: 'cursor-main',
+  project_dir: '/Users/me/Projects/teams-api',
+  branch: 'main',
+  status: 'running',
+  started_at: '2026-10-14T15:00:00Z',
+  csm_pid: 1,
+  task: { note: 'Cursor CLI sessions cannot be read, so the request is not shown.' },
+  duration_seconds: 30,
+};
+
+describe('a running Cursor session', () => {
+  it('says why its request is not shown instead of looking idle', () => {
+    render(
+      <MemoryRouter>
+        <AgentCard run={cursorRun} />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('Cursor CLI sessions cannot be read, so the request is not shown.')).toBeInTheDocument();
+    expect(screen.queryByText('Waiting for the first request')).toBeNull();
+  });
+
+  it('carries the note into Mission Control', () => {
+    const [s] = normalizeSessions({ runs: [cursorRun], external: [], approvals: [], activity: [], accounts: [], status, tabs: [], panes: {}, connected: true, now: new Date('2026-10-14T15:00:30Z').getTime() });
+    expect(s.title).toBeUndefined();
+    expect(s.note).toBe('Cursor CLI sessions cannot be read, so the request is not shown.');
+  });
+});
+
+describe('agent status in Settings', () => {
+  it('shows the error of an agent that is found but does not answer, not "installed"', () => {
+    useData.setState({ status: { ...status, providers: [{ id: 'claude', name: 'Claude Code', installed: true, error: 'run /opt/claude --version: exit status 1' }] }, loaded: {}, errors: {} });
+    render(
+      <MemoryRouter>
+        <Settings />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('run /opt/claude --version: exit status 1')).toBeInTheDocument();
+    expect(screen.queryByText('installed')).toBeNull();
   });
 });

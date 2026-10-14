@@ -132,6 +132,7 @@ function normalizeRun(run: Run, input: MissionInput): AgentSession {
     exitCode: run.exit_code,
     live,
     observable: true,
+    note: run.task.note,
     filesModified: run.task.files_modified?.length ?? 0,
     messages: run.task.messages,
     canResume: !live && !!run.session_id && !!input.status?.providers.find((p) => p.id === run.provider)?.resume,

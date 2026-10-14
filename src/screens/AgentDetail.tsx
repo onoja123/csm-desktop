@@ -88,7 +88,7 @@ export function AgentDetail() {
             <h1>{PROVIDER_LONG_NAMES[run.provider]}</h1>
             <AgentStatus run={run} withActivity />
           </div>
-          <p className="agent-head__task">{run.task.summary || (live ? 'Waiting for the first request' : 'No request recorded')}</p>
+          <p className="agent-head__task">{run.task.summary || run.task.note || (live ? 'Waiting for the first request' : 'No request recorded')}</p>
           <div className="agent-head__actions">
             {live ? (
               <>

@@ -26,6 +26,7 @@ export interface ProviderInfo {
 
 export interface TaskInfo {
   summary?: string;
+  note?: string;
   session_id?: string;
   messages?: number;
   files_modified?: string[];

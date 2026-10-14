@@ -57,6 +57,7 @@ export interface AgentSession {
   exitCode?: number;
   live: boolean;
   observable: boolean;
+  note?: string;
   filesModified: number;
   messages?: number;
   canResume: boolean;

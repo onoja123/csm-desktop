@@ -17,7 +17,7 @@ export function TaskCard({ run }: { run: AnyRun }) {
     <Link to={to} className="task-card">
       <AgentIcon provider={run.provider} size="md" />
       <div className="task-card__main">
-        <span className="task-card__title">{task?.summary || (run.kind === 'handoff' ? 'Handoff' : 'No request recorded yet')}</span>
+        <span className="task-card__title">{task?.summary || task?.note || (run.kind === 'handoff' ? 'Handoff' : 'No request recorded yet')}</span>
         <span className="task-card__meta">
           {PROVIDER_NAMES[run.provider]} · <span className="mono">{run.account}</span> · <Icon icon={Folder02Icon} size="sm" /> {baseName(run.project_dir)}
         </span>

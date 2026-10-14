@@ -90,7 +90,7 @@ export function Settings() {
             const limits = limitations(p);
             return (
               <Row key={p.id} label={PROVIDER_LONG_NAMES[p.id] ?? p.name}>
-                {p.installed ? <span className="mono">{p.version ?? 'installed'}</span> : <span className="muted">{p.error ?? 'not installed'}</span>}
+                {p.installed && !p.error ? <span className="mono">{p.version ?? 'installed'}</span> : <span className="muted">{p.error ?? 'not installed'}</span>}
                 {limits.length ? (
                   <ul className="agent-limits muted" aria-label={`What CSM cannot do with ${p.name}`}>
                     {limits.map((l) => (

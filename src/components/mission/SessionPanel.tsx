@@ -65,7 +65,7 @@ export function SessionPanel({ session: s, now, onClose }: { session: AgentSessi
         </button>
       </div>
 
-      <p className={`mc-panel__task ${s.title ? '' : 'muted'}`}>{s.title ?? (s.observable ? 'No request recorded for this session.' : 'This session runs in its own terminal; CSM sees its account and project but not its output.')}</p>
+      <p className={`mc-panel__task ${s.title ? '' : 'muted'}`}>{s.title ?? s.note ?? (s.observable ? 'No request recorded for this session.' : 'This session runs in its own terminal; CSM sees its account and project but not its output.')}</p>
 
       {s.attention ? (
         <div className="mc-attention" role="status">
