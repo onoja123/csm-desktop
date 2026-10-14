@@ -89,7 +89,6 @@ export function AgentDetail() {
     setBusy(true);
 
     try {
-      // Text and Enter go separately: typed in one write, the agent treats them as a paste and does not submit.
       await api.sendInput(id, message);
       await new Promise((r) => setTimeout(r, 120));
       await api.sendInput(id, '\r');
