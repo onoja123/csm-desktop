@@ -79,15 +79,26 @@ impl PtyManager {
             _ => shell::default_shell(),
         };
         let cwd = resolve_cwd(opts.cwd.as_deref());
-        let size = PtySize { rows: opts.rows.max(2), cols: opts.cols.max(10), pixel_width: 0, pixel_height: 0 };
-        let pair = native_pty_system().openpty(size).map_err(|e| format!("open pty: {e}"))?;
+        let size = PtySize {
+            rows: opts.rows.max(2),
+            cols: opts.cols.max(10),
+            pixel_width: 0,
+            pixel_height: 0,
+        };
+        let pair = native_pty_system()
+            .openpty(size)
+            .map_err(|e| format!("open pty: {e}"))?;
         let mut cmd = CommandBuilder::new(&shell_path);
         cmd.cwd(&cwd);
         cmd.env("TERM", "xterm-256color");
         cmd.env("COLORTERM", "truecolor");
         cmd.env("TERM_PROGRAM", "CSM");
         cmd.env("CSM_TERMINAL", "1");
-        for key in ["CLAUDECODE", "CLAUDE_CODE_CHILD_SESSION", "CLAUDE_CODE_SSE_PORT"] {
+        for key in [
+            "CLAUDECODE",
+            "CLAUDE_CODE_CHILD_SESSION",
+            "CLAUDE_CODE_SSE_PORT",
+        ] {
             cmd.env_remove(key);
         }
         shell::configure(&mut cmd, &shell_path, opts.integration_dir.as_deref());
@@ -95,16 +106,36 @@ impl PtyManager {
             cmd.arg("-l");
         }
 
-        let child = pair.slave.spawn_command(cmd).map_err(|e| format!("start {}: {e}", shell_path))?;
+        let child = pair
+            .slave
+            .spawn_command(cmd)
+            .map_err(|e| format!("start {}: {e}", shell_path))?;
         drop(pair.slave);
         let pid = child.process_id().unwrap_or(0);
         let mut reader = pair.master.try_clone_reader().map_err(|e| e.to_string())?;
         let writer = pair.master.take_writer().map_err(|e| e.to_string())?;
         let id = uuid::Uuid::new_v4().to_string();
-        let info = SessionInfo { id: id.clone(), pid, shell: shell_path.clone(), cwd: cwd.display().to_string(), cols: size.cols, rows: size.rows };
+        let info = SessionInfo {
+            id: id.clone(),
+            pid,
+            shell: shell_path.clone(),
+            cwd: cwd.display().to_string(),
+            cols: size.cols,
+            rows: size.rows,
+        };
 
         let output = Arc::new(Mutex::new(Pending::default()));
-        self.sessions.lock().unwrap().insert(id.clone(), Session { info: info.clone(), master: pair.master, writer, child, shell_pid: pid, output: output.clone() });
+        self.sessions.lock().unwrap().insert(
+            id.clone(),
+            Session {
+                info: info.clone(),
+                master: pair.master,
+                writer,
+                child,
+                shell_pid: pid,
+                output: output.clone(),
+            },
+        );
 
         // Without an app handle (tests), the caller reads the master itself.
         let Some(app) = app else {
@@ -131,14 +162,22 @@ impl PtyManager {
                 }
                 let mut out = output.lock().unwrap();
                 if out.attached {
-                    let _ = app.emit(&format!("pty://out/{reader_id}"), OutputEvent { id: reader_id.clone(), data: B64.encode(&*pending) });
+                    let _ = app.emit(
+                        &format!("pty://out/{reader_id}"),
+                        OutputEvent {
+                            id: reader_id.clone(),
+                            data: B64.encode(&*pending),
+                        },
+                    );
                 } else {
                     out.held.extend_from_slice(pending);
                 }
                 pending.clear();
             };
             loop {
-                let wait = deadline.map(|d| d.saturating_duration_since(Instant::now())).unwrap_or(Duration::from_secs(3600));
+                let wait = deadline
+                    .map(|d| d.saturating_duration_since(Instant::now()))
+                    .unwrap_or(Duration::from_secs(3600));
                 match rx.recv_timeout(wait) {
                     Ok(chunk) => {
                         pending.extend_from_slice(&chunk);
@@ -156,7 +195,13 @@ impl PtyManager {
                 }
             }
             flush(&mut pending);
-            let _ = app.emit("pty://exit", ExitEvent { id: reader_id.clone(), code: None });
+            let _ = app.emit(
+                "pty://exit",
+                ExitEvent {
+                    id: reader_id.clone(),
+                    code: None,
+                },
+            );
         });
 
         Ok(info)
@@ -181,7 +226,14 @@ impl PtyManager {
     pub fn resize(&self, id: &str, cols: u16, rows: u16) -> Result<(), String> {
         let mut sessions = self.sessions.lock().unwrap();
         let s = sessions.get_mut(id).ok_or("no such terminal")?;
-        s.master.resize(PtySize { rows: rows.max(2), cols: cols.max(10), pixel_width: 0, pixel_height: 0 }).map_err(|e| e.to_string())?;
+        s.master
+            .resize(PtySize {
+                rows: rows.max(2),
+                cols: cols.max(10),
+                pixel_width: 0,
+                pixel_height: 0,
+            })
+            .map_err(|e| e.to_string())?;
         s.info.cols = cols;
         s.info.rows = rows;
         Ok(())
@@ -201,9 +253,15 @@ impl PtyManager {
     }
 
     pub fn list(&self) -> Vec<SessionInfo> {
-        self.sessions.lock().unwrap().values().map(|s| s.info.clone()).collect()
+        self.sessions
+            .lock()
+            .unwrap()
+            .values()
+            .map(|s| s.info.clone())
+            .collect()
     }
 
+    #[cfg(test)]
     pub fn exit_status(&self, id: &str) -> Option<Option<i32>> {
         let mut sessions = self.sessions.lock().unwrap();
         let s = sessions.get_mut(id)?;
@@ -221,34 +279,60 @@ impl PtyManager {
         #[cfg(unix)]
         {
             use std::os::unix::io::AsRawFd;
-            let fd = s.master.as_raw_fd().ok_or("terminal has no file descriptor")?;
+            let fd = s
+                .master
+                .as_raw_fd()
+                .ok_or("terminal has no file descriptor")?;
             let pgid = unsafe { libc::tcgetpgrp(fd.as_raw_fd()) };
             if pgid <= 0 {
-                return Ok(Foreground { pid: s.shell_pid, name: shell_name(&s.info.shell), is_shell: true });
+                return Ok(Foreground {
+                    pid: s.shell_pid,
+                    name: shell_name(&s.info.shell),
+                    is_shell: true,
+                });
             }
             let pid = pgid as u32;
             let name = process_name(pid).unwrap_or_else(|| shell_name(&s.info.shell));
-            Ok(Foreground { pid, name, is_shell: pid == s.shell_pid })
+            Ok(Foreground {
+                pid,
+                name,
+                is_shell: pid == s.shell_pid,
+            })
         }
         #[cfg(not(unix))]
         {
-            Ok(Foreground { pid: s.shell_pid, name: shell_name(&s.info.shell), is_shell: true })
+            Ok(Foreground {
+                pid: s.shell_pid,
+                name: shell_name(&s.info.shell),
+                is_shell: true,
+            })
         }
     }
 }
 
 fn shell_name(path: &str) -> String {
-    Path::new(path).file_name().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| path.to_string())
+    Path::new(path)
+        .file_name()
+        .map(|s| s.to_string_lossy().into_owned())
+        .unwrap_or_else(|| path.to_string())
 }
 
 #[cfg(unix)]
 fn process_name(pid: u32) -> Option<String> {
-    let out = std::process::Command::new("ps").args(["-o", "comm=", "-p", &pid.to_string()]).output().ok()?;
+    let out = std::process::Command::new("ps")
+        .args(["-o", "comm=", "-p", &pid.to_string()])
+        .output()
+        .ok()?;
     let name = String::from_utf8_lossy(&out.stdout).trim().to_string();
     if name.is_empty() {
         None
     } else {
-        Some(Path::new(&name).file_name().map(|s| s.to_string_lossy().into_owned()).unwrap_or(name))
+        Some(
+            Path::new(&name)
+                .file_name()
+                .map(|s| s.to_string_lossy().into_owned())
+                .unwrap_or(name),
+        )
     }
 }
 
@@ -304,8 +388,28 @@ mod tests {
     }
 
     fn spawn_sh(mgr: &PtyManager) -> (SessionInfo, Output) {
-        let info = mgr.spawn(None, SpawnOptions { shell: Some("/bin/sh".into()), cwd: Some("/tmp".into()), cols: 80, rows: 24, integration_dir: None }).unwrap();
-        let mut reader = { mgr.sessions.lock().unwrap().get(&info.id).unwrap().master.try_clone_reader().unwrap() };
+        let info = mgr
+            .spawn(
+                None,
+                SpawnOptions {
+                    shell: Some("/bin/sh".into()),
+                    cwd: Some("/tmp".into()),
+                    cols: 80,
+                    rows: 24,
+                    integration_dir: None,
+                },
+            )
+            .unwrap();
+        let mut reader = {
+            mgr.sessions
+                .lock()
+                .unwrap()
+                .get(&info.id)
+                .unwrap()
+                .master
+                .try_clone_reader()
+                .unwrap()
+        };
         let (tx, rx) = mpsc::channel::<Vec<u8>>();
         std::thread::spawn(move || {
             let mut buf = [0u8; 4096];
@@ -344,7 +448,8 @@ mod tests {
     fn ctrl_c_interrupts_and_ctrl_d_ends_the_shell() {
         let mgr = PtyManager::default();
         let (info, out) = spawn_sh(&mgr);
-        mgr.write(&info.id, b"sleep 30; echo not-interrupted\n").unwrap();
+        mgr.write(&info.id, b"sleep 30; echo not-interrupted\n")
+            .unwrap();
         std::thread::sleep(Duration::from_millis(300));
         let fg = mgr.foreground(&info.id).unwrap();
         assert!(!fg.is_shell, "sleep should own the terminal: {:?}", fg.name);
@@ -352,11 +457,14 @@ mod tests {
         std::thread::sleep(Duration::from_millis(200));
         mgr.write(&info.id, b"echo after-$((1+1))\n").unwrap();
         let out = out.until("after-2", Duration::from_secs(5));
-        assert!(out.contains("after-2") && !out.contains("not-interrupted\r\nnot"), "got: {out:?}");
+        assert!(
+            out.contains("after-2") && !out.contains("not-interrupted\r\nnot"),
+            "got: {out:?}"
+        );
         mgr.write(&info.id, b"\x04").unwrap();
         let start = Instant::now();
         while start.elapsed() < Duration::from_secs(5) {
-            if let Some(_) = mgr.exit_status(&info.id) {
+            if mgr.exit_status(&info.id).is_some() {
                 return;
             }
             std::thread::sleep(Duration::from_millis(50));
@@ -370,10 +478,16 @@ mod tests {
         let (info, output) = spawn_sh(&mgr);
         mgr.write(&info.id, b"printf 'a\\nb\\n' | less\n").unwrap();
         let out = output.until("\x1b[?1049h", Duration::from_secs(5));
-        assert!(out.contains("\x1b[?1049h"), "less should enter the alternate screen: {out:?}");
+        assert!(
+            out.contains("\x1b[?1049h"),
+            "less should enter the alternate screen: {out:?}"
+        );
         mgr.write(&info.id, b"q").unwrap();
         let out = output.until("\x1b[?1049l", Duration::from_secs(5));
-        assert!(out.contains("\x1b[?1049l"), "less should leave the alternate screen: {out:?}");
+        assert!(
+            out.contains("\x1b[?1049l"),
+            "less should leave the alternate screen: {out:?}"
+        );
         mgr.kill(&info.id).unwrap();
     }
 
@@ -381,9 +495,16 @@ mod tests {
     fn unicode_and_colors_pass_through() {
         let mgr = PtyManager::default();
         let (info, out) = spawn_sh(&mgr);
-        mgr.write(&info.id, "printf '\\033[38;2;255;0;0mrouge\\033[0m — ünïcödé ✓\\n'; echo 'DO''NE'\n".as_bytes()).unwrap();
+        mgr.write(
+            &info.id,
+            "printf '\\033[38;2;255;0;0mrouge\\033[0m — ünïcödé ✓\\n'; echo 'DO''NE'\n".as_bytes(),
+        )
+        .unwrap();
         let out = out.until("DONE", Duration::from_secs(5));
-        assert!(out.contains("\x1b[38;2;255;0;0mrouge") && out.contains("ünïcödé ✓"), "got: {out:?}");
+        assert!(
+            out.contains("\x1b[38;2;255;0;0mrouge") && out.contains("ünïcödé ✓"),
+            "got: {out:?}"
+        );
         mgr.kill(&info.id).unwrap();
     }
 
@@ -391,7 +512,11 @@ mod tests {
     fn large_output_is_not_lost() {
         let mgr = PtyManager::default();
         let (info, out) = spawn_sh(&mgr);
-        mgr.write(&info.id, b"i=0; while [ $i -lt 2000 ]; do echo line-$i; i=$((i+1)); done; echo 'EN''D-MARK'\n").unwrap();
+        mgr.write(
+            &info.id,
+            b"i=0; while [ $i -lt 2000 ]; do echo line-$i; i=$((i+1)); done; echo 'EN''D-MARK'\n",
+        )
+        .unwrap();
         let out = out.until("END-MARK", Duration::from_secs(20));
         assert!(out.contains("line-1999"), "last line missing");
         mgr.kill(&info.id).unwrap();
@@ -409,7 +534,10 @@ mod tests {
 
     #[test]
     fn cwd_falls_back_to_home_for_missing_paths() {
-        assert_eq!(resolve_cwd(Some("/definitely/not/here")), dirs::home_dir().unwrap());
+        assert_eq!(
+            resolve_cwd(Some("/definitely/not/here")),
+            dirs::home_dir().unwrap()
+        );
         assert_eq!(resolve_cwd(Some("~")), dirs::home_dir().unwrap());
     }
 }

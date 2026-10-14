@@ -36,17 +36,31 @@ pub fn available_shells() -> Vec<ShellInfo> {
             }
         }
     }
-    for extra in ["/opt/homebrew/bin/fish", "/usr/local/bin/fish", "/opt/homebrew/bin/zsh", "/opt/homebrew/bin/bash", "/usr/local/bin/bash", "/opt/homebrew/bin/nu"] {
+    for extra in [
+        "/opt/homebrew/bin/fish",
+        "/usr/local/bin/fish",
+        "/opt/homebrew/bin/zsh",
+        "/opt/homebrew/bin/bash",
+        "/usr/local/bin/bash",
+        "/opt/homebrew/bin/nu",
+    ] {
         if Path::new(extra).exists() && !paths.iter().any(|p| p == extra) {
             paths.push(extra.to_string());
         }
     }
-    if !paths.iter().any(|p| *p == default) {
+    if !paths.contains(&default) {
         paths.insert(0, default.clone());
     }
     paths
         .into_iter()
-        .map(|path| ShellInfo { name: Path::new(&path).file_name().map(|s| s.to_string_lossy().into_owned()).unwrap_or_else(|| path.clone()), is_default: path == default, path })
+        .map(|path| ShellInfo {
+            name: Path::new(&path)
+                .file_name()
+                .map(|s| s.to_string_lossy().into_owned())
+                .unwrap_or_else(|| path.clone()),
+            is_default: path == default,
+            path,
+        })
         .collect()
 }
 
@@ -63,7 +77,11 @@ enum Kind {
 }
 
 fn shell_kind(path: &str) -> Kind {
-    match Path::new(path).file_name().and_then(|s| s.to_str()).unwrap_or("") {
+    match Path::new(path)
+        .file_name()
+        .and_then(|s| s.to_str())
+        .unwrap_or("")
+    {
         "zsh" => Kind::Zsh,
         "bash" => Kind::Bash,
         "fish" => Kind::Fish,
@@ -109,7 +127,10 @@ pub fn write_integration(dir: &Path) -> std::io::Result<()> {
     std::fs::write(dir.join(".zshrc"), ZSH_INTEGRATION)?;
     std::fs::write(dir.join("bashrc"), BASH_INTEGRATION)?;
     std::fs::create_dir_all(dir.join("fish").join("conf.d"))?;
-    std::fs::write(dir.join("fish").join("conf.d").join("csm.fish"), FISH_INTEGRATION)?;
+    std::fs::write(
+        dir.join("fish").join("conf.d").join("csm.fish"),
+        FISH_INTEGRATION,
+    )?;
     Ok(())
 }
 
@@ -129,7 +150,15 @@ pub fn configure(cmd: &mut CommandBuilder, shell_path: &str, integration_dir: Op
         }
         Kind::Fish => {
             let existing = std::env::var("XDG_DATA_DIRS").unwrap_or_default();
-            cmd.env("XDG_DATA_DIRS", format!("{}{}{}", dir.display(), if existing.is_empty() { "" } else { ":" }, existing));
+            cmd.env(
+                "XDG_DATA_DIRS",
+                format!(
+                    "{}{}{}",
+                    dir.display(),
+                    if existing.is_empty() { "" } else { ":" },
+                    existing
+                ),
+            );
         }
         Kind::Other => {}
     }

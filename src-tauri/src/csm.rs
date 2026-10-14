@@ -50,7 +50,9 @@ pub fn home_dir() -> PathBuf {
         }
     }
 
-    dirs::home_dir().unwrap_or_else(|| PathBuf::from("/")).join(".csm")
+    dirs::home_dir()
+        .unwrap_or_else(|| PathBuf::from("/"))
+        .join(".csm")
 }
 
 pub fn socket_path() -> PathBuf {
@@ -101,7 +103,11 @@ async fn connect() -> Result<hyper::client::conn::http1::SendRequest<Full<Bytes>
     Ok(sender)
 }
 
-fn build_request(method: &str, path: &str, body: Option<String>) -> Result<Request<Full<Bytes>>, String> {
+fn build_request(
+    method: &str,
+    path: &str,
+    body: Option<String>,
+) -> Result<Request<Full<Bytes>>, String> {
     Request::builder()
         .method(method)
         .uri(format!("http://csm{path}"))
@@ -112,10 +118,17 @@ fn build_request(method: &str, path: &str, body: Option<String>) -> Result<Reque
         .map_err(|e| e.to_string())
 }
 
-pub async fn request(method: &str, path: &str, body: Option<String>) -> Result<ApiResponse, String> {
+pub async fn request(
+    method: &str,
+    path: &str,
+    body: Option<String>,
+) -> Result<ApiResponse, String> {
     let mut sender = connect().await?;
     let req = build_request(method, path, body)?;
-    let res = sender.send_request(req).await.map_err(|e| format!("request to the csm service failed: {e}"))?;
+    let res = sender
+        .send_request(req)
+        .await
+        .map_err(|e| format!("request to the csm service failed: {e}"))?;
     let status = res.status().as_u16();
     let bytes = res
         .into_body()
@@ -124,11 +137,18 @@ pub async fn request(method: &str, path: &str, body: Option<String>) -> Result<A
         .map_err(|e| format!("reading the csm service response failed: {e}"))?
         .to_bytes();
 
-    Ok(ApiResponse { status, body: String::from_utf8_lossy(&bytes).into_owned() })
+    Ok(ApiResponse {
+        status,
+        body: String::from_utf8_lossy(&bytes).into_owned(),
+    })
 }
 
 #[tauri::command]
-pub async fn csm_request(method: String, path: String, body: Option<String>) -> Result<ApiResponse, String> {
+pub async fn csm_request(
+    method: String,
+    path: String,
+    body: Option<String>,
+) -> Result<ApiResponse, String> {
     request(&method, &path, body).await
 }
 
@@ -164,7 +184,11 @@ pub async fn csm_start_service() -> Result<String, String> {
         .output()
         .await
         .map_err(|e| format!("could not run {}: {}", csm.display(), e))?;
-    let text = format!("{}{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
+    let text = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     if !output.status.success() {
         return Err(text.trim().to_string());
@@ -190,7 +214,11 @@ pub async fn csm_stop_service() -> Result<String, String> {
         .output()
         .await
         .map_err(|e| e.to_string())?;
-    let text = format!("{}{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
+    let text = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 
     if output.status.success() {
         Ok(text.trim().to_string())
@@ -216,11 +244,23 @@ async fn event_loop(app: AppHandle) {
     loop {
         match stream_events(&app).await {
             Ok(()) => {
-                let _ = app.emit("csm:connection", ConnectionEvent { connected: false, error: None });
+                let _ = app.emit(
+                    "csm:connection",
+                    ConnectionEvent {
+                        connected: false,
+                        error: None,
+                    },
+                );
                 delay = Duration::from_millis(500);
             }
             Err(e) => {
-                let _ = app.emit("csm:connection", ConnectionEvent { connected: false, error: Some(e) });
+                let _ = app.emit(
+                    "csm:connection",
+                    ConnectionEvent {
+                        connected: false,
+                        error: Some(e),
+                    },
+                );
                 delay = (delay * 2).min(Duration::from_secs(5));
             }
         }
@@ -238,7 +278,13 @@ async fn stream_events(app: &AppHandle) -> Result<(), String> {
         return Err(format!("event stream refused with status {}", res.status()));
     }
 
-    let _ = app.emit("csm:connection", ConnectionEvent { connected: true, error: None });
+    let _ = app.emit(
+        "csm:connection",
+        ConnectionEvent {
+            connected: true,
+            error: None,
+        },
+    );
     let mut body: Incoming = res.into_body();
     let mut buffer: Vec<u8> = Vec::new();
 
