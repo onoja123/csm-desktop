@@ -44,6 +44,12 @@ Statuses come only from what CSM can observe:
 
 Account failover is reflected as it happens: the row's account updates when the runner writes the new live session, and the switch (from, to, reason) comes from the activity CSM logged for that project. There is no progress figure and no guessed task name, for the same reason as elsewhere in the app.
 
+## Menu bar
+
+CSM Desktop stays in the macOS menu bar. Its item shows how many agents are running, including ones started with `csm` in a terminal, and how many need you: approvals waiting, runs that exited with an error, sessions whose account hit a usage limit or needs a login, and enabled accounts that need a login. Clicking it opens a panel with the approvals waiting (approve or reject them there), what needs attention, what each agent is working on and the sessions that finished most recently. Selecting a session opens its details in four tabs: **Overview**; **Account**, which can show another account without switching; **Rate limits**, which keeps the usage the agent reported apart from the limits CSM observed; and **Actions**, which opens the session in CSM or in a terminal, changes its account, recovers it through the failover order, hands it off, stops it or resumes it. Nothing changes until you confirm, and an action CSM can't take for that agent says why. Right-click the item for Open CSM, Mission Control, Accounts and Quit CSM.
+
+Closing the main window leaves CSM in the menu bar. Agents run in the csm service either way, and Quit says so before it quits. The panel's settings choose which events send a notification (approval requests, failures, usage limits, sign-ins, failed handoffs, a session moving to another account, an agent finishing), quiet hours, how many finished sessions to list, whether CSM shows in the Dock and whether it opens at login. They are saved as `menubar.json` in the app's config directory.
+
 ## Build Room
 
 Build Room takes one request and a repository and runs it through a plan, isolated implementation, integration, checks, review and a pull request description, using the agents you have signed in to. **New build run** asks for the request, the repository and base branch, which agents to use, how many may run at once, and whether to approve the plan first, review, check the base commit and offer to push. A run's page shows the stage it is in, the plan, the tasks as a dependency graph with the agent and account working on each, and a panel for the selected task: its worktree and branch, attempts and any account or agent switch, what CSM measured in git next to what the agent reported, its diff, and retry, reassign and accept actions. The Checks, Review, Integration and History tabs show the commands CSM ran with their results, the review rounds and findings (marked as the reviewing agent's claims), the integration branch, conflicts and integrated diff, and every event. Plans can be edited before approval; runs can be paused, resumed and cancelled; pushing and opening a pull request always waits for your approval. Build Room tasks also appear in Mission Control and Activity. See the csm README for the rules the service follows.
@@ -122,21 +128,25 @@ produces `src-tauri/target/release/bundle/macos/CSM.app`. For a disk image, run 
 src/
   types/       shared TypeScript types: interfaces/, enums/ (string-literal unions), aliases/
   components/  one component per file, grouped by area: ui (primitives, Icon), shell, agents,
-               mission, accounts, autofix, build, handoffs, terminal, palette, mcp, approvals,
-               activity, tasks, sessions
+               mission, menubar, accounts, autofix, build, handoffs, terminal, palette, mcp,
+               approvals, activity, tasks, sessions
   screens/     one file per route: Home, MissionControl, BuildRoom, BuildRun, AutoFix, Accounts,
-               AgentDetail, Handoffs, Sessions, Tasks, Activity, MCP, Settings, Terminal and details
-  hooks/       useBuild, useNow, useSessions, useTerminalShortcuts, useTimeline
+               AgentDetail, Handoffs, Sessions, Tasks, Activity, MCP, Settings, Terminal and details,
+               plus MenuBar, the menu bar panel's window
+  hooks/       useBuild, useMenuState, useNow, useSessions, useTerminalShortcuts, useTimeline
   store/       zustand stores: connection (bootstrap, reconnect), data (sections, event routing),
-               palette and dialog state
+               palette, dialog and menu bar panel state
   lib/         api.ts (typed client), browser-shim.ts, format, mission (session status model),
-               build, receipt, timeline, hub, mcp, provider-icons, navigation
+               menubar, build, receipt, timeline, hub, mcp, provider-icons, navigation
   terminal/    terminal store, pane layout, PTY bridge, OSC parsing
   design/      tokens.css, tokens.ts (shared with the future mobile app), base.css, app.css
   test/        vitest suites
 src-tauri/
   src/csm.rs        socket client, SSE reader, service launcher, csm discovery
   src/terminal/     PTY sessions, shell discovery, git helpers
+  src/tray.rs       menu bar item, panel window, showing and routing the main window
+  src/monitor.rs    what needs attention, for the menu bar title, panel and notifications
+  src/prefs.rs      menu bar settings: notifications, quiet hours, Dock, open at login
   src/lib.rs        Tauri setup and command registration
 ```
 
@@ -145,6 +155,7 @@ src-tauri/
 - The desktop never sees tokens, API keys or MCP secret values. CSM's own redaction applies to everything it stores; the service only adds names, statuses and timestamps.
 - Approvals default to on. Turn them off in Settings if you prefer Claude Code's own prompts.
 - Commands that look destructive (`rm -rf`, `git push --force`, `DROP TABLE`, …) need a second click to approve.
+- Approval notifications name only the program a command runs, never the full command, which can carry secrets.
 - The service is local only. Remote access for the mobile app is a separate design and is not part of this version.
 
 To report a vulnerability, see [SECURITY.md](SECURITY.md).
