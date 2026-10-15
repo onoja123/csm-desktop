@@ -10,6 +10,7 @@ export type * from './data.enum';
 export type * from './handoff.enum';
 export type * from './hub.enum';
 export type * from './mcp.enum';
+export type * from './menubar.enum';
 export type * from './mission.enum';
 export type * from './receipt.enum';
 export type * from './review.enum';

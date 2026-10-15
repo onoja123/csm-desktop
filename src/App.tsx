@@ -7,6 +7,7 @@ import { HandoffDialog } from '@/components/handoffs/HandoffDialog';
 import { CheckpointDialog } from '@/components/handoffs/CheckpointDialog';
 import { GlobalShortcuts } from '@/components/shell/GlobalShortcuts';
 import { DevStartRedirect } from '@/components/shell/DevStartRedirect';
+import { MenuBarBridge } from '@/components/shell/MenuBarBridge';
 import { Home } from '@/screens/Home';
 import { MissionControl } from '@/screens/MissionControl';
 import { BuildRoom } from '@/screens/BuildRoom';
@@ -30,6 +31,7 @@ export function App() {
     <HashRouter>
       <GlobalShortcuts />
       <DevStartRedirect />
+      <MenuBarBridge />
 
       <AppShell>
         <ConnectionGate>

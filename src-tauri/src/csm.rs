@@ -265,6 +265,7 @@ async fn event_loop(app: AppHandle) {
             }
         }
 
+        crate::monitor::poke();
         tokio::time::sleep(delay).await;
     }
 }
@@ -311,6 +312,11 @@ fn drain_events(app: &AppHandle, buffer: &mut Vec<u8>) {
         let text = String::from_utf8_lossy(&block);
 
         if let Some(ev) = parse_block(&text) {
+            // Terminal output and screens stream constantly and never change what the menu bar shows.
+            if ev.kind != "run.output" && ev.kind != "run.screen" {
+                crate::monitor::on_event(app, &ev.kind, &ev.data);
+            }
+
             let _ = app.emit("csm:event", ev);
         }
     }

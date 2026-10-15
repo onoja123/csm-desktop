@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { ComputerTerminal01Icon, GitBranchIcon } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { Icon, StatusText } from '@/components/ui';
-import { statusTone } from '@/lib/mission';
+import { sessionTask, statusTone } from '@/lib/mission';
 import { duration, liveSeconds } from '@/lib/format';
 import type { AgentSession } from '@/types';
 
@@ -44,13 +44,7 @@ export const SessionRow = memo(function SessionRow({
         </div>
 
         <span className={`mc-row__title ${s.title ? '' : 'mc-row__title--none'}`}>
-          {s.title ??
-            s.note ??
-            (s.observable
-              ? s.live
-                ? 'No request recorded yet'
-                : 'No request recorded'
-              : 'Request not visible from here')}
+          {sessionTask(s)}
         </span>
       </div>
 

@@ -17,6 +17,7 @@ export type * from './event.interface';
 export type * from './handoff.interface';
 export type * from './hub.interface';
 export type * from './mcp.interface';
+export type * from './menubar.interface';
 export type * from './mission.interface';
 export type * from './navigation.interface';
 export type * from './palette.interface';

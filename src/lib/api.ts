@@ -26,7 +26,12 @@ import type {
   HubStatus,
   HubTestResult,
   Incident,
+  LoginItem,
   MCPAccount,
+  MenuBarPrefs,
+  MenuBarPrefsView,
+  MenuState,
+  MenuTarget,
   PlanEdit,
   Project,
   ProviderID,
@@ -211,4 +216,17 @@ export const service = {
   start: () => invoke<string>('csm_start_service'),
   stop: () => invoke<string>('csm_stop_service'),
   subscribe: () => invoke<boolean>('csm_subscribe'),
+};
+
+export const desktop = {
+  showMain: (route?: string, action?: string) =>
+    invoke<void>('show_main_window', { route, action }),
+  hidePanel: () => invoke<void>('hide_panel'),
+  quit: () => invoke<void>('quit_app'),
+  state: () => invoke<MenuState>('menubar_state'),
+  takeTarget: () => invoke<MenuTarget | null>('menubar_take_target'),
+  prefs: () => invoke<MenuBarPrefsView>('menubar_prefs'),
+  setPrefs: (prefs: MenuBarPrefs) => invoke<MenuBarPrefsView>('set_menubar_prefs', { prefs }),
+  loginItem: () => invoke<LoginItem>('login_item'),
+  setLoginItem: (enabled: boolean) => invoke<LoginItem>('set_login_item', { enabled }),
 };
