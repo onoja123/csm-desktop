@@ -366,6 +366,14 @@ export function normalizeSessions(input: MissionInput): AgentSession[] {
   return sortSessions(out);
 }
 
+export function sessionTask(s: AgentSession): string {
+  if (s.title) return s.title;
+  if (s.note) return s.note;
+  if (!s.observable) return 'Request not visible from here';
+
+  return s.live ? 'No request recorded yet' : 'No request recorded';
+}
+
 export function sortSessions(sessions: AgentSession[]): AgentSession[] {
   return [...sessions].sort((a, b) => {
     const d = STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status);
