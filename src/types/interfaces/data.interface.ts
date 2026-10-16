@@ -11,6 +11,7 @@ import type { MCPAccount } from './mcp.interface';
 import type { Project } from './project.interface';
 import type { ServiceStatus } from './service.interface';
 import type { SessionEntry } from './session.interface';
+import type { SkillRecord } from './skill.interface';
 import type { ServiceSettings } from './settings.interface';
 
 export interface DataState {
@@ -21,6 +22,7 @@ export interface DataState {
   sessions: SessionEntry[];
   handoffs: Handoff[];
   mcp: MCPAccount[];
+  skills: SkillRecord[];
   mcpProject?: string;
   approvals: ApprovalsView;
   activity: Activity[];

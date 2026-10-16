@@ -104,7 +104,30 @@ export interface Receipt {
   acceptance: ReceiptAcceptance;
   pull_request: ReceiptPullRequest;
   drift?: ReceiptDrift;
+  skills?: ReceiptSkill[];
   limitations: string[];
+}
+
+export interface ReceiptSkillAgent {
+  agent: string;
+  state: string;
+  compatibility?: string;
+  adaptations?: string[];
+  problem?: string;
+  evidence?: string[];
+}
+
+export interface ReceiptSkill {
+  task_id: string;
+  id: string;
+  name: string;
+  source: string;
+  revision?: string;
+  hash: string;
+  origin: string;
+  adapter: string;
+  usage: 'verified' | 'unverified' | 'not placed';
+  agents?: ReceiptSkillAgent[];
 }
 
 export interface ReceiptReviewRound {

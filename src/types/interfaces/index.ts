@@ -28,6 +28,7 @@ export type * from './service.interface';
 export type * from './session.interface';
 export type * from './settings.interface';
 export type * from './signal.interface';
+export type * from './skill.interface';
 export type * from './terminal-persistence.interface';
 export type * from './terminal-store.interface';
 export type * from './terminal.interface';

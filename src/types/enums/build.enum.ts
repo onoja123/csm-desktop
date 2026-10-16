@@ -50,6 +50,7 @@ export type BuildAction =
   | 'retry-task'
   | 'assign'
   | 'accept-task'
+  | 'set-skills'
   | 'continue-integration'
   | 'retry-resolve'
   | 'accept-findings'

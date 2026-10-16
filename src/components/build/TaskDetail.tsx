@@ -10,6 +10,7 @@ import {
 } from '@hugeicons/core-free-icons';
 import { AgentIcon } from '@/components/agents/AgentIcon';
 import { DiffView } from '@/components/build/DiffView';
+import { TaskSkills } from '@/components/skills/TaskSkills';
 import { Button, Icon, Panel, Row, StatusText } from '@/components/ui';
 import { TASK_STATUS_LABEL, currentAgent, taskTone } from '@/lib/build';
 import { PROVIDERS, PROVIDER_LONG_NAMES, ago, shortPath } from '@/lib/format';
@@ -198,6 +199,8 @@ export function TaskDetail({
 
         {t.files?.length ? <Row label="Expected files">{t.files.join(', ')}</Row> : null}
       </div>
+
+      <TaskSkills build={build} task={t} busy={busy} onAct={onAct} />
 
       {t.switches?.length ? (
         <div className="handoff-list">

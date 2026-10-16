@@ -44,6 +44,26 @@ import type {
   ServiceSettings,
   ServiceStatus,
   SessionEntry,
+  SkillActionRequest,
+  SkillActionResult,
+  SkillAgentInfo,
+  SkillAgentView,
+  SkillCatalogView,
+  SkillDetailView,
+  SkillDiffView,
+  SkillDoctorFinding,
+  SkillAction,
+  SkillInspectView,
+  SkillInstallRequest,
+  SkillInstallResult,
+  SkillPackInstallResult,
+  SkillPacksView,
+  SkillPolicy,
+  SkillResolveRequest,
+  SkillResolveView,
+  SkillTaskManifest,
+  SkillUpdateReport,
+  SkillsView,
   StartRunRequest,
   SwitchResult,
 } from '@/types';
@@ -174,6 +194,46 @@ export const api = {
 
   mcp: (projectDir?: string) =>
     call<MCPAccount[]>('GET', '/v1/mcp' + q({ project_dir: projectDir })),
+
+  skills: () => call<SkillsView>('GET', '/v1/skills'),
+  skillCatalog: (query: string, refresh = false, registry = false) =>
+    call<SkillCatalogView>(
+      'GET',
+      '/v1/skills/catalog' +
+        q({ q: query, refresh: refresh ? 1 : undefined, registry: registry ? 1 : undefined }),
+    ),
+  skillDetail: (id: string) => call<SkillDetailView>('GET', '/v1/skills/detail' + q({ id })),
+  skillAvailability: (projectDir?: string, provider?: string, account?: string) =>
+    call<SkillAgentView[]>(
+      'GET',
+      '/v1/skills/availability' + q({ project_dir: projectDir, provider, account }),
+    ),
+  skillDoctor: (projectDir?: string, verify = false) =>
+    call<SkillDoctorFinding[]>(
+      'GET',
+      '/v1/skills/doctor' + q({ project_dir: projectDir, verify: verify ? 1 : undefined }),
+    ),
+  skillDiff: (id: string, upstream = false) =>
+    call<SkillDiffView[]>('GET', '/v1/skills/diff' + q({ id, upstream: upstream ? 1 : undefined })),
+  skillTask: (build: string, task: string) =>
+    call<SkillTaskManifest>('GET', '/v1/skills/task' + q({ build, task })),
+  skillSession: (provider: string, projectDir: string) =>
+    call<SkillTaskManifest>('GET', '/v1/skills/session' + q({ provider, project_dir: projectDir })),
+  skillAgents: () => call<SkillAgentInfo[]>('GET', '/v1/skills/agents'),
+  skillPacks: () => call<SkillPacksView>('GET', '/v1/skills/packs'),
+  skillPolicy: () => call<SkillPolicy>('GET', '/v1/skills/policy'),
+  setSkillPolicy: (policy: SkillPolicy) => call<SkillPolicy>('PUT', '/v1/skills/policy', policy),
+  inspectSkill: (req: Partial<SkillInstallRequest> & { source: string }) =>
+    call<SkillInspectView>('POST', '/v1/skills/inspect', req),
+  installSkill: (req: SkillInstallRequest) =>
+    call<SkillInstallResult>('POST', '/v1/skills/install', req),
+  installPack: (id: string, req: Omit<SkillInstallRequest, 'source'>) =>
+    call<SkillPackInstallResult>('POST', `/v1/skills/packs/${encodeURIComponent(id)}/install`, req),
+  resolveSkills: (req: SkillResolveRequest) =>
+    call<SkillResolveView>('POST', '/v1/skills/resolve', req),
+  checkSkills: (ids: string[]) => call<SkillUpdateReport[]>('POST', '/v1/skills/check', { ids }),
+  skillAction: (action: SkillAction, req: SkillActionRequest) =>
+    call<SkillActionResult>('POST', `/v1/skills/${action}`, req),
 
   approvals: () => call<ApprovalsView>('GET', '/v1/approvals'),
   decide: (id: string, decision: ApprovalDecision, reason?: string) =>

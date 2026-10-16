@@ -18,6 +18,7 @@ import { AgentDetail } from '@/screens/AgentDetail';
 import { Accounts } from '@/screens/Accounts';
 import { AccountDetail } from '@/screens/AccountDetail';
 import { MCP } from '@/screens/MCP';
+import { Skills } from '@/screens/Skills';
 import { Sessions } from '@/screens/Sessions';
 import { Handoffs } from '@/screens/Handoffs';
 import { HandoffDetail } from '@/screens/HandoffDetail';
@@ -48,6 +49,7 @@ export function App() {
             <Route path="/accounts" element={<Accounts />} />
             <Route path="/accounts/:name" element={<AccountDetail />} />
             <Route path="/mcp" element={<MCP />} />
+            <Route path="/skills" element={<Skills />} />
             <Route path="/sessions" element={<Sessions />} />
             <Route path="/handoffs" element={<Handoffs />} />
             <Route path="/handoffs/:project/:id" element={<HandoffDetail />} />

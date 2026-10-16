@@ -4,6 +4,6 @@ export type RunStatus = 'running' | 'exited';
 
 export type RunBucket = 'running' | 'waiting' | 'completed' | 'failed' | 'stopped';
 
-export type AgentDetailTab = 'output' | 'files' | 'activity' | 'session' | 'mcp';
+export type AgentDetailTab = 'output' | 'files' | 'activity' | 'session' | 'mcp' | 'skills';
 
 export type RunKind = 'agent' | 'handoff';

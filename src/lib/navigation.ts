@@ -1,5 +1,6 @@
 import {
   ArrowDataTransferHorizontalIcon,
+  BookOpen01Icon,
   CheckListIcon,
   ComputerTerminal01Icon,
   DashboardSquare02Icon,
@@ -20,6 +21,7 @@ export const NAV: NavItem[] = [
   { to: '/build', label: 'Build Room', icon: WorkflowSquare03Icon },
   { to: '/autofix', label: 'AutoFix', icon: SirenIcon },
   { to: '/accounts', label: 'Accounts', icon: UserIcon },
+  { to: '/skills', label: 'Skills', icon: BookOpen01Icon },
   { to: '/mcp', label: 'MCP', icon: Plug01Icon },
   { to: '/sessions', label: 'Sessions', icon: TimeQuarter02Icon },
   { to: '/handoffs', label: 'Handoffs', icon: ArrowDataTransferHorizontalIcon },

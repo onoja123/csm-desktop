@@ -15,6 +15,7 @@ export type * from './mission.enum';
 export type * from './receipt.enum';
 export type * from './review.enum';
 export type * from './session.enum';
+export type * from './skill.enum';
 export type * from './terminal.enum';
 export type * from './timeline.enum';
 export type * from './ui.enum';
