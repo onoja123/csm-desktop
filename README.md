@@ -55,6 +55,12 @@ Closing the main window leaves CSM in the menu bar. Agents run in the csm servic
 Build Room takes one request and a repository and runs it through a plan, isolated implementation, integration, checks, review and a pull request description, using the agents you have signed in to. **New build run** asks for the request, the repository and base branch, which agents to use, how many may run at once, and whether to approve the plan first, review, check the base commit and offer to push. A run's page shows the stage it is in, the plan, the tasks as a dependency graph with the agent and account working on each, and a panel for the selected task: its worktree and branch, attempts and any account or agent switch, what CSM measured in git next to what the agent reported, its diff, and retry, reassign and accept actions. The Checks, Review, Integration and History tabs show the commands CSM ran with their results, the review rounds and findings (marked as the reviewing agent's claims), the integration branch, conflicts and integrated diff, and every event. Plans can be edited before approval; runs can be paused, resumed and cancelled; pushing and opening a pull request always waits for your approval. Build Room tasks also appear in Mission Control and Activity. See the csm README for the rules the service follows.
 
 
+## Skills
+
+The Skills screen manages csm's skill library. **Installed** lists each skill with its source, revision, inspection result and how many places it was copied to; selecting one shows its details, the agents it is enabled for, every placed copy as checked on disk, compatibility per agent and its history, with update checks, enable and disable, scope and remove. **Discover** searches the public catalog and skills.sh, and **Install a skill** reads a skill from a name, a GitHub path or URL, a git URL or a local folder, shows its files, inspection findings and compatibility with each agent before anything is installed, and asks before accepting risky findings or extra permissions. **Packs** installs curated groups, **Agents** shows which skill folders each agent account reads and what is in them, and **Selection** sets how tasks get skills (manual, recommended or automatic) and the default skills. A project picker switches the view to a project's own skills.
+
+Skills also appear where tasks run: the Build Room plan editor and task panel pin skills to a task, the task panel and receipt show the revisions used and whether each skill's use was verified from the agent's own session record, an agent's page lists what its account can load, and a handoff's page lists the skills carried to the next agent and any that were not. CSM never runs anything inside a skill; see the csm README for the rules.
+
 ## AutoFix
 
 AutoFix lists production incidents: Sentry errors received by the local service or claimed from CSM Hub, deduplicated
@@ -128,16 +134,17 @@ produces `src-tauri/target/release/bundle/macos/CSM.app`. For a disk image, run 
 src/
   types/       shared TypeScript types: interfaces/, enums/ (string-literal unions), aliases/
   components/  one component per file, grouped by area: ui (primitives, Icon), shell, agents,
-               mission, menubar, accounts, autofix, build, handoffs, terminal, palette, mcp,
-               approvals, activity, tasks, sessions
+               mission, menubar, accounts, autofix, build, handoffs, skills, terminal, palette,
+               mcp, approvals, activity, tasks, sessions
   screens/     one file per route: Home, MissionControl, BuildRoom, BuildRun, AutoFix, Accounts,
-               AgentDetail, Handoffs, Sessions, Tasks, Activity, MCP, Settings, Terminal and details,
+               AgentDetail, Handoffs, Skills, Sessions, Tasks, Activity, MCP, Settings, Terminal and
+               details,
                plus MenuBar, the menu bar panel's window
-  hooks/       useBuild, useMenuState, useNow, useSessions, useTerminalShortcuts, useTimeline
+  hooks/       useBuild, useHomeDir, useMenuState, useNow, useSessions, useTerminalShortcuts, useTimeline
   store/       zustand stores: connection (bootstrap, reconnect), data (sections, event routing),
                palette, dialog and menu bar panel state
   lib/         api.ts (typed client), browser-shim.ts, format, mission (session status model),
-               menubar, build, receipt, timeline, hub, mcp, provider-icons, navigation
+               menubar, build, receipt, skills, timeline, hub, mcp, provider-icons, navigation
   terminal/    terminal store, pane layout, PTY bridge, OSC parsing
   design/      tokens.css, tokens.ts (shared with the future mobile app), base.css, app.css
   test/        vitest suites
