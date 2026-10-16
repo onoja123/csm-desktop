@@ -104,6 +104,8 @@ export interface BuildTask {
   order: number;
   integrated?: boolean;
   switches?: AgentSwitch[];
+  skills?: string[];
+  skill_manifest?: string;
 }
 
 export interface BuildConflict {

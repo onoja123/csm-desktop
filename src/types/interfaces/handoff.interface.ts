@@ -7,6 +7,7 @@ import type {
   TaskOrigin,
 } from '../enums/handoff.enum';
 import type { MCPStatus } from '../enums/mcp.enum';
+import type { HandoffSkills } from './skill.interface';
 
 export interface HandoffAgent {
   provider: string;
@@ -104,6 +105,7 @@ export interface Handoff {
   context: HandoffContext;
   git: HandoffGit;
   mcp?: MCPResult[];
+  skills?: HandoffSkills;
   previous?: string;
   error?: string;
   project: string;

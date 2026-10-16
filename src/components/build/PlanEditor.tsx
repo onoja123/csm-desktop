@@ -9,6 +9,7 @@ import { Button, Field, Icon } from '@/components/ui';
 import { slugify } from '@/lib/build';
 import { api } from '@/lib/api';
 import { PROVIDERS, PROVIDER_LONG_NAMES } from '@/lib/format';
+import { useData } from '@/store/data';
 import type { Build, PlanEditTask, PlanTaskDraft, ProviderID } from '@/types';
 
 let seq = 0;
@@ -32,6 +33,7 @@ export function PlanEditor({
   onCancel: () => void;
 }) {
   const [summary, setSummary] = useState(build.plan.summary ?? '');
+  const installed = useData((s) => s.skills).filter((s) => s.enabled);
 
   const [tasks, setTasks] = useState<PlanTaskDraft[]>(() =>
     build.tasks
@@ -92,6 +94,7 @@ export function PlanEditor({
           context: t.context,
           provider: t.provider,
           depends_on: t.depends_on,
+          skills: t.skills,
           acceptance: t.acceptanceText
             .split('\n')
             .map((s) => s.trim())
@@ -234,6 +237,34 @@ export function PlanEditor({
                     );
                   })}
               </div>
+
+              {installed.length ? (
+                <div className="chips" aria-label="Skills">
+                  <span className="muted plan-editor__label">Skills</span>
+
+                  {installed.map((s) => {
+                    const on = (t.skills ?? []).includes(s.name);
+
+                    return (
+                      <button
+                        key={s.id}
+                        className={`chip ${on ? 'chip--active' : ''}`}
+                        aria-pressed={on}
+                        title={s.description}
+                        onClick={() =>
+                          update(t.key, {
+                            skills: on
+                              ? (t.skills ?? []).filter((x) => x !== s.name)
+                              : [...(t.skills ?? []), s.name],
+                          })
+                        }
+                      >
+                        {s.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

@@ -11,4 +11,5 @@ export type DataSection =
   | 'failover'
   | 'settings'
   | 'builds'
-  | 'signals';
+  | 'signals'
+  | 'skills';

@@ -169,6 +169,49 @@ export function ReceiptView({ build }: { build: Build }) {
         )}
       </div>
 
+      {r.skills?.length ? (
+        <div className="receipt__section">
+          <h4 className="panel__h4">
+            Skills<span className="handoff-list__note">references and hashes, not contents</span>
+          </h4>
+
+          <ul className="receipt__claims">
+            {r.skills.map((s, i) => (
+              <li key={i}>
+                <StatusText
+                  tone={s.usage === 'verified' ? 'ok' : s.usage === 'unverified' ? 'warn' : 'err'}
+                >
+                  {s.usage === 'verified'
+                    ? 'Loaded (verified)'
+                    : s.usage === 'unverified'
+                      ? 'Use unverified'
+                      : 'Not placed'}
+                </StatusText>
+
+                <span className="receipt__claim selectable">
+                  <span className="mono">{s.task_id} </span>
+                  {s.name}
+                  <span className="muted mono">
+                    {' '}
+                    {s.source} @{' '}
+                    {s.revision ? s.revision.slice(0, 12) : `content ${s.hash.slice(0, 12)}`}
+                  </span>
+                </span>
+
+                <span className="muted receipt__evidence">
+                  {(s.agents ?? [])
+                    .map(
+                      (a) =>
+                        `${a.agent}: ${a.state}${a.problem ? ` (${a.problem})` : ''}${a.evidence?.length ? `, ${a.evidence.join('; ')}` : ''}`,
+                    )
+                    .join(' · ')}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       <div className="receipt__section">
         <h4 className="panel__h4">Limitations</h4>
 

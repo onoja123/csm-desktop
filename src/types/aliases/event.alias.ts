@@ -19,4 +19,5 @@ export type StreamEvent =
   | { type: 'approval.requested' | 'approval.resolved'; data: Approval }
   | { type: 'activity'; data: Activity }
   | { type: 'build'; data: BuildChangedPayload }
-  | { type: 'signals'; data: null };
+  | { type: 'signals'; data: null }
+  | { type: 'skills'; data: null };

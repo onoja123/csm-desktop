@@ -13,6 +13,7 @@ First public release.
 - Accounts: health, usage windows and failover order for each agent account.
 - Context handoff and checkpoints: move a task from one agent to another with its context, files and next steps.
 - Build Room: plan a change, run agents on it in isolated worktrees, review the result and prepare a pull request.
+- Skills: install Agent Skills once and see where csm placed them for every agent account, inspect a skill before installing it, browse the catalog and packs, choose how tasks get skills, and see the skills pinned to Build Room tasks, recorded in receipts and carried through handoffs.
 - AutoFix: turn Sentry errors into investigated, reproduced and verified fixes through CSM Hub.
 - CSM Terminal: PTY-backed shells with tabs, splits, search and agent sessions.
 - Command palette, activity feed, approvals, MCP server overview and settings.

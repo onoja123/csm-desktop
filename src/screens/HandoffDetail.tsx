@@ -5,6 +5,7 @@ import { Page } from '@/components/shell/Page';
 import { AgentPair } from '@/components/handoffs/AgentPair';
 import { useHandoffDialog } from '@/store/handoff-dialog';
 import { mcpLabel, mcpTone } from '@/lib/mcp';
+import { HandoffSkills } from '@/components/skills/HandoffSkills';
 import {
   Button,
   ErrorState,
@@ -191,6 +192,8 @@ export function HandoffDetail() {
           </Panel>
         </Section>
       ) : null}
+
+      <HandoffSkills skills={handoff.skills} home={home} />
 
       <Section title="Context" meta="reported by the agent's session record">
         <Panel>

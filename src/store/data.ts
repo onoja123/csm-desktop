@@ -27,6 +27,7 @@ export const useData = create<DataState>((set, get) => ({
   sessions: [],
   handoffs: [],
   mcp: [],
+  skills: [],
   approvals: EMPTY_APPROVALS,
   activity: [],
   projects: [],
@@ -75,6 +76,9 @@ export const useData = create<DataState>((set, get) => ({
         case 'approvals':
           done({ approvals: await api.approvals() });
           break;
+        case 'skills':
+          done({ skills: (await api.skills()).skills ?? [] });
+          break;
         case 'activity':
           done({ activity: await api.activity() });
           break;
@@ -110,6 +114,7 @@ export const useData = create<DataState>((set, get) => ({
       'failover',
       'builds',
       'signals',
+      'skills',
     ];
 
     await Promise.all(sections.map((s) => get().refresh(s)));
@@ -180,6 +185,8 @@ export const useData = create<DataState>((set, get) => ({
         return ['builds'];
       case 'signals':
         return ['signals'];
+      case 'skills':
+        return ['skills'];
       default:
         return [];
     }

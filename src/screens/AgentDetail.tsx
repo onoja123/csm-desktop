@@ -15,11 +15,22 @@ import { useHandoffDialog } from '@/store/handoff-dialog';
 import { TerminalPanel } from '@/components/terminal/TerminalPanel';
 import { ActivityItem } from '@/components/activity/ActivityItem';
 import { MCPServerCard } from '@/components/mcp/MCPServerCard';
+import { AgentSkillView } from '@/components/skills/AgentSkillView';
+import { ManifestSkills } from '@/components/skills/ManifestSkills';
 import { ApprovalCard } from '@/components/approvals/ApprovalCard';
-import { Button, EmptyState, ErrorState, Icon, Panel, Row, Tabs } from '@/components/ui';
+import {
+  Button,
+  EmptyState,
+  ErrorState,
+  Icon,
+  LoadingState,
+  Panel,
+  Row,
+  Tabs,
+} from '@/components/ui';
 import { api } from '@/lib/api';
 import { ago, clock, duration, liveSeconds, PROVIDER_LONG_NAMES, shortPath } from '@/lib/format';
-import type { AgentDetailTab, MCPAccount } from '@/types';
+import type { AgentDetailTab, MCPAccount, SkillAgentView, SkillTaskManifest } from '@/types';
 import { useData } from '@/store/data';
 import { useNow } from '@/hooks/useNow';
 
@@ -35,6 +46,8 @@ export function AgentDetail() {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [mcp, setMcp] = useState<MCPAccount[]>();
+  const [skillViews, setSkillViews] = useState<SkillAgentView[]>();
+  const [sessionSkills, setSessionSkills] = useState<SkillTaskManifest>();
   const [switching, setSwitching] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -44,6 +57,20 @@ export function AgentDetail() {
     (cols: number, rows: number) => void api.resize(id, cols, rows).catch(() => undefined),
     [id],
   );
+
+  useEffect(() => {
+    if (tab !== 'skills' || !run) return;
+
+    api
+      .skillAvailability(run.project_dir, run.provider, run.account)
+      .then(setSkillViews)
+      .catch(() => setSkillViews([]));
+
+    api
+      .skillSession(run.provider, run.project_dir)
+      .then(setSessionSkills)
+      .catch(() => setSessionSkills(undefined));
+  }, [tab, run?.project_dir, run?.provider, run?.account, run]);
 
   useEffect(() => {
     if (tab !== 'mcp' || !run) return;
@@ -211,6 +238,7 @@ export function AgentDetail() {
               { id: 'activity', label: 'Activity', count: runActivity.length },
               { id: 'session', label: 'Session' },
               { id: 'mcp', label: 'MCP' },
+              { id: 'skills', label: 'Skills' },
             ]}
             value={tab}
             onChange={setTab}
@@ -341,6 +369,29 @@ export function AgentDetail() {
                   </div>
                 );
               })()
+            )
+          ) : null}
+
+          {tab === 'skills' && sessionSkills?.skills?.length ? (
+            <Panel className="task-skills">
+              <h4 className="panel__h4">Pinned to this session</h4>
+              <ManifestSkills manifest={sessionSkills} />
+            </Panel>
+          ) : null}
+
+          {tab === 'skills' ? (
+            !skillViews ? (
+              <LoadingState label="Reading the agent's skill folders" />
+            ) : skillViews.length === 0 ? (
+              <p className="muted">This agent does not load Agent Skills.</p>
+            ) : (
+              skillViews.map((v) => (
+                <AgentSkillView
+                  key={v.provider + (v.account ?? '')}
+                  view={v}
+                  home={status?.service.home.replace(/\/\.csm$/, '') ?? ''}
+                />
+              ))
             )
           ) : null}
         </div>

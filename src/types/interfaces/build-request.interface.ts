@@ -32,6 +32,7 @@ export interface PlanEditTask {
   files?: string[];
   depends_on?: string[];
   provider?: ProviderID | '';
+  skills?: string[];
 }
 
 export interface CreateBuildRequest {
@@ -51,4 +52,5 @@ export interface PlanEdit {
 export interface BuildActionRequest {
   task?: string;
   provider?: string;
+  skills?: string[];
 }
